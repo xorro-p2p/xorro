@@ -6,7 +6,7 @@ class Node
   attr_accessor :ip, :id, :files
   def initialize
     @ip = lookup_ip
-    @id = generate_id
+    @id = sha(@ip)
     @k_buckets = {}
     @files = generate_file_cache
   end
@@ -15,17 +15,19 @@ class Node
     open('http://whatismyip.akamai.com').read
   end
 
-  def generate_id
-    Digest::SHA1.hexdigest(ip)
-  end
-
   def generate_file_cache
     cache = {}
 
     Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
-      file_hash = Digest::SHA1.hexdigest(File.basename(file))
+      file_hash = sha(File.basename(file))
       cache[file_hash] = file
     end
     cache
+  end
+
+  private
+
+  def sha(str)
+    Digest::SHA1.hexdigest(str)
   end
 end
