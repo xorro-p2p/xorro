@@ -1,8 +1,11 @@
-require 'webrick'
-require_relative 'development.rb'
+require 'sinatra'
+require_relative 'development.rb'  ## ENV['uploads'] = "~/Desktop"
+require_relative 'node.rb'
+require 'pry'
 
-### ENV['uploads'] = "~/path/to/uploads/folder"
 
-root = File.expand_path ENV['uploads']
-server = WEBrick::HTTPServer.new :Port => 8000, :DocumentRoot => root
-server.start
+set :static, true
+set :public_folder, File.expand_path(ENV['uploads'])
+
+# binding.pry
+
