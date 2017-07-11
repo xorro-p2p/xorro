@@ -1,12 +1,13 @@
 require 'open-uri'
 require 'digest/sha1'
+require_relative 'development.rb'
 
 
 class Node
   attr_accessor :ip, :id, :files
-  def initialize
+  def initialize(num_string)
     @ip = lookup_ip
-    @id = sha(@ip)
+    @id = sha(num_string) # TEMP - using a fixed string for now to generate ID hash
     @k_buckets = {}
     @files = generate_file_cache
   end
