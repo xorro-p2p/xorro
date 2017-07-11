@@ -30,22 +30,27 @@ class RoutingTable
     if bucket.is_full?
       if splittable?(bucket)
         create_bucket
-        return @buckets.last.add(node_info)
+        @buckets.last.add(node_info)
       else
-        attempt_eviction(bucket)
+        bucket.attempt_eviction(node_info)
       end
     else
       bucket.add(node_info)
     end
   end
 
-  def attempt_eviction(bucket)
-    
+  # find the bucket that has the matching/closest XOR distance
+  def find_matching_bucket(new_node)
+    xor_distance = id_distance(new_node)
+
+    shared_bit_length = 160 - Math.log2(xor_distance).floor + 1
+
+    buckets[shared_bit_length] || buckets.last
   end
 
-  # find the bucket that has the matching/closest XOR distance
-  def find_matching_bucket(node)
-    
+  def id_distance(new_node)
+    # need to convert back after using hash(ip) as id
+    node.id.hex ^ new_node.id.hex
   end
 
   def splittable?(bucket)
