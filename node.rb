@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'digest/sha1'
+require 'pry'
 
 
 class Node
@@ -20,12 +21,14 @@ class Node
   end
 
   def generate_file_cache
+    # ENV['upload_folder'] = './uploads/*'
     cache = {}
 
-    Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
-      file_hash = Digest::SHA1.hexdigest(File.basename(file))
-      cache[file_hash] = file
-    end
+    Dir[ENV['upload_folder']].select { |f| File.file?(f) }.each do |file|
+     file_hash = Digest::SHA1.hexdigest(File.basename(file))
+     cache[file_hash] = file
+   end
+
     cache
   end
 end
