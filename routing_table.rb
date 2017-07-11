@@ -24,21 +24,36 @@ class RoutingTable
   def insert(node)
     raise ArgumentError, 'cannot add self' if node == @node
 
-    # bucket = find_matching_bucket(node)
-    bucket = @buckets.first
+    bucket = find_matching_bucket(node)
+    node_info = {:id => node.id, :ip => node.ip}
 
     if bucket.is_full?
-      if bucket.is_splittable?
-
+      if splittable?(bucket)
+        create_bucket
+        return @buckets.last.add(node_info)
+      else
+        attempt_eviction(bucket)
       end
     else
-      bucket.add(node)
+      bucket.add(node_info)
     end
+  end
+
+  def attempt_eviction(bucket)
+    
   end
 
   # find the bucket that has the matching/closest XOR distance
   def find_matching_bucket(node)
     
+  end
+
+  def splittable?(bucket)
+    @buckets.last == bucket
+  end
+
+  def create_bucket
+    @buckets.push KBucket.new
   end
 
   # delete a node from a bucket
