@@ -23,9 +23,9 @@ class KBucket
 
   # can rename this to depth
   # what is the number of shared leading bits of all contacts in this bucket?
-  def shared_bits_length
+  # def shared_bits_length()
 
-  end
+  # end
 
   def is_full?
     @contacts.size == K
@@ -52,14 +52,21 @@ class KBucket
 
   def attempt_eviction(hash)
     # sort @contacts -> oldest is head
-    # if head responds to ping
+    sort_by_seen
+
+    if ping
       # update contact's last seen
-      # re-sort
-    # if head doesn't respond
+      head.update_last_seen
+    else
       # delete head
       delete(head)
       # insert new contact as tail
       add(hash)
+    end
+  end
+
+  def ping
+    true
   end
 
   def delete(contact)
@@ -68,6 +75,6 @@ class KBucket
   end
 
   def sort_by_seen
-
+    @contacts.sort_by(&:last_seen)
   end
 end
