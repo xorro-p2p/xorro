@@ -18,21 +18,16 @@ class RoutingTable
     end
   end
 
-  # find the bucket to split and call split function
-  def split_bucket(bucket)
-
-  end
-
   # insert a new node into one of the k-buckets
   def insert(node)
-    raise ArgumentError, 'cannot add self' if node == @node
+    raise ArgumentError, 'cannot add self' if node.id == @node.id
 
     bucket = find_matching_bucket(node)
-    binding.pry
+    # binding.pry
     node_info = {:id => node.id, :ip => node.ip}
 
     if bucket.is_full?
-      if splittable?(bucket)
+      if bucket.is_splittable?
         create_bucket
         @buckets.last.add(node_info)
       else
@@ -55,11 +50,25 @@ class RoutingTable
     @buckets.last == bucket
   end
 
+  # replace this with split bucket
   def create_bucket
     @buckets.push KBucket.new
   end
 
-  # delete a node from a bucket
+  # split the last bucket
+  def split_bucket
+
+  end
+
+  # redistribute contacts between buckets.last and a newly created bucket
+  def redistribute_contacts
+    old_idx = @routing_table.buckets.size - 2
+    old_bucket = @routing_table.buckets[old_idx]
+    new_bucket = @routing_table.buckets.last
+
+  end
+
+  # delete a node from a bucket - should this only refer to a method in KBucket class?
   def delete(node)
 
   end

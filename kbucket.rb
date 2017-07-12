@@ -2,10 +2,12 @@ require_relative 'development.rb'
 
 class KBucket
   K = ENV['k'].to_i # hardcoding k value for now
+  attr_reader :splittable
   attr_accessor :contacts
 
   def initialize
     @contacts = []
+    @splittable = true
   end
 
   # implement the each method for our custom Node object
@@ -35,7 +37,11 @@ class KBucket
 
   # is this the bucket that has the longest shared_bits_length?
   def is_splittable?
+    @splittable
+  end
 
+  def make_unsplittable
+    @splittable = false
   end
 
   # split the bucket and redistribute contacts
