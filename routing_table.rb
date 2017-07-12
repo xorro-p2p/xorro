@@ -1,3 +1,6 @@
+require_relative 'development.rb'
+require 'pry'
+
 class RoutingTable
   attr_accessor :node, :buckets
 
@@ -24,21 +27,36 @@ class RoutingTable
   def insert(node)
     raise ArgumentError, 'cannot add self' if node == @node
 
-    # bucket = find_matching_bucket(node)
-    bucket = @buckets.first
+    bucket = find_matching_bucket(node)
+    binding.pry
+    node_info = {:id => node.id, :ip => node.ip}
 
     if bucket.is_full?
-      if bucket.is_splittable?
-
+      if splittable?(bucket)
+        create_bucket
+        @buckets.last.add(node_info)
+      else
+        bucket.attempt_eviction(node_info)
       end
     else
-      bucket.add(node)
+      bucket.add(node_info)
     end
   end
 
   # find the bucket that has the matching/closest XOR distance
-  def find_matching_bucket(node)
-    
+  def find_matching_bucket(new_node)
+    xor_distance = @node.id_distance(new_node)
+
+    shared_bit_length = ENV['bit_length'].to_i - (Math.log2(xor_distance).floor + 1)
+    buckets[shared_bit_length] || buckets.last
+  end
+
+  def splittable?(bucket)
+    @buckets.last == bucket
+  end
+
+  def create_bucket
+    @buckets.push KBucket.new
   end
 
   # delete a node from a bucket

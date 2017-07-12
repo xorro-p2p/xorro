@@ -1,13 +1,14 @@
 require 'open-uri'
 require 'digest/sha1'
+require_relative 'development.rb'
 
 
 class Node
   attr_accessor :ip, :id, :files
-  def initialize
+  def initialize(num_string)
     @ip = lookup_ip
-    @id = sha(@ip)
-    @k_buckets = {}
+    # @id = sha(num_string) # TEMP - using a fixed string for now to generate ID hash
+    @id = num_string
     @files = generate_file_cache
   end
 
@@ -23,6 +24,12 @@ class Node
       cache[file_hash] = file
     end
     cache
+  end
+
+  def id_distance(other_node)
+    # need to convert back after using hash(ip) as id
+    # @id.hex ^ other_node.id.hex
+    @id.to_i ^ other_node.id.to_i
   end
 
   private
