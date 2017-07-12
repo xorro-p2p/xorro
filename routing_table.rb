@@ -45,17 +45,10 @@ class RoutingTable
 
   # find the bucket that has the matching/closest XOR distance
   def find_matching_bucket(new_node)
-    xor_distance = id_distance(new_node)
+    xor_distance = @node.id_distance(new_node)
 
     shared_bit_length = ENV['bit_length'].to_i - (Math.log2(xor_distance).floor + 1)
-    # binding.pry
     buckets[shared_bit_length] || buckets.last
-  end
-
-  def id_distance(new_node)
-    # need to convert back after using hash(ip) as id
-    # node.id.hex ^ new_node.id.hex
-    node.id.to_i ^ new_node.id.to_i
   end
 
   def splittable?(bucket)

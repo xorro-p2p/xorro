@@ -27,6 +27,12 @@ class Node
     cache
   end
 
+  def id_distance(other_node)
+    # need to convert back after using hash(ip) as id
+    #@id.hex ^ other_node.id.hex
+    @id.to_i ^ other_node.id.to_i
+  end
+
   private
 
   def sha(str)
