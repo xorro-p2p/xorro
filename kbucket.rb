@@ -1,5 +1,7 @@
+require_relative 'development.rb'
+
 class KBucket
-  K = 4 # hardcoding k value for now
+  K = ENV['k'].to_i # hardcoding k value for now
   attr_accessor :contacts
 
   def initialize

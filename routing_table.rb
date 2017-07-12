@@ -1,3 +1,6 @@
+require_relative 'development.rb'
+require 'pry'
+
 class RoutingTable
   attr_accessor :node, :buckets
 
@@ -25,6 +28,7 @@ class RoutingTable
     raise ArgumentError, 'cannot add self' if node == @node
 
     bucket = find_matching_bucket(node)
+    binding.pry
     node_info = {:id => node.id, :ip => node.ip}
 
     if bucket.is_full?
@@ -43,14 +47,15 @@ class RoutingTable
   def find_matching_bucket(new_node)
     xor_distance = id_distance(new_node)
 
-    shared_bit_length = 160 - Math.log2(xor_distance).floor + 1
-
+    shared_bit_length = ENV['bit_length'].to_i - (Math.log2(xor_distance).floor + 1)
+    # binding.pry
     buckets[shared_bit_length] || buckets.last
   end
 
   def id_distance(new_node)
     # need to convert back after using hash(ip) as id
-    node.id.hex ^ new_node.id.hex
+    # node.id.hex ^ new_node.id.hex
+    node.id.to_i ^ new_node.id.to_i
   end
 
   def splittable?(bucket)
