@@ -32,6 +32,11 @@ class Node
     @id.to_i ^ other_node.id.to_i
   end
 
+  def shared_prefix_bit_length(other_node)
+    xor_distance = id_distance(other_node)
+    ENV['bit_length'].to_i - (Math.log2(xor_distance).floor + 1)
+  end
+
   private
 
   def sha(str)

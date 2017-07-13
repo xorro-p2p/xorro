@@ -22,14 +22,29 @@ class RoutingTable
   def insert(node)
     raise ArgumentError, 'cannot add self' if node.id == @node.id
 
-    bucket = find_matching_bucket(node)
-    # binding.pry
+    shared_bit_length = @node.shared_prefix_bit_length(node)
+
+    bucket = find_matching_bucket(shared_bit_length)
+    duplicate_contact = bucket.find_contact_by_id(node.id)
+
+    if duplicate_contact
+      duplicate_contact.update_last_seen
+      return
+    end
+
+    node_is_closer = shared_bit_length > @buckets.index(bucket)  ###Bool
+
     node_info = {:id => node.id, :ip => node.ip}
 
     if bucket.is_full?
-      if bucket.is_splittable?
+      if bucket.is_splittable? &&
+         @buckets.size < ENV['bit_length'].to_i &&
+         (node_is_closer ||
+          bucket.is_redistributable?(@node, @buckets.index(bucket)))
+        bucket.make_unsplittable
         create_bucket
-        @buckets.last.add(node_info)
+        redistribute_contacts
+        insert(node)
       else
         bucket.attempt_eviction(node_info)
       end
@@ -39,37 +54,31 @@ class RoutingTable
   end
 
   # find the bucket that has the matching/closest XOR distance
-  def find_matching_bucket(new_node)
-    xor_distance = @node.id_distance(new_node)
-
-    shared_bit_length = ENV['bit_length'].to_i - (Math.log2(xor_distance).floor + 1)
+  def find_matching_bucket(shared_bit_length)
     buckets[shared_bit_length] || buckets.last
   end
 
-  def splittable?(bucket)
-    @buckets.last == bucket
-  end
-
-  # replace this with split bucket
   def create_bucket
     @buckets.push KBucket.new
   end
 
-  # split the last bucket
-  def split_bucket
-
-  end
-
   # redistribute contacts between buckets.last and a newly created bucket
   def redistribute_contacts
-    old_idx = @routing_table.buckets.size - 2
-    old_bucket = @routing_table.buckets[old_idx]
-    new_bucket = @routing_table.buckets.last
+    old_idx = @buckets.size - 2
+    old_bucket = @buckets[old_idx]
+    new_bucket = @buckets.last
 
-  end
+    movers = old_bucket.contacts.select do |c|
+      shared_bit_length = @node.shared_prefix_bit_length(c)
+      node_is_closer = shared_bit_length > old_idx
 
-  # delete a node from a bucket - should this only refer to a method in KBucket class?
-  def delete(node)
+      node_is_closer
+    end
+
+    movers.each do |m|
+      old_bucket.delete(m)
+      new_bucket.contacts.push(m)    ####TODO REFACTOR THIS IT IS NOT GOOD
+    end
 
   end
 end

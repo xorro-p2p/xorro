@@ -8,11 +8,11 @@ class NodeTest < Minitest::Test
     @node2 = Node.new('2')
     @node8 = Node.new('8')
 
-    assert_equal(@node0.id_distance(@node1), 1)
-    assert_equal(@node0.id_distance(@node2), 2)
-    assert_equal(@node1.id_distance(@node2), 3)
-    assert_equal(@node0.id_distance(@node8), 8)
-    assert_equal(@node1.id_distance(@node8), 9)
-    assert_equal(@node2.id_distance(@node8), 10)
+    assert_equal(1, @node0.id_distance(@node1))
+    assert_equal(2, @node0.id_distance(@node2))
+    assert_equal(3, @node1.id_distance(@node2))
+    assert_equal(8, @node0.id_distance(@node8))
+    assert_equal(9, @node1.id_distance(@node8))
+    assert_equal(10, @node2.id_distance(@node8))
   end
 end
