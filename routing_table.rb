@@ -47,13 +47,13 @@ class RoutingTable
     buckets[shared_bit_length] || buckets.last
   end
 
-  def splittable?(bucket)
-    @buckets.last == bucket
-  end
-
   # replace this with split bucket
   def create_bucket
+    # NOTE: may need to move this condition elsewhere
     @buckets.push KBucket.new
+    # if @buckets.size < ENV['bit_length']
+    #   @buckets.push KBucket.new
+    # end
   end
 
   # split the last bucket
@@ -79,11 +79,6 @@ class RoutingTable
       old_bucket.delete(m)
       new_bucket.contacts.push(m)    ####TODO REFACTOR THIS IT IS NOT GOOD
     end
-
-  end
-
-  # delete a node from a bucket - should this only refer to a method in KBucket class?
-  def delete(node)
 
   end
 end
