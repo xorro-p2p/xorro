@@ -40,6 +40,13 @@ class KBucket
     @splittable
   end
 
+  def is_redistributable?
+    true
+    # @contacts.any? do |c|
+
+    # end
+  end
+
   def make_unsplittable
     @splittable = false
   end
