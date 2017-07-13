@@ -25,15 +25,26 @@ class RoutingTable
     shared_bit_length = @node.shared_prefix_bit_length(node)
 
     bucket = find_matching_bucket(shared_bit_length)
+    duplicate_contact = bucket.find_contact_by_id(node.id)
+
+    if duplicate_contact
+      duplicate_contact.update_last_seen
+      return
+    end
+
     node_is_closer = shared_bit_length > @buckets.index(bucket)  ###Bool
 
     node_info = {:id => node.id, :ip => node.ip}
 
     if bucket.is_full?
-      if bucket.is_splittable? && (node_is_closer || bucket.is_redistributable?) ### AND (|| (at least one member of bucket has greater shared bitlength than index of bucket)
+      if bucket.is_splittable? &&
+         @buckets.size < ENV['bit_length'].to_i &&
+         (node_is_closer ||
+          bucket.is_redistributable?(@node, @buckets.index(bucket)))
+        bucket.make_unsplittable
         create_bucket
         redistribute_contacts
-        @buckets.last.add(node_info)
+        insert(node)
       else
         bucket.attempt_eviction(node_info)
       end
@@ -47,18 +58,8 @@ class RoutingTable
     buckets[shared_bit_length] || buckets.last
   end
 
-  # replace this with split bucket
   def create_bucket
-    # NOTE: may need to move this condition elsewhere
     @buckets.push KBucket.new
-    # if @buckets.size < ENV['bit_length']
-    #   @buckets.push KBucket.new
-    # end
-  end
-
-  # split the last bucket
-  def split_bucket
-
   end
 
   # redistribute contacts between buckets.last and a newly created bucket
@@ -70,10 +71,9 @@ class RoutingTable
     movers = old_bucket.contacts.select do |c|
       shared_bit_length = @node.shared_prefix_bit_length(c)
       node_is_closer = shared_bit_length > old_idx
-      return node_is_closer
-    end
 
-    binding.pry
+      node_is_closer
+    end
 
     movers.each do |m|
       old_bucket.delete(m)
