@@ -40,20 +40,29 @@ class KBucket
     @splittable
   end
 
-  def is_redistributable?
-    true
-    # @contacts.any? do |c|
+  def find_contact_by_id(id)
+    @contacts.find do |c|
+      c.id == id
+    end
+  end
 
-    # end
+  def is_redistributable?(node, index)
+    shared_bit_lengths = @contacts.map do |c|
+      # contacts and nodes both have IDs so they both can be passed into this method
+      node.shared_prefix_bit_length(c)
+    end
+
+    has_moveable_value = shared_bit_lengths.any? do |bit_length|
+      bit_length > index
+    end
+
+    has_different_values = shared_bit_lengths.uniq.size > 1
+
+    has_moveable_value && has_different_values
   end
 
   def make_unsplittable
     @splittable = false
-  end
-
-  # split the bucket and redistribute contacts
-  def split
-
   end
 
   # if this bucket already includes the contact, move existing contact to tail and discard new contact
@@ -66,12 +75,10 @@ class KBucket
   end
 
   def attempt_eviction(hash)
-    # sort @contacts -> oldest is head
-    sort_by_seen
-
-    if ping
+    if head.pingable
       # update contact's last seen
       head.update_last_seen
+      sort_by_seen
     else
       # delete head
       delete(head)
@@ -80,16 +87,12 @@ class KBucket
     end
   end
 
-  def ping
-    true
-  end
-
   def delete(contact)
     return unless @contacts.include? contact
     @contacts.delete contact
   end
 
   def sort_by_seen
-    @contacts.sort_by(&:last_seen)
+    @contacts.sort_by!(&:last_seen)
   end
 end
