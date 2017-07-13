@@ -101,115 +101,118 @@ class RoutingTableTest < Minitest::Test
     assert_equal(2, @routing_table.buckets.size)
   end
 
-  # def test_insert_if_bucket_full_and_splittable_same_xor_distance
-  #   node14 = Node.new('14')
-  #   node15 = Node.new('15')
-  #   node13 = Node.new('13')
+  def test_insert_if_bucket_full_and_splittable_same_xor_distance
+    node14 = Node.new('14')
+    node15 = Node.new('15')
+    node13 = Node.new('13')
 
-  #   @routing_table.insert(node14)
-  #   @routing_table.insert(node15)
-  #   @routing_table.insert(node13)
+    @routing_table.insert(node14)
+    @routing_table.insert(node15)
+    @routing_table.insert(node13)
 
-  #   assert_equal(1, @routing_table.buckets.size)
-  # end
+    assert_equal(1, @routing_table.buckets.size)
+  end
 
-#   def test_redistribute_one_bucket_to_two
-#     node15 = Node.new('15')
-#     node3 = Node.new('3')
-#     node5 = Node.new('5')
+  def test_insert_if_bucket_full_and_splittable_same_xor_distance_bucket_redistributable
+    node7 = Node.new('7')
+    node15 = Node.new('15')
+    node13 = Node.new('13')
 
-#     @routing_table.insert(node15)
-#     @routing_table.insert(node3)
-#     @routing_table.insert(node5)
+    @routing_table.insert(node7)
+    @routing_table.insert(node15)
+    @routing_table.insert(node13)
 
-#     assert_equal(2, @routing_table.buckets.size)
-#     assert_equal(2, @routing_table.buckets[1].contacts.size)
-#   end
+    assert_equal(2, @routing_table.buckets.size)
+  end
 
-#   # def test_insert_if_bucket_full_and_splittable_but_contains_at_least_1_closer_element
-#   #   node3 = Node.new('3')
-#   #   node15 = Node.new('15')
-#   #   node13 = Node.new('13')
+  def test_redistribute_one_bucket_to_two
+    node15 = Node.new('15')
+    node3 = Node.new('3')
+    node5 = Node.new('5')
 
-#   #   @routing_table.insert(node3)
-#   #   @routing_table.insert(node15)
-#   #   @routing_table.insert(node13)
+    @routing_table.insert(node15)
+    @routing_table.insert(node3)
 
-#   #   assert_equal(2, @routing_table.buckets.size)
-#   # end
+    @routing_table.create_bucket
 
-#   def test_insert_if_bucket_full_and_not_splittable
-#     node15 = Node.new('15')
-#     node14 = Node.new('14')
+    @routing_table.redistribute_contacts
 
-#     @routing_table.insert(node15)
-#     @routing_table.insert(node14)
+    assert_equal(1, @routing_table.buckets[0].contacts.size)
+    assert_equal(1, @routing_table.buckets[1].contacts.size)
+  end
 
-#     node7 = Node.new('7')
-#     node6 = Node.new('6')
+  def test_insert_if_bucket_full_and_splittable_but_contains_at_least_1_closer_element
+    node3 = Node.new('3')
+    node15 = Node.new('15')
+    node13 = Node.new('13')
 
-#     @routing_table.insert(node7)
-#     @routing_table.insert(node6)
+    @routing_table.insert(node3)
+    @routing_table.insert(node15)
+    @routing_table.insert(node13)
 
-#     @node13 = Node.new('13')
-#     @routing_table.insert(node13)
+    assert_equal(2, @routing_table.buckets.size)
+  end
 
-#     assert_equal(2, @routing_table.buckets.size)
-#   end
+  def test_insert_if_bucket_full_and_not_splittable
+    node15 = Node.new('15')
+    node14 = Node.new('14')
 
-#   def test_insert_if_bucket_full_and_not_splittable_and_head_node_live
-#     node15 = Node.new('15')
-#     node14 = Node.new('14')
+    @routing_table.insert(node15)
+    @routing_table.insert(node14)
 
-#     @routing_table.insert(node15)
-#     @routing_table.insert(node14)
+    node7 = Node.new('7')
+    node6 = Node.new('6')
 
-#     node7 = Node.new('7')
-#     node6 = Node.new('6')
+    @routing_table.insert(node7)
+    @routing_table.insert(node6)
 
-#     @routing_table.insert(node7)
-#     @routing_table.insert(node6)
+    node13 = Node.new('13')
+    @routing_table.insert(node13)
 
-#     # assume node15 pingable is true
-#     @node13 = Node.new('13')
-#     @routing_table.insert(node13)
+    assert_equal(2, @routing_table.buckets.size)
+  end
 
-#     assert_equal('15', @routing_table.buckets[0].contacts.tail.id)
-#     assert_equal('14', @routing_table.buckets[0].contacts.head.id)
-#     assert_equal(2, @routing_table.buckets.size)
-#   end
+  def test_insert_if_bucket_full_and_not_splittable_and_head_node_live
+    node15 = Node.new('15')
+    node14 = Node.new('14')
 
-#   def test_insert_if_bucket_full_and_not_splittable_and_head_node_not_live
-#     node15 = Node.new('15')
-#     node14 = Node.new('14')
+    @routing_table.insert(node15)
+    @routing_table.insert(node14)
 
-#     @routing_table.insert(node15)
-#     @routing_table.insert(node14)
+    node7 = Node.new('7')
+    node6 = Node.new('6')
 
-#     node7 = Node.new('7')
-#     node6 = Node.new('6')
+    @routing_table.insert(node7)
+    @routing_table.insert(node6)
 
-#     @routing_table.insert(node7)
-#     @routing_table.insert(node6)
+    node13 = Node.new('13')
+    @routing_table.insert(node13)
 
-#     @routing_table.buckets[0].contacts.head.pingable = false
+    assert_equal('15', @routing_table.buckets[0].tail.id)
+    assert_equal('14', @routing_table.buckets[0].head.id)
+    assert_equal(2, @routing_table.buckets.size)
+  end
 
-#     @node13 = Node.new('13')
-#     @routing_table.insert(node13)
+  def test_insert_if_bucket_full_and_not_splittable_and_head_node_not_live
+    node15 = Node.new('15')
+    node14 = Node.new('14')
 
-#     assert_equal('13', @routing_table.buckets[0].contacts.tail.id)
-#     assert_equal('14', @routing_table.buckets[0].contacts.head.id)
-#     assert_equal(2, @routing_table.buckets.size)
-#   end
+    @routing_table.insert(node15)
+    @routing_table.insert(node14)
 
-#   def test_max_number_buckets
-#     # try to create k + 1 buckets; should still have k buckets
-#     # need to replace 3 with a reference to the actual bit length variable
-#     3.times do 
-#       @routing_table.create_bucket
-#     end
+    @routing_table.buckets[0].contacts[0].pingable = false
 
-#     @routing_table.create_bucket # need to rewrite when we implement
-#     assert_equal(4, @routing_table.buckets.size)
-#   end
+    node7 = Node.new('7')
+    node6 = Node.new('6')
+
+    @routing_table.insert(node7)
+    @routing_table.insert(node6)
+
+    node13 = Node.new('13')
+    @routing_table.insert(node13)
+
+    assert_equal('13', @routing_table.buckets[0].tail.id)
+    assert_equal('14', @routing_table.buckets[0].head.id)
+    assert_equal(2, @routing_table.buckets.size)
+  end
 end
