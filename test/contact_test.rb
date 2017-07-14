@@ -4,7 +4,8 @@ require_relative "../contact.rb"
 
 class ContactTest < Minitest::Test
   def setup
-    @node = Node.new('0')
+    @kn = KademliaNetwork.new
+    @node = Node.new('0', @kn)
     @options = {
       :id => @node.id,
       :ip => @node.ip,

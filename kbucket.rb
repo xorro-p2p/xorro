@@ -1,4 +1,5 @@
 require_relative 'development.rb'
+require_relative 'binary.rb'
 
 class KBucket
   K = ENV['k'].to_i # hardcoding k value for now
@@ -10,12 +11,6 @@ class KBucket
     @splittable = true
   end
 
-  # implement the each method for our custom Node object
-  include Enumerable
-  def each(&block)
-    @contacts.each(&block)
-  end
-
   # candidate for removal if new contact is being added to a full bucket
   def head
     @contacts.first
@@ -24,12 +19,6 @@ class KBucket
   def tail
     @contacts.last
   end
-
-  # can rename this to depth
-  # what is the number of shared leading bits of all contacts in this bucket?
-  # def shared_bits_length()
-
-  # end
 
   def is_full?
     @contacts.size == K
@@ -46,10 +35,9 @@ class KBucket
     end
   end
 
-  def is_redistributable?(node, index)
+  def is_redistributable?(node_id, index)
     shared_bit_lengths = @contacts.map do |c|
-      # contacts and nodes both have IDs so they both can be passed into this method
-      node.shared_prefix_bit_length(c)
+      Binary.shared_prefix_bit_length(node_id, c.id)
     end
 
     has_moveable_value = shared_bit_lengths.any? do |bit_length|
@@ -70,20 +58,18 @@ class KBucket
   # if this bucket doesn't include the contact and bucket is full
   #   ping head; delete head if it doesn't respond and insert new contact as tail
   #              move head to tail end if it does respond, discard new contact
-  def add(hash)
-    @contacts.push Contact.new(hash)
+  def add(contact)
+    @contacts.push contact
   end
 
-  def attempt_eviction(hash)
+  def attempt_eviction(contact)
     if head.pingable
-      # update contact's last seen
       head.update_last_seen
       sort_by_seen
     else
-      # delete head
       delete(head)
       # insert new contact as tail
-      add(hash)
+      add(contact)
     end
   end
 
