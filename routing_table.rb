@@ -1,4 +1,5 @@
 require_relative 'development.rb'
+require_relative 'binary.rb'
 require 'pry'
 
 class RoutingTable
@@ -22,7 +23,7 @@ class RoutingTable
   def insert(node)
     raise ArgumentError, 'cannot add self' if node.id == @node.id
 
-    shared_bit_length = @node.shared_prefix_bit_length(node)
+    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, node.id)
 
     bucket = find_matching_bucket(shared_bit_length)
     duplicate_contact = bucket.find_contact_by_id(node.id)
@@ -69,7 +70,7 @@ class RoutingTable
     new_bucket = @buckets.last
 
     movers = old_bucket.contacts.select do |c|
-      shared_bit_length = @node.shared_prefix_bit_length(c)
+      shared_bit_length = Binary.shared_prefix_bit_length(@node.id, c.id)
       node_is_closer = shared_bit_length > old_idx
 
       node_is_closer

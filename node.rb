@@ -1,13 +1,14 @@
 require 'open-uri'
 require 'digest/sha1'
 require_relative 'development.rb'
+require_relative 'binary.rb'
 
 
 class Node
   attr_accessor :ip, :id, :files
   def initialize(num_string)
     @ip = lookup_ip
-    # @id = sha(num_string) # TEMP - using a fixed string for now to generate ID hash
+    # @id = Binary.sha(num_string) # TEMP - using a fixed string for now to generate ID hash
     @id = num_string
     @files = generate_file_cache
   end
@@ -20,26 +21,9 @@ class Node
     cache = {}
 
     Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
-      file_hash = sha(File.basename(file))
+      file_hash = Binary.sha(File.basename(file))
       cache[file_hash] = file
     end
     cache
-  end
-
-  def id_distance(other_node)
-    # need to convert back after using hash(ip) as id
-    # @id.hex ^ other_node.id.hex
-    @id.to_i ^ other_node.id.to_i
-  end
-
-  def shared_prefix_bit_length(other_node)
-    xor_distance = id_distance(other_node)
-    ENV['bit_length'].to_i - (Math.log2(xor_distance).floor + 1)
-  end
-
-  private
-
-  def sha(str)
-    Digest::SHA1.hexdigest(str)
   end
 end

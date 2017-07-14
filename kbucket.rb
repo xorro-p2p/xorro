@@ -1,4 +1,5 @@
 require_relative 'development.rb'
+require_relative 'binary.rb'
 
 class KBucket
   K = ENV['k'].to_i # hardcoding k value for now
@@ -49,7 +50,7 @@ class KBucket
   def is_redistributable?(node, index)
     shared_bit_lengths = @contacts.map do |c|
       # contacts and nodes both have IDs so they both can be passed into this method
-      node.shared_prefix_bit_length(c)
+      Binary.shared_prefix_bit_length(node.id, c.id)
     end
 
     has_moveable_value = shared_bit_lengths.any? do |bit_length|

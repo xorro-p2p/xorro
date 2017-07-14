@@ -34,7 +34,7 @@ class RoutingTableTest < Minitest::Test
 
   def test_insert_find_matching_bucket_with_one_bucket
     new_node = Node.new('1')
-    shared_bit_length = @node.shared_prefix_bit_length(new_node)
+    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, new_node.id)
     result = @routing_table.find_matching_bucket(shared_bit_length)
     assert_equal(result, @routing_table.buckets[0])
   end
@@ -42,7 +42,7 @@ class RoutingTableTest < Minitest::Test
   def test_insert_find_matching_bucket_with_two_buckets_no_shared_bits
     new_node = Node.new('15')
     @routing_table.create_bucket
-    shared_bit_length = @node.shared_prefix_bit_length(new_node)
+    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, new_node.id)
     result = @routing_table.find_matching_bucket(shared_bit_length)
 
     assert_equal(result, @routing_table.buckets[0])
@@ -51,7 +51,7 @@ class RoutingTableTest < Minitest::Test
   def test_insert_find_matching_bucket_with_two_buckets_one_shared_bit
     new_node = Node.new('7')
     @routing_table.create_bucket
-    shared_bit_length = @node.shared_prefix_bit_length(new_node)
+    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, new_node.id)
     result = @routing_table.find_matching_bucket(shared_bit_length)
 
     assert_equal(result, @routing_table.buckets[1])
@@ -60,7 +60,7 @@ class RoutingTableTest < Minitest::Test
   def test_insert_find_matching_bucket_with_two_buckets_no_exact_shared_bits
     new_node = Node.new('1')
     @routing_table.create_bucket
-    shared_bit_length = @node.shared_prefix_bit_length(new_node)
+    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, new_node.id)
     result = @routing_table.find_matching_bucket(shared_bit_length)
 
     assert_equal(result, @routing_table.buckets[1])
@@ -71,9 +71,9 @@ class RoutingTableTest < Minitest::Test
     node7 = Node.new('7')
     node15 = Node.new('15')
 
-    shared_bit_length2 = @node.shared_prefix_bit_length(node2)
-    shared_bit_length7 = @node.shared_prefix_bit_length(node7)
-    shared_bit_length15 = @node.shared_prefix_bit_length(node15)
+    shared_bit_length2 = Binary.shared_prefix_bit_length(@node.id, node2.id)
+    shared_bit_length7 = Binary.shared_prefix_bit_length(@node.id, node7.id)
+    shared_bit_length15 = Binary.shared_prefix_bit_length(@node.id, node15.id)
 
     3.times do 
       @routing_table.create_bucket
