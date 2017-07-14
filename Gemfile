@@ -6,4 +6,5 @@ gem "pry"
 
 group :test, :development do
   gem "minitest"
+  gem "minitest-reporters"
 end
