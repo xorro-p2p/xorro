@@ -1,16 +1,17 @@
 Node
-  - network node
-  - ip
+  - @ip
+  - @id
   - ..
   - RoutingTable
+  - HashTable
+
   - join_network
+    - create an id if there isn't one
     - get TBDNetwork::SUPER_NODES (???)
-    - insert itself into TBDNetwork::ALL_NODES
-    - ask one of the super nodes to add the current node to the global routing table (could be on any node in the network)
-    - tell super nodes about yourself
-  - add_contact
-    - decide to add to own routing table or add to one of the neighor's RT?
-    - pick the neighbor to "add_contact"
+    - pick one of the super nodes as the bootstrap node
+    - ping the bootstrap node
+    - RPC "iterative_find_node" on the bootstrap node, passing its own contact
+
 	- iterative_find_node
 		- call "find_node" on itself
 			- returns k contacts
@@ -18,6 +19,7 @@ Node
 			- if the closest is itself?
 				- return itself
 			- else
+        - ping the closest node
 				- RPC "find_node" on that closest node
   - iterative_find_value
 		- input: resource_hash
@@ -27,7 +29,8 @@ Node
 			- if the closest itself?
 				- return itself
 			- else
-				- call "find_value" on that node
+        - ping that node
+				- RPC "find_value" on that node
   - iterative_store
     - compute the hash of the file content(or passed in)
 		- call find_node with the hash above
@@ -36,10 +39,11 @@ Node
 			- if the closest itself?
 				- call "store" on self, the originating node as the contact
 			- else
-				- RPC "store" on that node, the originating node as the contact
+        - ping that node
+				- RPC "store" on that node, the originating node as the contact, passing along the content hash
 	- store
-		- takes a contact, an ID/hash, the data
-		- insert the contact into the node's routing table
+		- receives a contact (the node that originated "iterative_store"), an hash (hash of the file content), the data (a URL to get it)
+    - insert k/v into the the current node's HashTable
 	- find_value
 		- takes a hash
 		- same as "find_node"
@@ -48,18 +52,19 @@ Node
 		- return k contacts that's closest to the hash
 	- ping
 		- takes a contact
-		- returns a boolean
+		- returns a boolean (alive or not)
 		- if true
-			upsert the contact into its routing table
+			update / insert the contact into its routing table
 		-	 else
 			evict the contact from its routing table
 	- receive_ping
 		- takes a contact
 		- upsert the contact into its routing table
 
-
 - replication
 - error paths (nodes down)
+- allow setting alpha
+- ping can be a random true/false (90% true / 10% false)
 
 RoutingTable
   - node_id
