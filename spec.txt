@@ -1,0 +1,71 @@
+Node
+  - network node
+  - ip
+  - ..
+  - RoutingTable
+  - join_network
+    - get TBDNetwork::SUPER_NODES (???)
+    - insert itself into TBDNetwork::ALL_NODES
+    - ask one of the super nodes to add the current node to the global routing table (could be on any node in the network)
+    - tell super nodes about yourself
+  - add_contact
+    - decide to add to own routing table or add to one of the neighor's RT?
+    - pick the neighbor to "add_contact"
+	- iterative_find_node
+		- call "find_node" on itself
+			- returns k contacts
+		- find the closest of the k contacts to the id
+			- if the closest is itself?
+				- return itself
+			- else
+				- RPC "find_node" on that closest node
+  - iterative_find_value
+		- input: resource_hash
+		- call its own "find_value"
+			- returns: k contacts
+		- find the closest of the k contacts to the value
+			- if the closest itself?
+				- return itself
+			- else
+				- call "find_value" on that node
+  - iterative_store
+    - compute the hash of the file content(or passed in)
+		- call find_node with the hash above
+			- return k contacts
+		- find the closest of the k contacts to the value
+			- if the closest itself?
+				- call "store" on self, the originating node as the contact
+			- else
+				- RPC "store" on that node, the originating node as the contact
+	- store
+		- takes a contact, an ID/hash, the data
+		- insert the contact into the node's routing table
+	- find_value
+		- takes a hash
+		- same as "find_node"
+	- find_node
+		- takes a hash
+		- return k contacts that's closest to the hash
+	- ping
+		- takes a contact
+		- returns a boolean
+		- if true
+			upsert the contact into its routing table
+		-	 else
+			evict the contact from its routing table
+	- receive_ping
+		- takes a contact
+		- upsert the contact into its routing table
+
+
+- replication
+- error paths (nodes down)
+
+RoutingTable
+  - node_id
+  - buckets
+    - bucket:
+      - [contacts]
+
+
+contact -> node
