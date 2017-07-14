@@ -3,15 +3,14 @@ require_relative '../node.rb'
 require_relative "../routing_table.rb"
 require_relative "../kbucket.rb"
 require_relative "../contact.rb"
+require_relative "../kademlia_network.rb"
 
 class KBucketTest < Minitest::Test
   def setup
+    @kn = KademliaNetwork.new
     @bucket = KBucket.new
-    @node = Node.new('0')
-    @options = {
-      :id => @node.id,
-      :ip => @node.ip,
-    }
+    @node = Node.new('0', @kn)
+    @contact = @node.to_contact
   end
 
   def test_create_bucket
@@ -21,35 +20,35 @@ class KBucketTest < Minitest::Test
   end
 
   def test_add_contact
-    @bucket.add(@options)
+    @bucket.add(@contact)
 
     assert_equal(1, @bucket.contacts.size)
   end
 
   def test_delete_contact
-    @bucket.add(@options)
+    @bucket.add(@contact)
     @bucket.delete(@bucket.contacts[0])
 
     assert_equal(0, @bucket.contacts.size)
   end
 
   def test_delete_contact_that_is_not_included
-    @bucket.add(@options)
-    contact = Contact.new({ :id => '1', :ip => '' })
+    @bucket.add(@contact)
+    contact = Node.new('1', @kn).to_contact
     @bucket.delete(contact)
 
     assert_equal(1, @bucket.contacts.size)
   end
 
   def test_head_tail_one_contact
-    @bucket.add(@options)
+    @bucket.add(@contact)
 
     assert_equal(@bucket.contacts[0], @bucket.head)
     assert_equal(@bucket.contacts[0], @bucket.tail)
   end
 
   def test_head_tail_two_contacts
-    @bucket.add(@options)
+    @bucket.add(@contact)
     @bucket.add({ :id => '1', :ip => '' })
 
     assert_equal(@bucket.contacts[0], @bucket.head)
@@ -57,27 +56,27 @@ class KBucketTest < Minitest::Test
   end
 
   def test_bucket_is_full
-    @bucket.add(@options)
+    @bucket.add(@contact)
     @bucket.add({ :id => '1', :ip => '' })
 
     assert(@bucket.is_full?)
   end
 
   def test_bucket_is_not_full
-    @bucket.add(@options)
+    @bucket.add(@contact)
 
     refute(@bucket.is_full?)
   end
 
   def test_find_contact_by_id
-    @bucket.add(@options)
+    @bucket.add(@contact)
     found_contact = @bucket.find_contact_by_id(@node.id)
 
     assert_equal(@bucket.contacts[0], found_contact)
   end
 
   def test_find_contact_by_id_no_match
-    @bucket.add(@options)
+    @bucket.add(@contact)
     found_contact = @bucket.find_contact_by_id('1')
 
     assert_nil(found_contact)
@@ -90,28 +89,24 @@ class KBucketTest < Minitest::Test
   end
 
   def test_is_redistributable
-    @bucket.add({ :id => '15', :ip => '' })
-    @bucket.add({ :id => '7', :ip => '' })
+    @bucket.add(Node.new('15', @kn).to_contact)
+    @bucket.add(Node.new('7', @kn).to_contact)
 
-    node = Node.new('0')
-
-    result = @bucket.is_redistributable?(node, 0)
+    result = @bucket.is_redistributable?('0', 0)
     assert(result)
   end
 
   def test_is_not_redistributable
-    @bucket.add({ :id => '15', :ip => '' })
-    @bucket.add({ :id => '14', :ip => '' })
+    @bucket.add(Node.new('15', @kn).to_contact)
+    @bucket.add(Node.new('14', @kn).to_contact)
 
-    node = Node.new('0')
-
-    result = @bucket.is_redistributable?(node, 0)
+    result = @bucket.is_redistributable?('0', 0)
     refute(result)
   end
 
   def test_sort_by_seen
-    @bucket.add(@options)
-    @bucket.add({ :id => '7', :ip => '' })
+    @bucket.add(@contact)
+    @bucket.add(Node.new('7', @kn).to_contact)
 
     @bucket.head.update_last_seen
     @bucket.sort_by_seen
@@ -120,8 +115,8 @@ class KBucketTest < Minitest::Test
   end
 
   def test_attempt_eviction_pingable
-    @bucket.add({ :id => '15', :ip => '' })
-    @bucket.add({ :id => '14', :ip => '' })
+    @bucket.add(Node.new('15', @kn).to_contact)
+    @bucket.add(Node.new('14', @kn).to_contact)
 
     @bucket.attempt_eviction({ :id => '13', :ip => '' })
 
@@ -130,11 +125,11 @@ class KBucketTest < Minitest::Test
   end
 
   def test_attempt_eviction_not_pingable
-    @bucket.add({ :id => '15', :ip => '' })
-    @bucket.add({ :id => '14', :ip => '' })
+    @bucket.add(Node.new('15', @kn).to_contact)
+    @bucket.add(Node.new('14', @kn).to_contact)
 
     @bucket.head.pingable = false
-    @bucket.attempt_eviction({ :id => '13', :ip => '' })
+    @bucket.attempt_eviction(Node.new('13', @kn).to_contact)
 
     assert_equal('13', @bucket.tail.id)
     assert_equal('14', @bucket.head.id)
