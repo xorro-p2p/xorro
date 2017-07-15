@@ -46,7 +46,32 @@ class NodeTest < Minitest::Test
 
     node0.ping(node1.to_contact)
 
-    # assert_equal(1, node1.routing_table.buckets[0].contacts.size)
+    assert_equal(1, node1.routing_table.buckets[0].contacts.size)
     assert_equal(1, node0.routing_table.buckets[0].contacts.size)
+  end
+
+  def test_store
+    node0 = Node.new('0', @kn)
+    node1 = Node.new('1', @kn)
+
+    node0.store('key', 'value', node1.to_contact)
+    assert_equal('value', node1.dht_segment['key'])
+  end
+
+  def test_receive_find_node
+    node0 = Node.new('0', @kn)
+    node4 = Node.new('4', @kn)
+    node5 = Node.new('5', @kn)
+    node12 = Node.new('12', @kn)
+    node7 = Node.new('7', @kn)
+
+    node0.routing_table.insert(node4.to_contact)
+    node0.routing_table.insert(node5.to_contact)
+    node0.routing_table.insert(node12.to_contact)
+
+    results = node0.receive_find_node('1', node7.to_contact)
+        # binding.pry
+    refute_empty(results)
+    assert_equal(2, results.size)
   end
 end
