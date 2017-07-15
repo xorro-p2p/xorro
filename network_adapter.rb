@@ -1,4 +1,4 @@
-class KademliaNetwork
+class NetworkAdapter
   attr_accessor :nodes
   
   def initialize

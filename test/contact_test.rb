@@ -1,10 +1,11 @@
 require_relative 'test_helper.rb'
 require_relative '../node.rb'
 require_relative "../contact.rb"
+require_relative "../network_adapter.rb"
 
 class ContactTest < Minitest::Test
   def setup
-    @kn = KademliaNetwork.new
+    @kn = NetworkAdapter.new
     @node = Node.new('0', @kn)
     @options = {
       :id => @node.id,

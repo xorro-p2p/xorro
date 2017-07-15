@@ -3,11 +3,11 @@ require_relative '../node.rb'
 require_relative "../routing_table.rb"
 require_relative "../kbucket.rb"
 require_relative "../contact.rb"
-require_relative "../kademlia_network.rb"
+require_relative "../network_adapter.rb"
 
 class KBucketTest < Minitest::Test
   def setup
-    @kn = KademliaNetwork.new
+    @kn = NetworkAdapter.new
     @bucket = KBucket.new
     @node = Node.new('0', @kn)
     @contact = @node.to_contact

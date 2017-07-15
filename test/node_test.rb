@@ -1,11 +1,11 @@
 require_relative 'test_helper.rb'
 require_relative "../node.rb"
 require_relative "../routing_table.rb"
-require_relative "../kademlia_network.rb"
+require_relative "../network_adapter.rb"
 
 class NodeTest < Minitest::Test
   def setup
-    @kn = KademliaNetwork.new
+    @kn = NetworkAdapter.new
   end
 
   def test_create_node
