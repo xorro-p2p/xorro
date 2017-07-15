@@ -12,6 +12,13 @@ class KBucket
     @splittable = true
   end
 
+  include Enumerable
+  def each(&block)
+    @contacts.each do |c|
+      yield c
+    end
+  end
+
   # candidate for removal if new contact is being added to a full bucket
   def head
     @contacts.first
