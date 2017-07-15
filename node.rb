@@ -8,7 +8,7 @@ require_relative 'network_adapter.rb'
 
 
 class Node
-  attr_accessor :ip, :id, :files, :routing_table
+  attr_accessor :ip, :id, :files, :routing_table, :dht_segment
   def initialize(num_string, network)
     @ip = lookup_ip
     @network = network
@@ -17,6 +17,7 @@ class Node
     @id = num_string
     @routing_table = RoutingTable.new(self)
     @files = generate_file_cache
+    @dht_segment = {}
   end
 
   def join(network)
@@ -55,5 +56,29 @@ class Node
     end 
 
     recipient_node
+  end
+
+  def store(file_id, address, recipient_contact)
+    recipient_node = @network.get_node_by_contact(recipient_contact)
+    recipient_node.receive_store(file_id, address, to_contact)
+    ping(recipient_contact)
+  end
+
+  def receive_store(file_id, address, contact)
+    @dht_segment[file_id] = address
+    ping(contact)
+  end
+
+  def receive_find_node(id, contact)
+    # i received an ID
+    # i want my routing table to return an array of k contacts
+    # i give the requester the array
+    results = @routing_table.find_closest_contacts(id)
+  end
+
+  def find_node()
+    # i'm telling another node to receive_find_nodes
+    # i get an array of k contacts
+
   end
 end
