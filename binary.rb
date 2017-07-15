@@ -6,11 +6,17 @@ module Binary
   end
 
   def self.shared_prefix_bit_length(id_string1, id_string2)
-    xor_distance = Binary.xor_distance(id_string1, id_string2)
-    ENV['bit_length'].to_i - (Math.log2(xor_distance).floor + 1)
+    distance = xor_distance(id_string1, id_string2)
+    ENV['bit_length'].to_i - (Math.log2(distance).floor + 1)
   end
 
   def self.sha(str)
     Digest::SHA1.hexdigest(str)
+  end
+
+  def self.xor_distance_map(source_node_id, array)
+    array.map do |item|
+      shared_prefix_bit_length(source_node_id, item.id)
+    end
   end
 end
