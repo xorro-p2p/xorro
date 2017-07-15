@@ -15,7 +15,7 @@ class Node
     join(@network)
     # @id = Binary.sha(num_string) # TEMP - using a fixed string for now to generate ID hash
     @id = num_string
-    @routing_table = RoutingTable.new(@id)
+    @routing_table = RoutingTable.new(self)
     @files = generate_file_cache
   end
 
@@ -45,12 +45,13 @@ class Node
     @routing_table.insert(contact)
   end
 
-  def ping(recipient_id)
-    recipient_node = @network.nodes.find {|n| n.id == recipient_id }
+  def ping(contact)
+    recipient_node = @network.get_node_by_contact(contact)
 
     if recipient_node
       recipient_node.receive_ping(self.to_contact)
-      @routing_table.insert(recipient_node.to_contact)
+      contact.update_last_seen
+      @routing_table.insert(contact)
     end 
 
     recipient_node

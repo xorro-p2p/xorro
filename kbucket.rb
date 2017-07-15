@@ -4,9 +4,10 @@ require_relative 'binary.rb'
 class KBucket
   K = ENV['k'].to_i # hardcoding k value for now
   attr_reader :splittable
-  attr_accessor :contacts
+  attr_accessor :contacts, :node
 
-  def initialize
+  def initialize(node)
+    @node = node
     @contacts = []
     @splittable = true
   end
@@ -36,9 +37,11 @@ class KBucket
   end
 
   def is_redistributable?(node_id, index)
-    shared_bit_lengths = @contacts.map do |c|
-      Binary.shared_prefix_bit_length(node_id, c.id)
-    end
+    shared_bit_lengths = Binary.xor_distance_map(node_id, @contacts)
+
+    # shared_bit_lengths = @contacts.map do |c|
+    #   Binary.shared_prefix_bit_length(node_id, c.id)
+    # end
 
     has_moveable_value = shared_bit_lengths.any? do |bit_length|
       bit_length > index
@@ -62,14 +65,14 @@ class KBucket
     @contacts.push contact
   end
 
-  def attempt_eviction(contact)
-    if head.pingable
+  def attempt_eviction(new_contact)
+    if @node.ping(head)
       head.update_last_seen
       sort_by_seen
     else
       delete(head)
       # insert new contact as tail
-      add(contact)
+      add(new_contact)
     end
   end
 

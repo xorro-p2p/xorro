@@ -3,11 +3,12 @@ require_relative 'binary.rb'
 require 'pry'
 
 class RoutingTable
-  attr_accessor :node, :buckets
+  attr_accessor :node, :node_id, :buckets
 
-  def initialize(current_node_id)
-    @node_id = current_node_id
-    @buckets = [KBucket.new]
+  def initialize(current_node)
+    @node = current_node
+    @node_id = current_node.id
+    @buckets = [KBucket.new(@node)]
   end
 
   # insert a new node into one of the k-buckets
@@ -50,7 +51,7 @@ class RoutingTable
   end
 
   def create_bucket
-    buckets.push KBucket.new
+    buckets.push KBucket.new(@node)
   end
 
   def split(bucket)

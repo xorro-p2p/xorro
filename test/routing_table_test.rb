@@ -121,7 +121,6 @@ class RoutingTableTest < Minitest::Test
   def test_redistribute_one_bucket_to_two
     node15 = Node.new('15', @kn)
     node3 = Node.new('3', @kn)
-    node5 = Node.new('5', @kn)
 
     @routing_table.insert(node15.to_contact)
     @routing_table.insert(node3.to_contact)
@@ -193,16 +192,16 @@ class RoutingTableTest < Minitest::Test
     @routing_table.insert(node15.to_contact)
     @routing_table.insert(node14.to_contact)
 
-    @routing_table.buckets[0].contacts[0].pingable = false
-
     node7 = Node.new('7', @kn)
     node6 = Node.new('6', @kn)
 
     @routing_table.insert(node7.to_contact)
     @routing_table.insert(node6.to_contact)
 
+    @kn.nodes.delete_at(1)
+
     node13 = Node.new('13', @kn)
-    @routing_table.insert(node13)
+    @routing_table.insert(node13.to_contact)
 
     assert_equal('13', @routing_table.buckets[0].tail.id)
     assert_equal('14', @routing_table.buckets[0].head.id)
