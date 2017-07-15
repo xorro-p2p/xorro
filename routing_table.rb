@@ -11,13 +11,18 @@ class RoutingTable
     @buckets = [KBucket.new(@node)]
   end
 
+  include Enumerable
+  def each(&block)
+    @buckets.each do |b|
+      yield b
+    end
+  end
+
   # insert a new node into one of the k-buckets
   def insert(contact)
     raise ArgumentError, 'cannot add self' if contact.id == @node_id
 
-    shared_bit_length = Binary.shared_prefix_bit_length(@node_id, contact.id)
-
-    bucket = find_matching_bucket(shared_bit_length)
+    bucket = find_closest_bucket(contact.id)
     duplicate_contact = bucket.find_contact_by_id(contact.id)
 
     if duplicate_contact
@@ -25,11 +30,9 @@ class RoutingTable
       return
     end
 
-    node_is_closer = shared_bit_length > @buckets.index(bucket)  ###Bool
-
     if bucket.is_full?
       if bucket.is_splittable? && room_for_another_bucket? &&
-         (node_is_closer ||
+         (node_is_closer(contact.id, bucket) ||
           bucket.is_redistributable?(@node_id, @buckets.index(bucket)))
         split(bucket)
         insert(contact)
@@ -42,8 +45,32 @@ class RoutingTable
   end
 
   # find the bucket that has the matching/closest XOR distance
-  def find_matching_bucket(idx)
+  def find_closest_bucket(id)
+    idx = Binary.shared_prefix_bit_length(@node_id, id)
     buckets[idx] || buckets.last
+  end
+
+  def find_closest_contacts(id)
+    closest_bucket = find_closest_bucket(id)
+    results = [] + closest_bucket.contacts
+
+    bucket_idx = @buckets.index(closest_bucket) - 1
+
+    until results.size == ENV['k'] || bucket_idx < 0 do
+      current_bucket = @buckets[bucket_idx]
+
+      current_bucket.each do |contact|
+        results.push(contact) if results.size < ENV['k'].to_i
+      end
+
+      bucket_idx -= 1
+    end
+
+    results
+  end
+
+  def node_is_closer(contact_id, bucket)
+    Binary.shared_prefix_bit_length(@node_id, contact_id) > @buckets.index(bucket)
   end
 
   def room_for_another_bucket?
