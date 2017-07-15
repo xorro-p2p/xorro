@@ -4,7 +4,7 @@ require_relative 'development.rb'
 require_relative 'binary.rb'
 require_relative 'routing_table.rb'
 require_relative 'contact.rb'
-require_relative 'kademlia_network.rb'
+require_relative 'network_adapter.rb'
 
 
 class Node
