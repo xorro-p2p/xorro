@@ -64,21 +64,56 @@ class Node
     ping(recipient_contact)
   end
 
-  def receive_store(file_id, address, contact)
+  def receive_store(file_id, address, sender_contact)
     @dht_segment[file_id] = address
-    ping(contact)
+    ping(sender_contact)
   end
 
-  def receive_find_node(id, contact)
+  def receive_find_node(query_id, sender_contact)
     # i received an ID
     # i want my routing table to return an array of k contacts
     # i give the requester the array
-    results = @routing_table.find_closest_contacts(id)
+    # have to exclude the requestor contact
+
+    closest_nodes = @routing_table.find_closest_contacts(query_id, sender_contact)
+    ping(sender_contact)
+
+    closest_nodes
   end
 
-  def find_node()
+  def find_node(query_id, recipient_contact)
     # i'm telling another node to receive_find_nodes
     # i get an array of k contacts
+    # The name of this RPC is misleading. Even if the key to the RPC is the nodeID of an
+    # existing contact or indeed if it is the nodeID of the recipient itself, the recipient
+    # is still required to return k triples. A more descriptive name would be FIND_CLOSE_NODES. 
 
+    # The recipient of a FIND_NODE should never return a triple containing the nodeID of the requestor.
+    # If the requestor does receive such a triple, it should discard it.
+    # A node must never put its own nodeID into a bucket as a contact.
+
+    recipient_node = @network.get_node_by_contact(recipient_contact)
+    closest_nodes = recipient_node.receive_find_node(query_id, self.to_contact)
+    ping(recipient_contact)
+
+    closest_nodes
+  end
+
+  def receive_find_value(file_id, sender_contact)
+    result = {}
+
+    if dht_segment[file_id]
+      result['data'] = dht_segment[file_id]
+    else
+      result['contacts'] = receive_find_node(file_id, sender_contact)
+    end
+
+    ping(sender_contact)
+    result
+  end
+
+  def find_value(file_id, recipient_contact)
+    recipient_node = @network.get_node_by_contact(recipient_contact)
+    result = recipient_node.receive_find_value(file_id, self.to_contact)
   end
 end
