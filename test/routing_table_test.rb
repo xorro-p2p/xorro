@@ -3,11 +3,11 @@ require_relative '../node.rb'
 require_relative "../routing_table.rb"
 require_relative "../kbucket.rb"
 require_relative "../contact.rb"
-require_relative "../kademlia_network.rb"
+require_relative "../network_adapter.rb"
 
 class RoutingTableTest < Minitest::Test
   def setup
-    @kn = KademliaNetwork.new
+    @kn = NetworkAdapter.new
     @node = Node.new('0', @kn)
     @routing_table = @node.routing_table
   end
@@ -33,48 +33,40 @@ class RoutingTableTest < Minitest::Test
     assert_equal(1, @routing_table.buckets[0].contacts.size)
   end
 
-  def test_insert_find_matching_bucket_with_one_bucket
-    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, '1')
-    result = @routing_table.find_matching_bucket(shared_bit_length)
+  def test_insert_find_closest_bucket_with_one_bucket
+    result = @routing_table.find_closest_bucket('1')
     assert_equal(result, @routing_table.buckets[0])
   end
 
-  def test_insert_find_matching_bucket_with_two_buckets_no_shared_bits
+  def test_insert_find_closest_bucket_with_two_buckets_no_shared_bits
     @routing_table.create_bucket
-    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, '15')
-    result = @routing_table.find_matching_bucket(shared_bit_length)
+    result = @routing_table.find_closest_bucket('15')
 
     assert_equal(result, @routing_table.buckets[0])
   end
 
-  def test_insert_find_matching_bucket_with_two_buckets_one_shared_bit
+  def test_insert_find_closest_bucket_with_two_buckets_one_shared_bit
     @routing_table.create_bucket
-    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, '7')
-    result = @routing_table.find_matching_bucket(shared_bit_length)
+    result = @routing_table.find_closest_bucket('7')
 
     assert_equal(result, @routing_table.buckets[1])
   end
 
-  def test_insert_find_matching_bucket_with_two_buckets_no_exact_shared_bits
+  def test_insert_find_closest_bucket_with_two_buckets_no_exact_shared_bits
     @routing_table.create_bucket
-    shared_bit_length = Binary.shared_prefix_bit_length(@node.id, '1')
-    result = @routing_table.find_matching_bucket(shared_bit_length)
+    result = @routing_table.find_closest_bucket('1')
 
     assert_equal(result, @routing_table.buckets[1])
   end
 
-  def test_insert_find_matching_bucket_with_k_buckets_no_exact_shared_bits
-    shared_bit_length2 = Binary.shared_prefix_bit_length(@node.id, '2')
-    shared_bit_length7 = Binary.shared_prefix_bit_length(@node.id, '7')
-    shared_bit_length15 = Binary.shared_prefix_bit_length(@node.id, '15')
-
+  def test_insert_find_closest_bucket_with_k_buckets_no_exact_shared_bits
     3.times do 
       @routing_table.create_bucket
     end
 
-    result2 = @routing_table.find_matching_bucket(shared_bit_length2)
-    result7 = @routing_table.find_matching_bucket(shared_bit_length7)
-    result15 = @routing_table.find_matching_bucket(shared_bit_length15)
+    result2 = @routing_table.find_closest_bucket('2')
+    result7 = @routing_table.find_closest_bucket('7')
+    result15 = @routing_table.find_closest_bucket('15')
 
     assert_equal(result2, @routing_table.buckets[2])
     assert_equal(result7, @routing_table.buckets[1])
@@ -90,6 +82,18 @@ class RoutingTableTest < Minitest::Test
     @routing_table.insert(node14.to_contact)
     @routing_table.insert(node15.to_contact)
     @routing_table.insert(node7.to_contact)
+
+    assert_equal(2, @routing_table.buckets.size)
+  end
+
+  def test_insert_if_bucket_full_and_splittable_smaller_distance_insert_first
+    node7 = Node.new('7', @kn)
+    node6 = Node.new('6', @kn)
+    node13 = Node.new('13', @kn)
+
+    @routing_table.insert(node7.to_contact)
+    @routing_table.insert(node6.to_contact)
+    @routing_table.insert(node13.to_contact)
 
     assert_equal(2, @routing_table.buckets.size)
   end
@@ -121,7 +125,6 @@ class RoutingTableTest < Minitest::Test
   def test_redistribute_one_bucket_to_two
     node15 = Node.new('15', @kn)
     node3 = Node.new('3', @kn)
-    node5 = Node.new('5', @kn)
 
     @routing_table.insert(node15.to_contact)
     @routing_table.insert(node3.to_contact)
@@ -193,16 +196,16 @@ class RoutingTableTest < Minitest::Test
     @routing_table.insert(node15.to_contact)
     @routing_table.insert(node14.to_contact)
 
-    @routing_table.buckets[0].contacts[0].pingable = false
-
     node7 = Node.new('7', @kn)
     node6 = Node.new('6', @kn)
 
     @routing_table.insert(node7.to_contact)
     @routing_table.insert(node6.to_contact)
 
+    @kn.nodes.delete_at(1)
+
     node13 = Node.new('13', @kn)
-    @routing_table.insert(node13)
+    @routing_table.insert(node13.to_contact)
 
     assert_equal('13', @routing_table.buckets[0].tail.id)
     assert_equal('14', @routing_table.buckets[0].head.id)

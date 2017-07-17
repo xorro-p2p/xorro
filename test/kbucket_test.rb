@@ -3,13 +3,13 @@ require_relative '../node.rb'
 require_relative "../routing_table.rb"
 require_relative "../kbucket.rb"
 require_relative "../contact.rb"
-require_relative "../kademlia_network.rb"
+require_relative "../network_adapter.rb"
 
 class KBucketTest < Minitest::Test
   def setup
-    @kn = KademliaNetwork.new
-    @bucket = KBucket.new
+    @kn = NetworkAdapter.new
     @node = Node.new('0', @kn)
+    @bucket = KBucket.new(@node)
     @contact = @node.to_contact
   end
 
@@ -118,7 +118,7 @@ class KBucketTest < Minitest::Test
     @bucket.add(Node.new('15', @kn).to_contact)
     @bucket.add(Node.new('14', @kn).to_contact)
 
-    @bucket.attempt_eviction({ :id => '13', :ip => '' })
+    @bucket.attempt_eviction(Contact.new(id: '13', ip: ''))
 
     assert_equal('15', @bucket.tail.id)
     assert_equal('14', @bucket.head.id)
@@ -128,7 +128,7 @@ class KBucketTest < Minitest::Test
     @bucket.add(Node.new('15', @kn).to_contact)
     @bucket.add(Node.new('14', @kn).to_contact)
 
-    @bucket.head.pingable = false
+    @kn.nodes.delete_at(1)
     @bucket.attempt_eviction(Node.new('13', @kn).to_contact)
 
     assert_equal('13', @bucket.tail.id)
