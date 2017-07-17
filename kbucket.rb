@@ -46,17 +46,11 @@ class KBucket
   def is_redistributable?(node_id, index)
     shared_bit_lengths = Binary.xor_distance_map(node_id, @contacts)
 
-    # shared_bit_lengths = @contacts.map do |c|
-    #   Binary.shared_prefix_bit_length(node_id, c.id)
-    # end
-
     has_moveable_value = shared_bit_lengths.any? do |bit_length|
       bit_length > index
     end
 
-    has_different_values = shared_bit_lengths.uniq.size > 1
-
-    has_moveable_value && has_different_values
+    has_moveable_value
   end
 
   def make_unsplittable
