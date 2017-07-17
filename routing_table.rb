@@ -54,9 +54,11 @@ class RoutingTable
     closest_bucket = find_closest_bucket(id)
     results = []
 
+    
     bucket_idx = @buckets.index(closest_bucket)
+    further_bucket_idx = bucket_idx - 1
 
-    until results.size == ENV['k'] || bucket_idx < 0 do
+    until results.size == ENV['k'] || bucket_idx == buckets.size do
       current_bucket = @buckets[bucket_idx]
 
       current_bucket.each do |contact|
@@ -68,7 +70,24 @@ class RoutingTable
         end
       end
 
-      bucket_idx -= 1
+      bucket_idx += 1
+    end
+
+
+
+    until results.size == ENV['k'] || further_bucket_idx < 0 do
+      current_bucket = @buckets[further_bucket_idx]
+
+      current_bucket.each do |contact|
+
+        if sender_contact
+          results.push(contact) if results.size < ENV['k'].to_i && contact.id != sender_contact.id
+        else
+          results.push(contact) if results.size < ENV['k'].to_i
+        end
+      end
+
+      further_bucket_idx -= 1
     end
 
     results

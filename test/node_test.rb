@@ -105,29 +105,29 @@ class NodeTest < Minitest::Test
     assert_includes(results, node3_contact)
   end
 
-  # def test_receive_find_node_multiple_buckets_starting_from_back
-  #   # checking to see if results will be taken from multiple buckets
-  #   node0 = Node.new('0', @kn)
-  #   node4 = Node.new('4', @kn)
-  #   node5 = Node.new('5', @kn)
-  #   node12 = Node.new('12', @kn)
-  #   node7 = Node.new('7', @kn)
+  def test_receive_find_node_multiple_buckets_starting_from_back
+    # checking to see if results will be taken from multiple buckets
+    node0 = Node.new('0', @kn)
+    node4 = Node.new('4', @kn)
+    node5 = Node.new('5', @kn)
+    node12 = Node.new('12', @kn)
+    node7 = Node.new('7', @kn)
 
-  #   node4_contact = node4.to_contact
-  #   node5_contact = node5.to_contact
-  #   node12_contact = node12.to_contact
+    node4_contact = node4.to_contact
+    node5_contact = node5.to_contact
+    node12_contact = node12.to_contact
 
-  #   node0.routing_table.insert(node4_contact)
-  #   node0.routing_table.insert(node5_contact)
-  #   node0.routing_table.insert(node12_contact)
+    node0.routing_table.insert(node4_contact)
+    node0.routing_table.insert(node5_contact)
+    node0.routing_table.insert(node12_contact)
 
-  #   results = node0.receive_find_node('13', node7.to_contact)
+    results = node0.receive_find_node('13', node7.to_contact)
 
-  #   refute_empty(results)
-  #   assert_equal(2, results.size)
-  #   assert_includes(results, node12_contact)
-  #   assert_includes(results, node4_contact)
-  # end
+    refute_empty(results)
+    assert_equal(2, results.size)
+    assert_includes(results, node12_contact)
+    assert_includes(results, node4_contact)
+  end
 
   def test_receive_find_node_fewer_than_k_results
     node0 = Node.new('0', @kn)
@@ -251,24 +251,21 @@ class NodeTest < Minitest::Test
     node4 = Node.new('4', @kn)
     node5 = Node.new('5', @kn)
     node12 = Node.new('12', @kn)
-    node13 = Node.new('13', @kn)
     node7 = Node.new('7', @kn)
 
     node4_contact = node4.to_contact
     node5_contact = node5.to_contact
     node12_contact = node12.to_contact
-    node13_contact = node13.to_contact
 
     node0.routing_table.insert(node4_contact)
     node0.routing_table.insert(node5_contact)
     node0.routing_table.insert(node12_contact)
-    node0.routing_table.insert(node13_contact)
 
     results = node7.find_value('10', node0.to_contact)
 
     refute_empty(results['contacts'])
     assert_equal(2, results['contacts'].size)
     assert_includes(results['contacts'], node12_contact)
-    assert_includes(results['contacts'], node13_contact)
+    assert_includes(results['contacts'], node4_contact)
   end
 end
