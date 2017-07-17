@@ -86,6 +86,18 @@ class RoutingTableTest < Minitest::Test
     assert_equal(2, @routing_table.buckets.size)
   end
 
+  def test_insert_if_bucket_full_and_splittable_smaller_distance_insert_first
+    node7 = Node.new('7', @kn)
+    node6 = Node.new('6', @kn)
+    node13 = Node.new('13', @kn)
+
+    @routing_table.insert(node7.to_contact)
+    @routing_table.insert(node6.to_contact)
+    @routing_table.insert(node13.to_contact)
+
+    assert_equal(2, @routing_table.buckets.size)
+  end
+
   def test_insert_if_bucket_full_and_splittable_same_xor_distance
     node14 = Node.new('14', @kn)
     node15 = Node.new('15', @kn)
@@ -100,7 +112,7 @@ class RoutingTableTest < Minitest::Test
 
   def test_insert_if_bucket_full_and_splittable_same_xor_distance_bucket_redistributable
     node7 = Node.new('7', @kn)
-    node15 = Node.new('6', @kn)
+    node15 = Node.new('15', @kn)
     node13 = Node.new('13', @kn)
 
     @routing_table.insert(node7.to_contact)
