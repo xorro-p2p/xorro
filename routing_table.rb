@@ -58,39 +58,29 @@ class RoutingTable
     bucket_idx = @buckets.index(closest_bucket)
     further_bucket_idx = bucket_idx - 1
 
-    until results.size == ENV['k'] || bucket_idx == buckets.size do
-      current_bucket = @buckets[bucket_idx]
-
-      current_bucket.each do |contact|
-
-        if sender_contact
-          results.push(contact) if results.size < ENV['k'].to_i && contact.id != sender_contact.id
-        else
-          results.push(contact) if results.size < ENV['k'].to_i
-        end
-      end
-
-      bucket_idx += 1
-    end
-
-
-
-    until results.size == ENV['k'] || further_bucket_idx < 0 do
-      current_bucket = @buckets[further_bucket_idx]
-
-      current_bucket.each do |contact|
-
-        if sender_contact
-          results.push(contact) if results.size < ENV['k'].to_i && contact.id != sender_contact.id
-        else
-          results.push(contact) if results.size < ENV['k'].to_i
-        end
-      end
-
-      further_bucket_idx -= 1
-    end
-
+    fill_closest_contacts(results, bucket_idx, sender_contact, to_right_side = true)
+    fill_closest_contacts(results, further_bucket_idx, sender_contact, to_right_side = false)
+    
     results
+  end
+
+  def fill_closest_contacts(results, start_idx, sender_contact, to_right_side)
+    mover = to_right_side ? 1 : -1
+
+    until results.size == ENV['k'] || start_idx == buckets.size || start_idx < 0 do
+      current_bucket = @buckets[start_idx]
+
+      current_bucket.each do |contact|
+
+        if sender_contact
+          results.push(contact) if results.size < ENV['k'].to_i && contact.id != sender_contact.id
+        else
+          results.push(contact) if results.size < ENV['k'].to_i
+        end
+      end
+
+      start_idx += mover
+    end
   end
 
   def node_is_closer(contact_id, bucket)
