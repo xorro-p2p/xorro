@@ -44,7 +44,7 @@ class KBucket
   end
 
   def is_redistributable?(node_id, index)
-    shared_bit_lengths = Binary.xor_distance_map(node_id, @contacts)
+    shared_bit_lengths = Binary.shared_prefix_bit_length_map(node_id, @contacts)
 
     has_moveable_value = shared_bit_lengths.any? do |bit_length|
       bit_length > index
