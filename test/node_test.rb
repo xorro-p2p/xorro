@@ -268,4 +268,47 @@ class NodeTest < Minitest::Test
     assert_includes(results['contacts'], node12_contact)
     assert_includes(results['contacts'], node4_contact)
   end
+
+  def test_iterative_find_node
+    node0 = Node.new('0', @kn)
+    node4 = Node.new('4', @kn)
+    node5 = Node.new('5', @kn)
+    node12 = Node.new('12', @kn)
+    node14 = Node.new('14', @kn)
+
+    node4_contact = node4.to_contact
+    node5_contact = node5.to_contact
+    node12_contact = node12.to_contact
+    node14_contact = node14.to_contact
+
+    node0.routing_table.insert(node4_contact)
+    node0.routing_table.insert(node5_contact)
+    node0.routing_table.insert(node12_contact)
+
+    node12.routing_table.insert(node14_contact)
+
+    result = node0.iterative_find_node('15')
+    assert_instance_of(Array, result)
+    assert_equal(2, result.size)
+    assert_includes(result.map(&:id), node14_contact.id)
+    assert_includes(result.map(&:id), node12_contact.id)
+  end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
