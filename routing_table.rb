@@ -50,7 +50,7 @@ class RoutingTable
     buckets[idx] || buckets.last
   end
 
-  def find_closest_contacts(id, sender_contact = nil)
+  def find_closest_contacts(id, sender_contact = nil, quantity = ENV['k'].to_i)
     closest_bucket = find_closest_bucket(id)
     results = []
 
@@ -58,24 +58,24 @@ class RoutingTable
     bucket_idx = @buckets.index(closest_bucket)
     further_bucket_idx = bucket_idx - 1
 
-    fill_closest_contacts(results, bucket_idx, sender_contact, to_right_side = true)
-    fill_closest_contacts(results, further_bucket_idx, sender_contact, to_right_side = false)
+    fill_closest_contacts(results, bucket_idx, sender_contact, to_right_side = true, quantity)
+    fill_closest_contacts(results, further_bucket_idx, sender_contact, to_right_side = false, quantity)
     
     results
   end
 
-  def fill_closest_contacts(results, start_idx, sender_contact, to_right_side)
+  def fill_closest_contacts(results, start_idx, sender_contact, to_right_side, quantity)
     mover = to_right_side ? 1 : -1
 
-    until results.size == ENV['k'] || start_idx == buckets.size || start_idx < 0 do
+    until results.size == quantity || start_idx == buckets.size || start_idx < 0 do
       current_bucket = @buckets[start_idx]
 
       current_bucket.each do |contact|
 
         if sender_contact
-          results.push(contact) if results.size < ENV['k'].to_i && contact.id != sender_contact.id
+          results.push(contact) if results.size < quantity && contact.id != sender_contact.id
         else
-          results.push(contact) if results.size < ENV['k'].to_i
+          results.push(contact) if results.size < quantity
         end
       end
 
