@@ -20,6 +20,7 @@ module Binary
     end
   end
 
+  #### write tests - determine what happens when array is empty.
   def self.select_closest_xor(id, array)
     xors = array.map {|el| el.id.to_i ^ id.to_i }
     array[xors.index(xors.min)]
