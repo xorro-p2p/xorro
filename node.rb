@@ -99,6 +99,20 @@ class Node
     closest_nodes
   end
 
+  def iterative_find_node(query_id)
+    shortlist = []
+
+    results_returned = @routing_table.find_closest_contacts(query_id, nil, ENV['alpha'].to_i)
+
+    until shortlist.select(&:active).size == ENV['k'].to_i  ## or results_returned contains nothing closer than contents of shortist
+      shortlist.push(results_returned.pop) until results_returned.empty?
+      closest = Binary.select_closest_xor(query_id, shortlist)
+
+      shortlist.each_slice(ENV['alpha'].to_i) do | arr |
+
+      end
+  end
+
   def receive_find_value(file_id, sender_contact)
     result = {}
 
