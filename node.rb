@@ -99,18 +99,35 @@ class Node
     closest_nodes
   end
 
+  #### refactor this method to accept indeterminate list of array arguments, move to utility module
+  def contact_is_not_in_results_or_shortlist(contact, array1, array2)
+    !array1.find { |obj| obj.id == contact.id } && !array2.find { |obj| obj.id == contact.id }
+  end
+
   def iterative_find_node(query_id)
     shortlist = []
-
     results_returned = @routing_table.find_closest_contacts(query_id, nil, ENV['alpha'].to_i)
 
-    until shortlist.select(&:active).size == ENV['k'].to_i  ## or results_returned contains nothing closer than contents of shortist
-      shortlist.push(results_returned.pop) until results_returned.empty?
-      closest = Binary.select_closest_xor(query_id, shortlist)
+    until shortlist.select(&:active).size == ENV['k'].to_i
+      shortlist.push(results_returned.pop.clone) until results_returned.empty? || shortlist.size == ENV['k'].to_i
+      closest_contact = Binary.select_closest_xor(query_id, shortlist)
 
-      shortlist.each_slice(ENV['alpha'].to_i) do | arr |
-
+      # once we get past happy path, we only iterate over items not yet probed
+      shortlist.each do |contact|
+        temp_results = find_node(query_id, contact)
+        temp_results.each do |t|
+          results_returned.push(t) if contact_is_not_in_results_or_shortlist(t, results_returned, shortlist)
+        end
+        #happy path only.. contact will be marked as probed when queried, then marked as active if we receive a reply
+        #contact stays in probed mode until reply is received.
+        contact.active = true
       end
+
+      break if results_returned.empty? || 
+               Binary.xor_distance_map(query_id, results_returned).min >= Binary.xor_distance(closest_contact.id, query_id)
+    end
+
+    return shortlist
   end
 
   def receive_find_value(file_id, sender_contact)
