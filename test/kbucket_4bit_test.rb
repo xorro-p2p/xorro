@@ -11,6 +11,8 @@ class KBucketTest < Minitest::Test
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
+    ENV['bit-length'] = '4'
+    ENV['k'] = '2'
   end
 
   def test_create_bucket

@@ -4,6 +4,11 @@ require_relative "../contact.rb"
 require 'pry'
 
 class BinaryTest < Minitest::Test
+  def setup
+    ENV['bit_length'] = '6'
+    ENV['k'] = '2'
+  end
+
   def test_xor_distance
     assert_equal(1, Binary.xor_distance('0', '1'))
     assert_equal(2, Binary.xor_distance('0', '2'))
@@ -14,14 +19,15 @@ class BinaryTest < Minitest::Test
   end
 
   def test_shared_prefix_bit_length
-    assert_equal(3, Binary.shared_prefix_bit_length('0', '1'))
-    assert_equal(2, Binary.shared_prefix_bit_length('1', '2'))
-    assert_equal(3, Binary.shared_prefix_bit_length('2', '3'))
-    assert_equal(1, Binary.shared_prefix_bit_length('3', '4'))
-    assert_equal(3, Binary.shared_prefix_bit_length('4', '5'))
-    assert_equal(2, Binary.shared_prefix_bit_length('7', '5'))
-    assert_equal(0, Binary.shared_prefix_bit_length('7', '8'))
-    assert_equal(0, Binary.shared_prefix_bit_length('15', '0'))
+    assert_equal(5, Binary.shared_prefix_bit_length('0', '1'))
+    assert_equal(6, Binary.shared_prefix_bit_length('1', '1'))
+    assert_equal(4, Binary.shared_prefix_bit_length('1', '2'))
+    assert_equal(5, Binary.shared_prefix_bit_length('2', '3'))
+    assert_equal(3, Binary.shared_prefix_bit_length('3', '4'))
+    assert_equal(5, Binary.shared_prefix_bit_length('4', '5'))
+    assert_equal(4, Binary.shared_prefix_bit_length('7', '5'))
+    assert_equal(2, Binary.shared_prefix_bit_length('7', '8'))
+    assert_equal(0, Binary.shared_prefix_bit_length('63', '0'))
   end
 
   def test_sha
