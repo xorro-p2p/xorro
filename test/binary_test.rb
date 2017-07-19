@@ -1,6 +1,7 @@
 require_relative 'test_helper.rb'
 require_relative "../binary.rb"
 require_relative "../contact.rb"
+require 'pry'
 
 class BinaryTest < Minitest::Test
   def test_xor_distance
@@ -35,5 +36,12 @@ class BinaryTest < Minitest::Test
     assert_equal(Binary.select_closest_xor('0', array).id, '1')
     assert_equal(Binary.select_closest_xor('5', array).id, '5')
     assert_equal(Binary.select_closest_xor('15', array).id, '5')
+  end
+
+  def test_sort_by_xor!
+    array = ['1', '2','3','4','5']
+    shuffled = array.shuffle.map {|i| Contact.new({id: i})}
+    result = Binary.sort_by_xor!('0', shuffled).map(&:id)
+    assert_equal(array, result)
   end
 end
