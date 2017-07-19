@@ -69,6 +69,14 @@ class Node
     ping(sender_contact)
   end
 
+  def iterative_store(file_id, address)
+    results = iterative_find_node(file_id)
+
+    results.each do |contact|
+      store(file_id, address, contact)
+    end
+  end
+
   def receive_find_node(query_id, sender_contact)
     # i received an ID
     # i want my routing table to return an array of k contacts
@@ -146,5 +154,45 @@ class Node
   def find_value(file_id, recipient_contact)
     recipient_node = @network.get_node_by_contact(recipient_contact)
     result = recipient_node.receive_find_value(file_id, self.to_contact)
+  end
+
+  def iterative_find_value(query_id)
+    return dht_segment[query_id] if dht_segment[query_id]
+
+    shortlist = []
+    results_returned = @routing_table.find_closest_contacts(query_id, nil, ENV['alpha'].to_i)
+
+    until shortlist.select(&:active).size == ENV['k'].to_i + 1
+      shortlist.push(results_returned.pop.clone) until results_returned.empty? || shortlist.size == ENV['k'].to_i
+      # closest_contact = Binary.select_closest_xor(query_id, shortlist)
+      Binary.sort_by_xor!(id, shortlist)
+      closest_contact = shortlist[0]
+
+      # once we get past happy path, we only iterate over items not yet probed
+      shortlist.each do |contact|
+        temp_results = find_value(query_id, contact)
+
+        if temp_results['data']
+          # When this function succeeds (finds the value), a STORE RPC is sent to
+          # the closest Contact which did not return the value.
+          second_closest = shortlist.find { |c| c.id != contact.id }
+          store(query_id, temp_results['data'], second_closest)
+ 
+          return temp_results['data']
+        end
+
+        temp_results['contacts'].each do |t|
+          results_returned.push(t) if contact_is_not_in_results_or_shortlist(t, results_returned, shortlist)
+        end
+        #happy path only.. contact will be marked as probed when queried, then marked as active if we receive a reply
+        #contact stays in probed mode until reply is received.
+        contact.active = true
+      end
+
+      break if results_returned.empty? || 
+               Binary.xor_distance_map(query_id, results_returned).min >= Binary.xor_distance(closest_contact.id, query_id)
+    end
+
+    return shortlist
   end
 end

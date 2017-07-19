@@ -2,6 +2,7 @@ require_relative 'test_helper.rb'
 require_relative "../node.rb"
 require_relative "../routing_table.rb"
 require_relative "../network_adapter.rb"
+require_relative "../kbucket.rb"
 
 class NodeTest < Minitest::Test
   def setup
@@ -292,23 +293,82 @@ class NodeTest < Minitest::Test
     assert_equal(2, result.size)
     assert_includes(result.map(&:id), node14_contact.id)
     assert_includes(result.map(&:id), node12_contact.id)
+    # test that ping adds new contact to our routing table
+    assert_includes(node0.routing_table.buckets[0].map(&:id), node14_contact.id)
+  end
+
+  def test_iterative_store
+    node0 = Node.new('0', @kn)
+    node4 = Node.new('4', @kn)
+    node5 = Node.new('5', @kn)
+    node12 = Node.new('12', @kn)
+    node14 = Node.new('14', @kn)
+
+    node4_contact = node4.to_contact
+    node5_contact = node5.to_contact
+    node12_contact = node12.to_contact
+    node14_contact = node14.to_contact
+
+    node0.routing_table.insert(node4_contact)
+    node0.routing_table.insert(node5_contact)
+    node0.routing_table.insert(node12_contact)
+
+    node12.routing_table.insert(node14_contact)
+    node0.iterative_store('13', 'some_address')
+
+    assert_equal('some_address', node12.dht_segment['13'])
+    refute(node14.dht_segment['13'])    
+  end
+
+  def test_iterative_find_value_with_match
+    node0 = Node.new('0', @kn)
+    node4 = Node.new('4', @kn)
+    node5 = Node.new('5', @kn)
+    node12 = Node.new('12', @kn)
+    node14 = Node.new('14', @kn)
+
+    node4_contact = node4.to_contact
+    node5_contact = node5.to_contact
+    node12_contact = node12.to_contact
+    node14_contact = node14.to_contact
+
+    node0.routing_table.insert(node4_contact)
+    node0.routing_table.insert(node5_contact)
+    node0.routing_table.insert(node12_contact)
+
+    node12.routing_table.insert(node14_contact)
+    node0.store('15', 'some_address', node14_contact)
+
+    result = node0.iterative_find_value('15')
+    assert_instance_of(String, result)
+    assert_equal('some_address', result)
+    # store in second closest node
+    assert_equal('some_address', node12.dht_segment['15'])
+  end
+
+  def test_iterative_find_value_with_no_match
+    node0 = Node.new('0', @kn)
+    node4 = Node.new('4', @kn)
+    node5 = Node.new('5', @kn)
+    node12 = Node.new('12', @kn)
+    node14 = Node.new('14', @kn)
+
+    node4_contact = node4.to_contact
+    node5_contact = node5.to_contact
+    node12_contact = node12.to_contact
+    node14_contact = node14.to_contact
+
+    node0.routing_table.insert(node4_contact)
+    node0.routing_table.insert(node5_contact)
+    node0.routing_table.insert(node12_contact)
+
+    node12.routing_table.insert(node14_contact)
+    node0.store('13', 'some_address', node14_contact)
+
+    result = node0.iterative_find_value('15')
+    assert_instance_of(Array, result)
+    assert_equal(2, result.size)
+    assert_includes(result.map(&:id), node14_contact.id)
+    assert_includes(result.map(&:id), node12_contact.id)
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
