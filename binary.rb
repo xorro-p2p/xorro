@@ -32,4 +32,10 @@ module Binary
   def self.xor_distance_map(id, array)
     array.map { |obj| xor_distance(id, obj.id)}
   end
+
+  def self.sort_by_xor!(id, array)
+    array.sort! do |x, y|
+      xor_distance(x.id, id) <=> xor_distance(y.id, id)
+    end
+  end
 end
