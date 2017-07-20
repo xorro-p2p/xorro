@@ -1,6 +1,6 @@
 require 'open-uri'
 require 'digest/sha1'
-require_relative 'development.rb'
+require_relative '../development.rb'
 require_relative 'binary.rb'
 require_relative 'routing_table.rb'
 require_relative 'contact.rb'

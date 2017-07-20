@@ -1,7 +1,7 @@
 require_relative 'test_helper.rb'
-require_relative '../node.rb'
-require_relative "../contact.rb"
-require_relative "../network_adapter.rb"
+require_relative '../lib/node.rb'
+require_relative "../lib/contact.rb"
+require_relative "../lib/network_adapter.rb"
 
 class ContactTest < Minitest::Test
   def setup

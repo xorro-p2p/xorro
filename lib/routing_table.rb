@@ -1,4 +1,4 @@
-require_relative 'development.rb'
+require_relative '../development.rb'
 require_relative 'binary.rb'
 require_relative 'kbucket.rb'
 require 'pry'

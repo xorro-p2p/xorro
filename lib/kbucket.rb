@@ -1,4 +1,4 @@
-require_relative 'development.rb'
+require_relative '../development.rb'
 require_relative 'binary.rb'
 
 class KBucket

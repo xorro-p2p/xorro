@@ -1,5 +1,5 @@
 require_relative 'test_helper.rb'
-require_relative '../network_adapter.rb'
+require_relative '../lib/network_adapter.rb'
 
 class NetworkAdapterTest < Minitest::Test
   def setup
