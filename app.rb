@@ -1,11 +1,11 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require_relative 'development.rb'  ## ENV['uploads'] = "~/Desktop"
-require_relative 'node.rb'
-require_relative 'network_adapter.rb'
+require_relative 'lib/node.rb'
+require_relative 'lib/network_adapter.rb'
 require 'json'
 require 'pry'
-require_relative 'contact'
+require_relative 'lib/contact.rb'
 
 NETWORK = NetworkAdapter.new
 NODE = Node.new('3', NETWORK)

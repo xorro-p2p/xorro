@@ -1,6 +1,6 @@
 require_relative 'test_helper.rb'
-require_relative "../binary.rb"
-require_relative "../contact.rb"
+require_relative "../lib/binary.rb"
+require_relative "../lib/contact.rb"
 require 'pry'
 
 class BinaryTest < Minitest::Test

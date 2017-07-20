@@ -1,8 +1,8 @@
 require_relative 'test_helper.rb'
-require_relative "../node.rb"
-require_relative "../routing_table.rb"
-require_relative "../network_adapter.rb"
-require_relative "../kbucket.rb"
+require_relative "../lib/node.rb"
+require_relative "../lib/routing_table.rb"
+require_relative "../lib/network_adapter.rb"
+require_relative "../lib/kbucket.rb"
 
 class NodeTest < Minitest::Test
   def setup
