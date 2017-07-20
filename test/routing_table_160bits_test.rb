@@ -1,9 +1,9 @@
 require_relative 'test_helper.rb'
-require_relative '../node.rb'
-require_relative "../routing_table.rb"
-require_relative "../kbucket.rb"
-require_relative "../contact.rb"
-require_relative "../network_adapter.rb"
+require_relative '../lib/node.rb'
+require_relative "../lib/routing_table.rb"
+require_relative "../lib/kbucket.rb"
+require_relative "../lib/contact.rb"
+require_relative "../lib/network_adapter.rb"
 
 class RoutingTableTest < Minitest::Test
   def setup
@@ -47,6 +47,17 @@ class RoutingTableTest < Minitest::Test
 
     result = @routing_table.find_closest_bucket(no_shared_id)
 
+    assert_equal(result, @routing_table.buckets[0])    
+  end
+
+  def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_bug
+    ENV['bit_length'] = '160'
+    @routing_table.create_bucket
+
+    no_shared_id = (2 ** (ENV['bit_length'].to_i) - 1).to_s
+
+    result = @routing_table.find_closest_bucket(no_shared_id)
+    
     assert_equal(result, @routing_table.buckets[0])    
   end
 
