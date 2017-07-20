@@ -1,3 +1,5 @@
+require 'json'
+
 class Contact
   attr_reader :id, :ip, :port, :last_seen
   attr_accessor :active
@@ -12,5 +14,17 @@ class Contact
 
   def update_last_seen
     @last_seen = Time.now
+  end
+
+  def as_json(options={})
+    {
+      id: @id,
+      ip: @ip,
+      port: @port
+    }
+  end
+
+  def to_json(*options)
+    as_json(*options).to_json(*options)
   end
 end
