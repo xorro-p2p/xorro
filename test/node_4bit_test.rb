@@ -7,6 +7,8 @@ require_relative "../kbucket.rb"
 class NodeTest < Minitest::Test
   def setup
     @kn = NetworkAdapter.new
+    ENV['bit_length'] = '4'
+    ENV['k'] = '2'
   end
 
   def test_create_node
