@@ -8,7 +8,7 @@ module Binary
   def self.shared_prefix_bit_length(id_string1, id_string2)
     return ENV['bit_length'].to_i if id_string1 == id_string2
     distance = xor_distance(id_string1, id_string2)
-    ENV['bit_length'].to_i - (Math.log2(distance).floor + 1)
+    ENV['bit_length'].to_i - distance.to_s(2).size
   end
 
   def self.sha(str)
