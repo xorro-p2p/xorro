@@ -85,4 +85,8 @@ class KBucket
   def sort_by_seen
     @contacts.sort_by!(&:last_seen)
   end
+
+  def size
+    contacts.size
+  end
 end
