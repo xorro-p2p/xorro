@@ -1,3 +1,5 @@
 development.rb
 Gemfile.lock
 .DS_Store
+tmp/*
+!tmp/.gitkeep
