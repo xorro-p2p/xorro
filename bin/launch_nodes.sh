@@ -28,8 +28,8 @@ launch_nodes() {
 }
 
 launch_node() {
-  nohup ruby app.rb -p $1 &
-  echo $! >> pids.txt
+  nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  echo $! >> tmp/pids.txt
 }
 
 if [[ $# == 0 ]] || [[ $1 == '-h' ]]; then

@@ -3,6 +3,6 @@
 while read p
   do 
     kill $p 
-  done<pids.txt
+  done<tmp/pids.txt
 
-> pids.txt
+> tmp/pids.txt
