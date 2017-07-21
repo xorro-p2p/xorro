@@ -14,11 +14,11 @@ class RoutingTableTest160 < Minitest::Test
     ENV['k'] = '2'
   end
 
-  def test_create_routing_table_160bits
+  def test_create_routing_table
     assert_equal(1, @routing_table.buckets.size)
   end
 
-  def test_insert_node_with_duplicate_id_160bits
+  def test_insert_node_with_duplicate_id
     new_node = Node.new('0',@kn)
 
     assert_raises(ArgumentError) do
@@ -26,7 +26,7 @@ class RoutingTableTest160 < Minitest::Test
     end
   end
 
-  def test_insert_if_bucket_not_full_160bits
+  def test_insert_if_bucket_not_full
     node15 = Node.new('15', @kn)
 
     @routing_table.insert(node15)
@@ -35,12 +35,12 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(1, @routing_table.buckets[0].contacts.size)
   end
 
-  def test_insert_find_closest_bucket_with_one_bucket_with_closest_shared_bit_length_160bits
+  def test_insert_find_closest_bucket_with_one_bucket_with_closest_shared_bit_length
     result = @routing_table.find_closest_bucket('1')
     assert_equal(result, @routing_table.buckets[0])
   end
 
-  def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_160bits
+  def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length
     @routing_table.create_bucket
 
     no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
@@ -50,7 +50,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(result, @routing_table.buckets[0])    
   end
 
-  def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_bug_160bits
+  def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_bug
     @routing_table.create_bucket
 
     no_shared_id = (2 ** (ENV['bit_length'].to_i) - 1).to_s
@@ -60,7 +60,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(result, @routing_table.buckets[0])    
   end
 
-  def test_insert_find_closest_bucket_with_two_buckets_one_shared_bit_160bits
+  def test_insert_find_closest_bucket_with_two_buckets_one_shared_bit
     @routing_table.create_bucket
     one_shared_id = (2 ** (ENV['bit_length'].to_i - 2)).to_s
 
@@ -69,14 +69,14 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(result, @routing_table.buckets[1])
   end
 
-  def test_insert_find_closest_bucket_with_two_buckets_with_most_shared_bits_160bits
+  def test_insert_find_closest_bucket_with_two_buckets_with_most_shared_bits
     @routing_table.create_bucket
     result = @routing_table.find_closest_bucket('1')
 
     assert_equal(result, @routing_table.buckets[1])
   end
 
-  def test_insert_find_closest_bucket_with_full_buckets_with_arbitrary_shared_bits_160bits
+  def test_insert_find_closest_bucket_with_full_buckets_with_arbitrary_shared_bits
     total_buckets = ENV['bit_length'].to_i - 1 # create bucket equal to k
 
     total_buckets.times do
@@ -97,7 +97,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(result15, @routing_table.buckets[position3])
   end
 
-  def test_insert_if_bucket_full_and_splittable_diff_xor_distance_160bits
+  def test_insert_if_bucket_full_and_splittable_diff_xor_distance
     node_id = '7'
 
     node14 = Node.new('14', @kn)
@@ -113,7 +113,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(index_of_inserted_bucket + 1, @routing_table.buckets.size)
   end
 
-  def test_insert_if_bucket_full_and_splittable_smaller_distance_insert_first_160bits
+  def test_insert_if_bucket_full_and_splittable_smaller_distance_insert_first
     node7 = Node.new('7', @kn) # 7 and 6 are same distance
     node6 = Node.new('6', @kn) # 7 and 6 are same distance
     node13 = Node.new('13', @kn) # this id is further
@@ -131,7 +131,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(index_of_last_bucket + 1, @routing_table.buckets.size)
   end
 
-  def test_insert_if_bucket_full_and_splittable_same_xor_distance_160bits
+  def test_insert_if_bucket_full_and_splittable_same_xor_distance
     node14 = Node.new('14', @kn)
     node15 = Node.new('15', @kn)
     node13 = Node.new('13', @kn)
@@ -146,7 +146,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(index_of_last_bucket + 1, @routing_table.buckets.size)
   end
 
-  def test_insert_if_bucket_full_and_splittable_same_xor_distance_bucket_redistributable_160bits
+  def test_insert_if_bucket_full_and_splittable_same_xor_distance_bucket_redistributable
     node7 = Node.new('7', @kn)
     node15 = Node.new('15', @kn)
     node13 = Node.new('13', @kn)
@@ -179,7 +179,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(1, @routing_table.buckets[1].contacts.size)
   end
 
-  def test_insert_if_bucket_full_and_splittable_but_contains_at_least_1_closer_element_160bits
+  def test_insert_if_bucket_full_and_splittable_but_contains_at_least_1_closer_element
     no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
 
     node3 = Node.new('3', @kn)
@@ -221,7 +221,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(2, @routing_table.buckets.size)
   end
 
-  def test_insert_if_bucket_full_and_not_splittable_and_head_node_live_160bits
+  def test_insert_if_bucket_full_and_not_splittable_and_head_node_live
     no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
     no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
     no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
@@ -250,7 +250,7 @@ class RoutingTableTest160 < Minitest::Test
     assert_equal(2, @routing_table.buckets.size)
   end
 
-  def test_insert_if_bucket_full_and_not_splittable_and_head_node_not_live_160bits
+  def test_insert_if_bucket_full_and_not_splittable_and_head_node_not_live
     no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
     no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
     no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
