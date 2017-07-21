@@ -1,0 +1,46 @@
+body {
+  background: black;
+  color: white;
+  font-family: 'Courier New';
+  font-weight: 100
+}
+
+nav {
+  margin: 30px
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+main {
+  width: 900px;
+  margin: 30px 50px
+}
+
+h1 {
+  font-weight: lighter;
+}
+
+  dl {
+    padding: 0.5em;
+  }
+  dt {
+    float: left;
+    clear: left;
+    width: 100px;
+    text-align: right;
+    font-weight: bold;
+    color: green;
+  }
+  dt::after {
+    content: ":";
+  }
+  dd {
+    margin: 0 0 0 110px;
+    padding: 0 0 0.5em 0;
+  }
