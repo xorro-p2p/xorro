@@ -5,7 +5,7 @@ require_relative "../lib/kbucket.rb"
 require_relative "../lib/contact.rb"
 require_relative "../lib/network_adapter.rb"
 
-class RoutingTableTest < Minitest::Test
+class RoutingTableTest6 < Minitest::Test
   def setup
     @kn = NetworkAdapter.new
     @node = Node.new('0', @kn)

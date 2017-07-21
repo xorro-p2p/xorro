@@ -3,7 +3,7 @@ require_relative "../lib/binary.rb"
 require_relative "../lib/contact.rb"
 require 'pry'
 
-class BinaryTest < Minitest::Test
+class BinaryTest6 < Minitest::Test
   def setup
     ENV['bit_length'] = '6'
     ENV['k'] = '2'
