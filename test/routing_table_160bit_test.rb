@@ -5,7 +5,7 @@ require_relative "../lib/kbucket.rb"
 require_relative "../lib/contact.rb"
 require_relative "../lib/network_adapter.rb"
 
-class RoutingTableTest < Minitest::Test
+class RoutingTableTest160 < Minitest::Test
   def setup
     @kn = NetworkAdapter.new
     @node = Node.new('0', @kn)
@@ -51,7 +51,6 @@ class RoutingTableTest < Minitest::Test
   end
 
   def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_bug
-    ENV['bit_length'] = '160'
     @routing_table.create_bucket
 
     no_shared_id = (2 ** (ENV['bit_length'].to_i) - 1).to_s
