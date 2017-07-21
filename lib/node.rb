@@ -38,7 +38,7 @@ class Node
     end
     cache
   end
-
+  
   def to_contact
     Contact.new({:id => id, :ip => ip, :port => port })
   end
