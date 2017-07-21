@@ -5,13 +5,13 @@ require_relative "../lib/kbucket.rb"
 require_relative "../lib/contact.rb"
 require_relative "../lib/network_adapter.rb"
 
-class KBucketTest < Minitest::Test
+class KBucketTest6 < Minitest::Test
   def setup
     @kn = NetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit-length'] = '6'
+    ENV['bit_length'] = '6'
     ENV['k'] = '2'
   end
 

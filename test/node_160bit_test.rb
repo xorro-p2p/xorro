@@ -4,10 +4,10 @@ require_relative "../lib/routing_table.rb"
 require_relative "../lib/network_adapter.rb"
 require_relative "../lib/kbucket.rb"
 
-class NodeTest6 < Minitest::Test
+class NodeTest160 < Minitest::Test
   def setup
     @kn = NetworkAdapter.new
-    ENV['bit_length'] = '6'
+    ENV['bit_length'] = '160'
     ENV['k'] = '2'
   end
 
@@ -296,7 +296,8 @@ class NodeTest6 < Minitest::Test
     assert_includes(result.map(&:id), node14_contact.id)
     assert_includes(result.map(&:id), node12_contact.id)
     # test that ping adds new contact to our routing table
-    assert_includes(node0.routing_table.buckets[2].map(&:id), node14_contact.id)
+    bucket_index_of_node14 = Binary.shared_prefix_bit_length('0', '14')
+    assert_includes(node0.routing_table.buckets[bucket_index_of_node14].map(&:id), node14_contact.id)
   end
 
   def test_iterative_store

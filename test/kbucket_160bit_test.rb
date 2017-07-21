@@ -5,13 +5,13 @@ require_relative "../lib/kbucket.rb"
 require_relative "../lib/contact.rb"
 require_relative "../lib/network_adapter.rb"
 
-class KBucketTest < Minitest::Test
+class KBucketTest160 < Minitest::Test
   def setup
     @kn = NetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit_length'] = '4'
+    ENV['bit_length'] = '160'
     ENV['k'] = '2'
   end
 
@@ -99,8 +99,11 @@ class KBucketTest < Minitest::Test
   end
 
   def test_is_not_redistributable
-    @bucket.add(Node.new('15', @kn).to_contact)
-    @bucket.add(Node.new('14', @kn).to_contact)
+    no_shared_id = ((2 ** ENV['bit_length'].to_i) - 1).to_s
+    no_shared_id2 = ((2 ** ENV['bit_length'].to_i) - 2).to_s
+    
+    @bucket.add(Node.new(no_shared_id, @kn).to_contact)
+    @bucket.add(Node.new(no_shared_id2, @kn).to_contact)
 
     result = @bucket.is_redistributable?('0', 0)
     refute(result)
