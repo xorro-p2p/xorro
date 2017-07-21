@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Debug <%= @title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/debug/node">Node Info</a>
+      <a href="/debug/dht">DHT Segment</a>
+      <a href="/debug/kbuckets">K-Buckets</a>
+    </nav>
+  </header>
+  <main>
+    <%= yield %>
+  </main>
+</body>
+</html>

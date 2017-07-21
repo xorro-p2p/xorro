@@ -66,6 +66,7 @@ class Node
 
   def receive_store(file_id, address, sender_contact)
     @dht_segment[file_id] = address
+    @routing_table.insert(sender_contact)
     ping(sender_contact)
   end
 
