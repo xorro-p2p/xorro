@@ -11,7 +11,8 @@ require_relative 'lib/contact.rb'
 
 
 NETWORK = NetworkAdapter.new
-NODE = Node.new('3', NETWORK, settings.port)
+id = rand(2 ** ENV['bit_length'].to_i).to_s
+NODE = Node.new(id, NETWORK, settings.port)
 
 get '/', '/debug/node' do
   @title = "Node Info"
@@ -44,15 +45,16 @@ post '/rpc/store' do
 end
 
 post '/rpc/find_node' do
-  file_id = params[:file_id]
+  node_id = params[:node_id]
   contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
-
-  NODE.receive_find_node(file_id, contact)
+  result = NODE.receive_find_node(node_id, contact)
+  result.to_json
 end
 
 post '/rpc/find_value' do
   file_id = params[:file_id]
   contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
-  NODE.receive_find_node(file_id, contact)
+  result = NODE.receive_find_value(file_id, contact)
+  result.to_json
 end
 
