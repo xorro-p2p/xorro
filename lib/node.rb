@@ -8,10 +8,11 @@ require_relative 'network_adapter.rb'
 
 
 class Node
-  attr_accessor :ip, :id, :files, :routing_table, :dht_segment
-  def initialize(num_string, network)
+  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment
+  def initialize(num_string, network, port='80')
     @ip = lookup_ip
     @network = network
+    @port = port
     join(@network)
     # @id = Binary.sha(num_string) # TEMP - using a fixed string for now to generate ID hash
     @id = num_string
@@ -37,9 +38,9 @@ class Node
     end
     cache
   end
-
+  
   def to_contact
-    Contact.new({:id => id, :ip => ip})
+    Contact.new({:id => id, :ip => ip, :port => port })
   end
 
   def receive_ping(contact)
@@ -59,6 +60,7 @@ class Node
   end
 
   def store(file_id, address, recipient_contact)
+    ## response = HTTParty.post("reciever ip:port/rpc/store", :query = { })
     recipient_node = @network.get_node_by_contact(recipient_contact)
     recipient_node.receive_store(file_id, address, to_contact)
     ping(recipient_contact)

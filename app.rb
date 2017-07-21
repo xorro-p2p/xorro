@@ -11,12 +11,12 @@ require_relative 'lib/contact.rb'
 
 
 NETWORK = NetworkAdapter.new
-NODE = Node.new('3', NETWORK)
+NODE = Node.new('3', NETWORK, settings.port)
 
 get '/', '/debug/node' do
   @title = "Node Info"
   @node = NODE
-  @port = settings.port
+  @port = @node.port
   erb :node
 end
 
