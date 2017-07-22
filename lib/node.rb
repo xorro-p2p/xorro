@@ -86,10 +86,10 @@ class Node
     # i give the requester the array
     # have to exclude the requestor contact
 
-    closest_nodes = @routing_table.find_closest_contacts(query_id, sender_contact)
+    closest_contacts = @routing_table.find_closest_contacts(query_id, sender_contact)
     ping(sender_contact)
-
-    closest_nodes
+    @routing_table.insert(sender_contact)
+    closest_contacts
   end
 
   def find_node(query_id, recipient_contact)
@@ -149,7 +149,7 @@ class Node
     else
       result['contacts'] = receive_find_node(file_id, sender_contact)
     end
-
+    @routing_table.insert(sender_contact)
     ping(sender_contact)
     result
   end
