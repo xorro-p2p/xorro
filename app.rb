@@ -1,26 +1,40 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/multi_route'
+require 'json'
 require 'erubis'
+require 'pry'
 require_relative 'development.rb'  ## ENV['uploads'] = "~/Desktop"
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
-require 'json'
-require 'pry'
 require_relative 'lib/contact.rb'
+require_relative 'lib/defaults.rb'
 
 
 NETWORK = NetworkAdapter.new
-id = rand(2 ** ENV['bit_length'].to_i).to_s
-NODE = Node.new(id, NETWORK, settings.port)
+
+Defaults.setup(settings.port)
+id_file = YAML::load_file(File.join(ENV['home'], "/id.yml"))
+
+NODE = Node.new(id_file[:id], NETWORK, settings.port)
 
 get '/', '/debug/node' do
   @title = "Node Info"
   @node = NODE
-  @port = @node.port
-  @buckets = @node.routing_table.buckets
-  @dht = @node.dht_segment
   erb :node
+end
+
+
+get '/debug/buckets' do
+  @title = "K-Buckets"
+  @node = NODE
+  erb :buckets
+end
+
+get '/', '/debug/dht' do
+  @title = "DHT Segment"
+  @node = NODE
+  erb :dht
 end
 
 get '/files/:filename' do

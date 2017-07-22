@@ -16,8 +16,21 @@
         <dt>ipv4</dt>
         <dd><%= @node.ip %></dd>
         <dt>port</dt>
-        <dd><%= @port %></dd>
+        <dd><%= @node.port %></dd>
       </dl>
+    </nav>
+    <nav>
+      <ul>
+        <li>
+          <a href="/debug/node">Node</a>
+        </li>
+        <li>
+          <a href="/debug/dht">DHT</a> 
+        </li>
+        <li>
+          <a href="/debug/buckets">Buckets</a>
+        </li>
+      </ul>
     </nav>
   </header>
   <main>

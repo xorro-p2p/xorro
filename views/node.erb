@@ -1,52 +1,18 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <h4>k-buckets: <%= @buckets.size %></h4>
-      <% @buckets.each_with_index do |b,x| %>
-          <div class="bucket">
-            <dl>
-              <dt>
-                Bucket
-              </dt>
-              <dd>
-                <%= x %>
-              </dd>
-              <dt>
-                Size 
-              </dt>
-              <dd>
-                <%= b.size %>
-              </dd>
-              <dt>
-                Contacts 
-              </dt>
-              <dd>
-                <% b.contacts. each do |c| %>
-                  id: <%= c.id %>
-                  ip: <%= c.ip %>
-                  port: <%= c.port %>
-                  <br>
-                <% end %>
-              </dd>
-            </dl>
-          </div>
+
+<div class="files">
+  <h4>files</h4>
+    <dl>
+      <% @node.files.each do |k,v| %>
+        <dt>
+          <%= k %>
+        </dt>
+        <dd>
+          <a href="http://<%= @node.ip %>:<%= @node.port %>/files/<%= v %>"><%= v %></a>
+        </dd>
       <% end %>
-    </div>
-    <div class="col-md-6 dht">
-      <h4>dht segment</h4>
-        <dl>
-          <% @dht.each do |k,v| %>
-            <dt>
-              <%= k %>
-            </dt>
-            <dd>
-              <a href="<%= v %>"><%= v %></a>
-            </dd>
-          <% end %>
-        </dl>
-    </div>
-  </div>
+    </dl>
 </div>
+
 
 
 
