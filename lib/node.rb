@@ -26,7 +26,8 @@ class Node
   end
 
   def lookup_ip
-    open('http://whatismyip.akamai.com').read
+    'localhost'
+    #open('http://whatismyip.akamai.com').read
   end
 
   def generate_file_cache
