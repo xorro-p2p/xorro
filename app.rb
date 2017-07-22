@@ -18,19 +18,9 @@ get '/', '/debug/node' do
   @title = "Node Info"
   @node = NODE
   @port = @node.port
+  @buckets = @node.routing_table.buckets
+  @dht = @node.dht_segment
   erb :node
-end
-
-get '/debug/dht' do
-  @dht = NODE.dht_segment
-  @title = 'DHT Segment'
-  erb :dht
-end
-
-get '/debug/kbuckets' do
-  @title = "K-Buckets"
-  @buckets = NODE.routing_table.buckets
-  erb :kbuckets
 end
 
 get '/files/:filename' do

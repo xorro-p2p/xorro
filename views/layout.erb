@@ -3,14 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Debug <%= @title %></title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
   <header>
     <nav>
-      <a href="/debug/node">Node Info</a>
-      <a href="/debug/dht">DHT Segment</a>
-      <a href="/debug/kbuckets">K-Buckets</a>
+      <h3><%= @title %></h3>
+      <dl>
+        <dt>id</dt>
+        <dd><%= @node.id %></dd>
+        <dt>ipv4</dt>
+        <dd><%= @node.ip %></dd>
+        <dt>port</dt>
+        <dd><%= @port %></dd>
+      </dl>
     </nav>
   </header>
   <main>
