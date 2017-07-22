@@ -58,3 +58,10 @@ post '/rpc/find_value' do
   result.to_json
 end
 
+post '/rpc/ping' do
+  contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+  NODE.receive_ping(contact)
+  status 200
+end
+
+
