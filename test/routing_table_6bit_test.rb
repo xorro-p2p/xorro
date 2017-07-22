@@ -21,9 +21,8 @@ class RoutingTableTest6 < Minitest::Test
   def test_insert_node_with_duplicate_id
     new_node = Node.new('0',@kn)
 
-    assert_raises(ArgumentError) do
-      @routing_table.insert(new_node)
-    end
+    @routing_table.insert(new_node)
+    assert_equal(0, @routing_table.buckets[0].size)
   end
 
   def test_insert_if_bucket_not_full

@@ -26,7 +26,8 @@ class Node
   end
 
   def lookup_ip
-    open('http://whatismyip.akamai.com').read
+    'localhost'
+    #open('http://whatismyip.akamai.com').read
   end
 
   def generate_file_cache
@@ -34,7 +35,7 @@ class Node
 
     Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = Binary.sha(File.basename(file))
-      cache[file_hash] = file
+      cache[file_hash] = File.basename(file)
     end
     cache
   end

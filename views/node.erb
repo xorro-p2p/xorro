@@ -1,10 +1,19 @@
-<h1><%= @title %></h1>
 
-<dl>
-  <dt>id</dt>
-  <dd><%= @node.id %></dd>
-  <dt>ipv4</dt>
-  <dd><%= @node.ip %></dd>
-  <dt>port</dt>
-  <dd><%= @port %></dd>
-</dl>
+<div class="files">
+  <h4>files</h4>
+    <dl>
+      <% @node.files.each do |k,v| %>
+        <dt>
+          <%= k %>
+        </dt>
+        <dd>
+          <a href="http://<%= @node.ip %>:<%= @node.port %>/files/<%= v %>"><%= v %></a>
+        </dd>
+      <% end %>
+    </dl>
+</div>
+
+
+
+
+

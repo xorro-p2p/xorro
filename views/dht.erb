@@ -1,19 +1,13 @@
-<h1><%= @title %></h1>
-<ul>
-  <dl>
-    <dt>
-      key
-    </dt>
-    <dd>
-      value
-    </dd>
-    <% @dht.each do |k,v| %>
-      <dt>
-        <%= k %>:
-      </dt>
-      <dd>
-        <%= v %>
-      </dd>
-    <% end %>
-  </dl>
-</ul>
+<div class="dht">
+  <h4>dht segment</h4>
+    <dl>
+      <% @node.dht_segment.each do |k,v| %>
+        <dt>
+          <%= k %>
+        </dt>
+        <dd>
+          <a href="<%= v %>"><%= v %></a>
+        </dd>
+      <% end %>
+    </dl>
+</div>

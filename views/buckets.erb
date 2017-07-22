@@ -1,0 +1,38 @@
+
+<div class="buckets">
+  <h4>k-buckets: <%= @node.routing_table.buckets.size %></h4>
+  <% @node.routing_table.buckets.each_with_index do |b,x| %>
+      <div class="bucket">
+        <dl>
+          <dt>
+            Bucket
+          </dt>
+          <dd>
+            <%= x %>
+          </dd>
+          <dt>
+            Size 
+          </dt>
+          <dd>
+            <%= b.size %>
+          </dd>
+          <dt>
+            Contacts 
+          </dt>
+          <dd>
+            <ul>
+             <% b.contacts. each do |c| %>
+              <li>id: <%= c.id %>  ip: <%= c.ip %>:<%= c.port %>
+              </li>
+              <% end %>
+            </ul>
+          </dd>
+        </dl>
+      </div>
+  <% end %>
+</div>
+
+
+
+
+
