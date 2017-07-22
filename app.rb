@@ -24,7 +24,6 @@ get '/', '/debug/node' do
   erb :node
 end
 
-
 get '/debug/buckets' do
   @title = "K-Buckets"
   @node = NODE
