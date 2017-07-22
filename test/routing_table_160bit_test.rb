@@ -21,8 +21,6 @@ class RoutingTableTest160 < Minitest::Test
   def test_insert_node_with_duplicate_id
     new_node = Node.new('0',@kn)
 
-    new_node = Node.new('0',@kn)
-
     @routing_table.insert(new_node)
     assert_equal(0, @routing_table.buckets[0].size)
   end
