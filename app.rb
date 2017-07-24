@@ -19,22 +19,29 @@ Defaults.setup(settings.port)
 NODE = Defaults.create_node_file(NETWORK, settings.port)
 
 get '/', '/debug/node' do
-  @title = "Node Info"
-  @node = NODE
-  erb :node
-end
+   @title = "Node Info"
+   @super = ENV['SUPER'] || 'false'
+   @node = NODE
+   @superport = ENV['SUPERPORT'] || 'none'
+   erb :node
+ end
+ 
+ get '/debug/buckets' do
+   @title = "K-Buckets"
+   @super = ENV['SUPER'] || 'false'
+   @superport = ENV['SUPERPORT'] || 'none'
+   @node = NODE
+   erb :buckets
+ end
+ 
+ get '/', '/debug/dht' do
+   @title = "DHT Segment"
+   @super = ENV['SUPER'] || 'false'
+   @superport = ENV['SUPERPORT'] || 'none'
+   @node = NODE
+   erb :dht
+ end
 
-get '/debug/buckets' do
-  @title = "K-Buckets"
-  @node = NODE
-  erb :buckets
-end
-
-get '/', '/debug/dht' do
-  @title = "DHT Segment"
-  @node = NODE
-  erb :dht
-end
 
 get '/files/:filename' do
   send_file File.join(File.expand_path(ENV['uploads']) , params[:filename])
