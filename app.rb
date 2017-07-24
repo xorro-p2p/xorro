@@ -9,14 +9,14 @@ require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
 require_relative 'lib/contact.rb'
 require_relative 'lib/defaults.rb'
+require_relative 'lib/storage.rb'
 
 
 NETWORK = NetworkAdapter.new
 
 Defaults.setup(settings.port)
-id_file = YAML::load_file(File.join(ENV['home'], "/id.yml"))
 
-NODE = Node.new(id_file[:id], NETWORK, settings.port)
+NODE = Defaults.create_node_file(NETWORK, settings.port)
 
 get '/', '/debug/node' do
   @title = "Node Info"
