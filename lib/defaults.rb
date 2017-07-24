@@ -2,7 +2,7 @@ require 'yaml'
 
 module Defaults
   def self.setup(port)
-    node_homes = File.expand_path("~/Desktop")
+    node_homes = File.expand_path("~/Desktop/node_homes")
     Dir.mkdir(node_homes) unless Dir.exists?(node_homes)
     create_node_home(node_homes, port)
   end
