@@ -21,14 +21,21 @@ help_message() {
 }
 
 launch_nodes() {
-  for port in $@
+  launch_super $1
+  SUPERPORT=$1
+  for port in ${@:2}
   do
     launch_node $port
   done
 }
 
+launch_super() {
+  SUPER=true nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  echo $! >> tmp/pids.txt
+}
+
 launch_node() {
-  nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  SUPERPORT=$SUPERPORT nohup ruby app.rb -p $1 >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
