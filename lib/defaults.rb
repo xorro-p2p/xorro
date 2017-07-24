@@ -2,7 +2,7 @@ require 'yaml'
 
 module Defaults
   def self.setup(port)
-    node_homes = File.expand_path(ENV['node_homes'])
+    node_homes = File.expand_path("~/Desktop")
     Dir.mkdir(node_homes) unless Dir.exists?(node_homes)
     create_node_home(node_homes, port)
   end
@@ -18,21 +18,17 @@ module Defaults
     uploads = File.join(node_home, "/uploads")
     Dir.mkdir(uploads) unless Dir.exists?(uploads)
     ENV['uploads'] = uploads
-    create_id_file(node_home)
   end
 
-  def self.create_id_file(node_home)
-    id_file = File.join(node_home, "/id.yml")
-
-    unless File.exists?(id_file) && is_valid_id_file(id_file)
-      id = new_id
-      File.write(id_file, {id: id}.to_yaml)
+  def self.create_node_file(network, port)
+    if Storage.file_exists? && Storage.valid_file?
+      node = Storage.load_file
+    else
+      node = Node.new(new_id, network, port)
+      Storage.write_to_disk(node)
     end
-  end
 
-  def self.is_valid_id_file(id_file)
-    f = YAML::load_file(id_file)
-    f && f[:id] && f[:id].to_i.between?(0,2 ** ENV['bit_length'].to_i)
+    node
   end
 
   def self.new_id
