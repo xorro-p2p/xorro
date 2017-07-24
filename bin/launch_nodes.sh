@@ -9,6 +9,8 @@ help_message() {
   echo "For each port number, a k-node will be launched with a Sinatra webserver running on that port"
   echo "The process will be backgrounded, and the PID written to pids.txt"
   echo
+  echo "The first port number passed in will be the SuperNode, and all subsequent nodes will be made aware of it's port."
+  echo
   echo "You can quit the processes in bulk using kill_nodes.sh, which iterates through pids.txt,"
   echo "kills each process, then overwrites the file"
   echo
