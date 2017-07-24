@@ -199,4 +199,8 @@ class Node
 
     return shortlist
   end
+
+  def sync
+    Storage.write_to_disk(self)
+  end
 end
