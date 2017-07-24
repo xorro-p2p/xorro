@@ -9,6 +9,8 @@ help_message() {
   echo "For each port number, a k-node will be launched with a Sinatra webserver running on that port"
   echo "The process will be backgrounded, and the PID written to pids.txt"
   echo
+  echo "The first port number passed in will be the SuperNode, and all subsequent nodes will be made aware of it's port."
+  echo
   echo "You can quit the processes in bulk using kill_nodes.sh, which iterates through pids.txt,"
   echo "kills each process, then overwrites the file"
   echo
@@ -21,14 +23,21 @@ help_message() {
 }
 
 launch_nodes() {
-  for port in $@
+  launch_super $1
+  SUPERPORT=$1
+  for port in ${@:2}
   do
     launch_node $port
   done
 }
 
+launch_super() {
+  SUPER=true nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  echo $! >> tmp/pids.txt
+}
+
 launch_node() {
-  nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  SUPERPORT=$SUPERPORT nohup ruby app.rb -p $1 >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
