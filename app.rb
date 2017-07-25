@@ -16,7 +16,7 @@ NETWORK = NetworkAdapter.new
 
 Defaults.setup(settings.port)
 
-NODE = Defaults.create_node_file(NETWORK, settings.port)
+NODE = Defaults.create_node(NETWORK, settings.port)
 
 get '/', '/debug/node' do
    @title = "Node Info"

@@ -269,7 +269,7 @@ class NodeTest160 < Minitest::Test
     refute_empty(results['contacts'])
     assert_equal(2, results['contacts'].size)
     assert_includes(results['contacts'], node12_contact)
-    assert_includes(results['contacts'], node4_contact)
+    assert_includes(results['contacts'], node5_contact)
   end
 
   def test_iterative_find_node
