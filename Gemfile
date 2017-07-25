@@ -4,6 +4,7 @@ ruby "2.3.1"
 gem "sinatra"
 gem "json"
 gem "erubis"
+gem "http"
 
 group :test, :development do
   gem "minitest"
