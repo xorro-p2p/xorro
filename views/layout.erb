@@ -38,6 +38,26 @@
     </nav>
   </header>
   <main>
+    <form action="/send_find_node" method="post">
+      <h1>Iterate find node</h1>
+      <p>Query id</p>
+      <input type="text" id="query_id" name="query_id">
+      <input type="submit" value="submit">
+    </form>
+    <form action="/send_find_value" method="post">
+      <h1>Iterate find value</h1>
+      <p>Query file_id</p>
+      <input type="text" id="file_id" name="file_id">
+      <input type="submit" value="submit">
+    </form>
+    <form action="/send_store" method="post">
+      <h1>Iterate store</h1>
+      <p>Store key</p>
+      <input type="text" id="key" name="key">
+      <p>Store data(address?)</p>
+      <input type="text" id="data" name="data">
+      <input type="submit" value="submit">
+    </form>
     <%= yield %>
   </main>
 </body>
