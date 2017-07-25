@@ -74,4 +74,32 @@ post '/rpc/ping' do
   status 200
 end
 
+post '/send_find_node' do
+  query_id = params[:query_id]
+  
+  @contacts = NODE.iterative_find_node(query_id)
+  
+  @node = NODE
+  erb :test
+  # redirect '/'
+end
+
+post '/send_find_value' do
+  query_id = params[:file_id]
+  
+  @contacts = NODE.iterative_find_value(query_id)
+  
+  @node = NODE
+  erb :test
+  # redirect '/'
+end
+
+post '/send_store' do
+  key = params[:key]
+  data = params[:data]
+  NODE.iterate_store(key, data)
+
+  redirect '/'
+end
+
 
