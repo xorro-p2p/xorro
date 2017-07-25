@@ -5,6 +5,7 @@ require_relative 'binary.rb'
 require_relative 'routing_table.rb'
 require_relative 'contact.rb'
 require_relative 'network_adapter.rb'
+require_relative 'storage.rb'
 
 
 class Node
@@ -23,6 +24,7 @@ class Node
 
   def join(network)
     network.nodes.push(self)
+    sync
   end
 
   def lookup_ip
@@ -37,7 +39,9 @@ class Node
       file_hash = Binary.sha(File.basename(file))
       cache[file_hash] = File.basename(file)
     end
-    cache
+
+    @files =  cache
+    sync
   end
   
   def to_contact
@@ -46,6 +50,7 @@ class Node
 
   def receive_ping(contact)
     @routing_table.insert(contact)
+    sync
   end
 
   def ping(contact)
@@ -61,7 +66,7 @@ class Node
   end
 
   def store(file_id, address, recipient_contact)
-    ## response = HTTParty.post("reciever ip:port/rpc/store", :query = { })
+    ## response = HTTParty.post("receiver ip:port/rpc/store", :query = { })
     recipient_node = @network.get_node_by_contact(recipient_contact)
     recipient_node.receive_store(file_id, address, to_contact)
     ping(recipient_contact)
@@ -71,6 +76,7 @@ class Node
     @dht_segment[file_id] = address
     @routing_table.insert(sender_contact)
     ping(sender_contact)
+    sync
   end
 
   def iterative_store(file_id, address)
@@ -157,6 +163,7 @@ class Node
 
   def find_value(file_id, recipient_contact)
     recipient_node = @network.get_node_by_contact(recipient_contact)
+    ping(recipient_contact)
     result = recipient_node.receive_find_value(file_id, self.to_contact)
   end
 

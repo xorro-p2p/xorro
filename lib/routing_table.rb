@@ -29,6 +29,7 @@ class RoutingTable
 
     if duplicate_contact
       duplicate_contact.update_last_seen
+      @node.sync
       return
     end
 
@@ -101,6 +102,7 @@ class RoutingTable
     bucket.make_unsplittable
     create_bucket
     redistribute_contacts
+    @node.sync
   end
 
   # redistribute contacts between buckets.last and a newly created bucket

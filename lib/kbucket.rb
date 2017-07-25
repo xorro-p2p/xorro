@@ -55,21 +55,24 @@ class KBucket
 
   def make_unsplittable
     @splittable = false
+    @node.sync
   end
 
   # if this bucket already includes the contact, move existing contact to tail and discard new contact
   # if this bucket doesn't include the contact and @contacts.size < K, insert new contact as tail
   # if this bucket doesn't include the contact and bucket is full
-  #   ping head; delete head if it doesn't respond and insert new contact as tail
-  #              move head to tail end if it does respond, discard new contact
+  # ping head; delete head if it doesn't respond and insert new contact as tail
+  # move head to tail end if it does respond, discard new contact
   def add(contact)
     @contacts.push contact
+    @node.sync
   end
 
   def attempt_eviction(new_contact)
     if @node.ping(head)
       head.update_last_seen
       sort_by_seen
+      @node.sync
     else
       delete(head)
       # insert new contact as tail
@@ -80,6 +83,7 @@ class KBucket
   def delete(contact)
     return unless @contacts.include? contact
     @contacts.delete contact
+    @node.sync
   end
 
   def sort_by_seen
