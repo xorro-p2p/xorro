@@ -20,14 +20,15 @@ module Defaults
     ENV['uploads'] = uploads
   end
 
-  def self.create_node_file(network, port)
-    if Storage.file_exists? && Storage.valid_file?
+  def self.create_node(network, port)
+    if Storage.file_exists? && Storage.valid_node?
       node = Storage.load_file
+      node.generate_file_cache
     else
       node = Node.new(new_id, network, port)
-      Storage.write_to_disk(node)
     end
 
+    node.sync
     node
   end
 
