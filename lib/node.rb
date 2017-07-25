@@ -66,10 +66,7 @@ class Node
   end
 
   def store(file_id, address, recipient_contact)
-    ## response = HTTParty.post("receiver ip:port/rpc/store", :query = { })
-    recipient_node = @network.get_node_by_contact(recipient_contact)
-    recipient_node.receive_store(file_id, address, to_contact)
-    ping(recipient_contact)
+    @network.store(file_id, address, recipient_contact, self.to_contact)
   end
 
   def receive_store(file_id, address, sender_contact)
@@ -110,11 +107,7 @@ class Node
     # If the requestor does receive such a triple, it should discard it.
     # A node must never put its own nodeID into a bucket as a contact.
 
-    recipient_node = @network.get_node_by_contact(recipient_contact)
-    closest_nodes = recipient_node.receive_find_node(query_id, self.to_contact)
-    ping(recipient_contact)
-
-    closest_nodes
+    @network.find_node(query_id, recipient_contact, self.to_contact)
   end
 
   #### refactor this method to accept indeterminate list of array arguments, move to utility module
@@ -162,9 +155,7 @@ class Node
   end
 
   def find_value(file_id, recipient_contact)
-    recipient_node = @network.get_node_by_contact(recipient_contact)
-    ping(recipient_contact)
-    result = recipient_node.receive_find_value(file_id, self.to_contact)
+    @network.find_value(file_id, recipient_contact, self.to_contact)
   end
 
   def iterative_find_value(query_id)

@@ -111,3 +111,7 @@ main dt {
   clear: left;
   font-weight: bold;
 }
+
+input {
+  color: black;
+}
