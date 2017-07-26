@@ -6,11 +6,12 @@ require_relative 'routing_table.rb'
 require_relative 'contact.rb'
 require_relative 'network_adapter.rb'
 require_relative 'storage.rb'
+require 'json'
 require 'pry'
 
 
 class Node
-  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super
+  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super, :superport
   def initialize(num_string, network, port='80', is_super=false)
     @ip = lookup_ip
     @network = network
@@ -22,10 +23,19 @@ class Node
     generate_file_cache
     @dht_segment = {}
     @is_super = false
+    @superport = nil
   end
 
   def promote
     @is_super = true
+  end
+
+  def activate
+    return if is_super
+    @superport = ENV['SUPERPORT']
+    result = JSON.parse(@network.get_info('localhost', @superport))
+    contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
+    ping(contact)
   end
 
   def join(network)
