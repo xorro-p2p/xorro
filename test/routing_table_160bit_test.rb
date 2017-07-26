@@ -3,11 +3,11 @@ require_relative '../lib/node.rb'
 require_relative "../lib/routing_table.rb"
 require_relative "../lib/kbucket.rb"
 require_relative "../lib/contact.rb"
-require_relative "../lib/network_adapter.rb"
+require_relative "../lib/fake_network_adapter.rb"
 
 class RoutingTableTest160 < Minitest::Test
   def setup
-    @kn = NetworkAdapter.new
+    @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @routing_table = @node.routing_table
     ENV['bit_length'] = '160'
