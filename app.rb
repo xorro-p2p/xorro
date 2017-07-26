@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/multi_route'
+require 'sinatra/content_for'
 require 'json'
 require 'erubis'
 require 'pry'
@@ -52,6 +53,7 @@ post '/rpc/store' do
   address = params[:address]
   contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
   NODE.receive_store(file_id, address, contact)
+  status 200
 end
 
 post '/rpc/find_node' do
@@ -77,7 +79,7 @@ end
 post '/send_find_node' do
   query_id = params[:query_id]
   
-  @contacts = NODE.iterative_find_node(query_id)
+  @result = NODE.iterative_find_node(query_id)
   
   @node = NODE
   erb :test
@@ -87,18 +89,36 @@ end
 post '/send_find_value' do
   query_id = params[:file_id]
   
-  @contacts = NODE.iterative_find_value(query_id)
+  @result = NODE.iterative_find_value(query_id)
   
   @node = NODE
   erb :test
   # redirect '/'
 end
 
-post '/send_store' do
+post '/send_rpc_store' do
   key = params[:key]
   data = params[:data]
-  NODE.iterate_store(key, data)
 
+  contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port])
+  NODE.store(key, data, contact)
+  redirect '/'
+end
+
+post '/send_it_store' do
+  key = params[:key]
+  data = params[:data]
+  NODE.iterative_store(key, data)
+
+  redirect '/'
+end
+
+post '/send_rpc_ping' do
+  id = params[:id]
+  ip = params[:ip]
+  port = params[:port]
+  contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+  NODE.ping(contact)
   redirect '/'
 end
 
