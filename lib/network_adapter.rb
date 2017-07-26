@@ -12,21 +12,33 @@ class NetworkAdapter
     info_hash = {:file_id => file_id, :address => address, :port => sender_contact.port, :id => sender_contact.id, :ip => sender_contact.ip }
     url = recipient_contact.ip
     port = recipient_contact.port
-    response = call_rpc_store(url, port, info_hash)
+    begin
+      response = call_rpc_store(url, port, info_hash)
+    rescue
+      response = false
+    end
     response
   end
 
   def find_node(query_id, recipient_contact, sender_contact)
     info_hash = {:node_id => query_id, :id => sender_contact.id, :port => sender_contact.port}
-    response = call_rpc_find_node(recipient_contact.ip, recipient_contact.port, info_hash)
-    closest_nodes = JSON.parse(response)      
+    begin
+      response = call_rpc_find_node(recipient_contact.ip, recipient_contact.port, info_hash)
+      closest_nodes = JSON.parse(response) 
+    rescue
+      closest_nodes = []
+    end
     closest_nodes.map! { |contact| Contact.new({ id: contact['id'], ip: contact['ip'], port: contact['port'].to_i }) }
   end
 
   def find_value(file_id, recipient_contact, sender_contact)
     info_hash = {:file_id => file_id, :id => sender_contact.id, :port => sender_contact.port}
-    response = call_rpc_find_value(recipient_contact.ip, recipient_contact.port, info_hash)
-    result = JSON.parse(response)
+    begin
+      response = call_rpc_find_value(recipient_contact.ip, recipient_contact.port, info_hash)
+      result = JSON.parse(response)
+    rescue
+      result = {}
+    end
     if result['contacts']
       result['contacts'].map! { |contact| Contact.new({ id: contact['id'], ip: contact['ip'], port: contact['port'].to_i }) }
     end
@@ -38,7 +50,11 @@ class NetworkAdapter
 
   def ping(contact, sender_contact)
     info_hash = {:port => sender_contact.port, :id => sender_contact.id, :ip => sender_contact.ip }
-    response = call_rpc_ping(contact.ip, contact.port, info_hash)
+    begin
+      response = call_rpc_ping(contact.ip, contact.port, info_hash)
+    rescue
+      return false
+    end
     return response.code == 200
   end
 
