@@ -9,6 +9,7 @@ class NodeTest6 < Minitest::Test
     @kn = FakeNetworkAdapter.new
     ENV['bit_length'] = '6'
     ENV['k'] = '2'
+    ENV['alpha'] = '1'
   end
 
   def test_create_node
