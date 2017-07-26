@@ -70,17 +70,18 @@ nav dl dd, nav dl dt {
 }
 
 div.files, div.dht, div.buckets {
-  width: 700px;
+  width: 800px;
   margin: 0 auto
 }
 
 div.buckets ul {
-  width: 313px
+  width: 630px
 }
 
 div.buckets li {
   list-style-type: none;
-  text-align: right;
+  text-align: left;
+  margin-left: 60px
 }
 
 div.files dd, div.dht dd{
