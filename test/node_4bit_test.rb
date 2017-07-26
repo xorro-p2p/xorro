@@ -1,12 +1,12 @@
 require_relative 'test_helper.rb'
 require_relative "../lib/node.rb"
 require_relative "../lib/routing_table.rb"
-require_relative "../lib/network_adapter.rb"
+require_relative "../lib/fake_network_adapter.rb"
 require_relative "../lib/kbucket.rb"
 
 class NodeTest < Minitest::Test
   def setup
-    @kn = NetworkAdapter.new
+    @kn = FakeNetworkAdapter.new
     ENV['bit_length'] = '4'
     ENV['k'] = '2'
   end

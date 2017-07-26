@@ -1,11 +1,11 @@
 require_relative 'test_helper.rb'
 require_relative '../lib/node.rb'
 require_relative "../lib/contact.rb"
-require_relative "../lib/network_adapter.rb"
+require_relative "../lib/fake_network_adapter.rb"
 
 class ContactTest < Minitest::Test
   def setup
-    @kn = NetworkAdapter.new
+    @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @options = {
       :id => @node.id,

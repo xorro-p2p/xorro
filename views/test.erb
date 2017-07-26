@@ -1,2 +1,8 @@
-<p><%= @contacts %></p>
+<% if @result.class == Array %>
+  <% @result.each do |c| %>
+    <p><%= c.id %> </p>
+  <% end %>
+<% else %>
+  <p><%= @result %></p>
+<% end %>
 

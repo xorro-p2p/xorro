@@ -6,11 +6,13 @@ require_relative 'routing_table.rb'
 require_relative 'contact.rb'
 require_relative 'network_adapter.rb'
 require_relative 'storage.rb'
+require 'json'
+require 'pry'
 
 
 class Node
-  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment
-  def initialize(num_string, network, port='80')
+  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super, :superport
+  def initialize(num_string, network, port='80', is_super=false)
     @ip = lookup_ip
     @network = network
     @port = port
@@ -18,8 +20,22 @@ class Node
     # @id = Binary.sha(num_string) # TEMP - using a fixed string for now to generate ID hash
     @id = num_string
     @routing_table = RoutingTable.new(self)
-    @files = generate_file_cache
+    generate_file_cache
     @dht_segment = {}
+    @is_super = false
+    @superport = nil
+  end
+
+  def promote
+    @is_super = true
+  end
+
+  def activate
+    return if is_super
+    @superport = ENV['SUPERPORT']
+    result = JSON.parse(@network.get_info('localhost', @superport))
+    contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
+    ping(contact)
   end
 
   def join(network)
@@ -39,8 +55,7 @@ class Node
       file_hash = Binary.sha(File.basename(file))
       cache[file_hash] = File.basename(file)
     end
-
-    @files =  cache
+    @files = cache
     sync
   end
   
@@ -50,30 +65,30 @@ class Node
 
   def receive_ping(contact)
     @routing_table.insert(contact)
-    sync
   end
 
   def ping(contact)
-    recipient_node = @network.get_node_by_contact(contact)
+    response = @network.ping(contact, to_contact)
+    # recipient_node = @network.get_node_by_contact(contact)
 
-    if recipient_node
-      recipient_node.receive_ping(self.to_contact)
-      contact.update_last_seen
-      @routing_table.insert(contact)
-    end 
-
-    recipient_node
+    # if recipient_node
+    #   recipient_node.receive_ping(self.to_contact)
+    #   contact.update_last_seen
+    #   @routing_table.insert(contact)
+    # end 
+    @routing_table.insert(contact) if response
+    response
   end
 
   def store(file_id, address, recipient_contact)
-    @network.store(file_id, address, recipient_contact, self.to_contact)
+    response = @network.store(file_id, address, recipient_contact, self.to_contact)
+    @routing_table.insert(recipient_contact) if response && response.code == 200
   end
 
   def receive_store(file_id, address, sender_contact)
     @dht_segment[file_id] = address
     @routing_table.insert(sender_contact)
-    ping(sender_contact)
-    sync
+    # ping(sender_contact)
   end
 
   def iterative_store(file_id, address)
@@ -91,7 +106,7 @@ class Node
     # have to exclude the requestor contact
 
     closest_contacts = @routing_table.find_closest_contacts(query_id, sender_contact)
-    ping(sender_contact)
+    # ping(sender_contact)
     @routing_table.insert(sender_contact)
     closest_contacts
   end
@@ -150,7 +165,7 @@ class Node
       result['contacts'] = receive_find_node(file_id, sender_contact)
     end
     @routing_table.insert(sender_contact)
-    ping(sender_contact)
+    # ping(sender_contact)
     result
   end
 
@@ -164,7 +179,7 @@ class Node
     shortlist = []
     results_returned = @routing_table.find_closest_contacts(query_id, nil, ENV['alpha'].to_i)
 
-    until shortlist.select(&:active).size == ENV['k'].to_i + 1
+    until shortlist.select(&:active).size == ENV['k'].to_i
       shortlist.push(results_returned.pop.clone) until results_returned.empty? || shortlist.size == ENV['k'].to_i
       # closest_contact = Binary.select_closest_xor(query_id, shortlist)
       Binary.sort_by_xor!(id, shortlist)
@@ -178,13 +193,15 @@ class Node
           # When this function succeeds (finds the value), a STORE RPC is sent to
           # the closest Contact which did not return the value.
           second_closest = shortlist.find { |c| c.id != contact.id }
-          store(query_id, temp_results['data'], second_closest)
+          store(query_id, temp_results['data'], second_closest) if second_closest
  
           return temp_results['data']
         end
 
-        temp_results['contacts'].each do |t|
-          results_returned.push(t) if contact_is_not_in_results_or_shortlist(t, results_returned, shortlist)
+        if temp_results['contacts']
+          temp_results['contacts'].each do |t|
+            results_returned.push(t) if contact_is_not_in_results_or_shortlist(t, results_returned, shortlist)
+          end
         end
         #happy path only.. contact will be marked as probed when queried, then marked as active if we receive a reply
         #contact stays in probed mode until reply is received.

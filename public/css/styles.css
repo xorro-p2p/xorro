@@ -3,6 +3,7 @@ body {
   color: white;
   font-family: 'Courier New';
   font-weight: 100;
+  min-width: 1200px
 }
 
 dd {
@@ -13,7 +14,7 @@ header {
 }
 header nav {
   margin: 0 auto;
-  width: 700px;
+  width: 800px;
 }
 
 header nav dl{
@@ -22,6 +23,20 @@ header nav dl{
   margin: 20px 10px;
 }
 
+div.forms {
+  float: left;
+  width: 280px
+}
+
+div.forms form {
+  border: 1px solid white;
+  padding: 5px
+}
+
+div.list {
+  float: left;
+  margin-left: 40px;
+}
 nav a {
   text-decoration: none;
   border: 1px solid white;
@@ -55,17 +70,18 @@ nav dl dd, nav dl dt {
 }
 
 div.files, div.dht, div.buckets {
-  width: 700px;
+  width: 800px;
   margin: 0 auto
 }
 
 div.buckets ul {
-  width: 313px
+  width: 630px
 }
 
 div.buckets li {
   list-style-type: none;
-  text-align: right;
+  text-align: left;
+  margin-left: 60px
 }
 
 div.files dd, div.dht dd{

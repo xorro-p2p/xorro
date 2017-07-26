@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/multi_route'
+require 'sinatra/content_for'
 require 'json'
 require 'erubis'
 require 'pry'
@@ -17,28 +18,29 @@ NETWORK = NetworkAdapter.new
 Defaults.setup(settings.port)
 
 NODE = Defaults.create_node(NETWORK, settings.port)
+NODE.activate
 
 get '/', '/debug/node' do
    @title = "Node Info"
-   @super = ENV['SUPER'] || 'false'
    @node = NODE
-   @superport = ENV['SUPERPORT'] || 'none'
+   @super = @node.is_super
+   @superport = @node.superport || 'none'
    erb :node
  end
  
  get '/debug/buckets' do
    @title = "K-Buckets"
-   @super = ENV['SUPER'] || 'false'
-   @superport = ENV['SUPERPORT'] || 'none'
    @node = NODE
+   @super = @node.is_super
+   @superport = @node.superport || 'none'
    erb :buckets
  end
  
  get '/', '/debug/dht' do
    @title = "DHT Segment"
-   @super = ENV['SUPER'] || 'false'
-   @superport = ENV['SUPERPORT'] || 'none'
    @node = NODE
+   @super = @node.is_super
+   @superport = @node.superport || 'none'
    erb :dht
  end
 
@@ -52,6 +54,7 @@ post '/rpc/store' do
   address = params[:address]
   contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
   NODE.receive_store(file_id, address, contact)
+  status 200
 end
 
 post '/rpc/find_node' do
@@ -77,28 +80,50 @@ end
 post '/send_find_node' do
   query_id = params[:query_id]
   
-  @contacts = NODE.iterative_find_node(query_id)
+  @result = NODE.iterative_find_node(query_id)
   
   @node = NODE
   erb :test
   # redirect '/'
+end
+
+get '/info' do
+  NODE.to_contact.to_json
 end
 
 post '/send_find_value' do
   query_id = params[:file_id]
   
-  @contacts = NODE.iterative_find_value(query_id)
+  @result = NODE.iterative_find_value(query_id)
   
   @node = NODE
   erb :test
   # redirect '/'
 end
 
-post '/send_store' do
+post '/send_rpc_store' do
   key = params[:key]
   data = params[:data]
-  NODE.iterate_store(key, data)
 
+  contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port])
+  NODE.store(key, data, contact)
+  redirect '/'
+end
+
+post '/send_it_store' do
+  key = params[:key]
+  data = params[:data]
+  NODE.iterative_store(key, data)
+
+  redirect '/'
+end
+
+post '/send_rpc_ping' do
+  id = params[:id]
+  ip = params[:ip]
+  port = params[:port]
+  contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+  NODE.ping(contact)
   redirect '/'
 end
 
