@@ -183,8 +183,10 @@ class Node
           return temp_results['data']
         end
 
-        temp_results['contacts'].each do |t|
-          results_returned.push(t) if contact_is_not_in_results_or_shortlist(t, results_returned, shortlist)
+        if temp_results['contacts']
+          temp_results['contacts'].each do |t|
+            results_returned.push(t) if contact_is_not_in_results_or_shortlist(t, results_returned, shortlist)
+          end
         end
         #happy path only.. contact will be marked as probed when queried, then marked as active if we receive a reply
         #contact stays in probed mode until reply is received.
