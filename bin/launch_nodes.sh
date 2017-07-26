@@ -24,6 +24,7 @@ help_message() {
 
 launch_nodes() {
   launch_super $1
+  sleep 1
   SUPERPORT=$1
   for port in ${@:2}
   do
