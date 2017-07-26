@@ -10,8 +10,8 @@ require 'pry'
 
 
 class Node
-  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment
-  def initialize(num_string, network, port='80')
+  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super
+  def initialize(num_string, network, port='80', is_super=false)
     @ip = lookup_ip
     @network = network
     @port = port
@@ -21,6 +21,11 @@ class Node
     @routing_table = RoutingTable.new(self)
     generate_file_cache
     @dht_segment = {}
+    @is_super = false
+  end
+
+  def promote
+    @is_super = true
   end
 
   def join(network)

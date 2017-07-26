@@ -27,7 +27,7 @@ module Defaults
     else
       node = Node.new(new_id, network, port)
     end
-
+    node.promote if ENV['SUPER'] == 'true'
     node.sync
     node
   end

@@ -21,15 +21,15 @@ NODE = Defaults.create_node(NETWORK, settings.port)
 
 get '/', '/debug/node' do
    @title = "Node Info"
-   @super = ENV['SUPER'] || 'false'
    @node = NODE
+   @super = NODE.is_super
    @superport = ENV['SUPERPORT'] || 'none'
    erb :node
  end
  
  get '/debug/buckets' do
    @title = "K-Buckets"
-   @super = ENV['SUPER'] || 'false'
+   @super = NODE.is_super
    @superport = ENV['SUPERPORT'] || 'none'
    @node = NODE
    erb :buckets
@@ -37,7 +37,7 @@ get '/', '/debug/node' do
  
  get '/', '/debug/dht' do
    @title = "DHT Segment"
-   @super = ENV['SUPER'] || 'false'
+   @super = NODE.is_super
    @superport = ENV['SUPERPORT'] || 'none'
    @node = NODE
    erb :dht
