@@ -58,6 +58,15 @@ class NetworkAdapter
     return response.code == 200
   end
 
+  def get_info(url, port)
+    begin
+      response = call_get_info(url, port)
+    rescue
+      response = '{}'
+    end
+    response
+  end
+
 
   private 
 
@@ -76,6 +85,10 @@ class NetworkAdapter
 
   def call_rpc_find_value(url, port, info_hash)
     HTTP.post('http://' + url + ':' + port.to_s + '/rpc/find_value', :form => info_hash)
+  end
+
+  def call_get_info(url, port)
+    HTTP.get('http://' + url + ':' + port.to_s + '/info')
   end
 end
 

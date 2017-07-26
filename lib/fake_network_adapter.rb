@@ -33,6 +33,10 @@ class FakeNetworkAdapter
     recipient_node.receive_find_value(file_id, sender_contact)
   end
 
+  def get_info
+    
+  end
+
   def ping(contact, sender_contact)
     recipient_node = get_node_by_contact(contact)
     
