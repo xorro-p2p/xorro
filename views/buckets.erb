@@ -23,7 +23,7 @@
             <ul>
              <% b.contacts. each do |c| %>
               <li>id: <%= c.id %></li>
-              <li>ip: <%= c.ip %>:<%= c.port %></li>
+              <li>ip: <a href="http://<%= c.ip %>:<%= c.port %>"><%= c.ip %>:<%= c.port %></a></li>
               <li>lastseen: <%= c.last_seen %></li>
               <li>---------------------</li>
               <% end %>
