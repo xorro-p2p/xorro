@@ -22,8 +22,10 @@
           <dd>
             <ul>
              <% b.contacts. each do |c| %>
-              <li>id: <%= c.id %>  ip: <%= c.ip %>:<%= c.port %>
-              </li>
+              <li>id: <%= c.id %></li>
+              <li>ip: <%= c.ip %>:<%= c.port %></li>
+              <li>lastseen: <%= c.last_seen %></li>
+              <li>---------------------</li>
               <% end %>
             </ul>
           </dd>
