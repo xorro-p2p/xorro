@@ -2,7 +2,7 @@ require_relative '../development.rb'
 require_relative 'binary.rb'
 
 class KBucket
-  K = ENV['k'].to_i # hardcoding k value for now
+  # K = ENV['k'].to_i # hardcoding k value for now
   attr_reader :splittable
   attr_accessor :contacts, :node
 
@@ -29,7 +29,7 @@ class KBucket
   end
 
   def is_full?
-    @contacts.size == K
+    @contacts.size == ENV['k'].to_i
   end
 
   # is this the bucket that has the longest shared_bits_length?
