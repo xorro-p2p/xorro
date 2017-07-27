@@ -1,3 +1,5 @@
+#!/bin/bash
+
 help_message() {
   echo
   echo 'looks like you need some help using this tool.'
