@@ -52,7 +52,7 @@ class Node
     cache = {}
 
     Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
-      file_hash = Binary.sha(File.basename(file))
+      file_hash = Binary.sha(File.read(file)).hex.to_s
       cache[file_hash] = File.basename(file)
     end
     @files = cache
