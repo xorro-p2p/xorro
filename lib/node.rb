@@ -36,11 +36,20 @@ class Node
     result = JSON.parse(@network.get_info('localhost', @superport))
     contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
     ping(contact)
+    iterative_find_node(@id)
+    broadcast
   end
 
   def join(network)
     network.nodes.push(self)
     sync
+  end
+
+  def broadcast
+    @files.keys.each do |k|
+      address = "http://" + @ip + ":" + @port.to_s + "/files/" + @files[k]
+      iterative_store(k, address)
+    end
   end
 
   def lookup_ip
