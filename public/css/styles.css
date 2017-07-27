@@ -3,7 +3,7 @@ body {
   color: white;
   font-family: 'Courier New';
   font-weight: 100;
-  min-width: 1200px
+  min-width: 1230px
 }
 
 dd {
@@ -85,11 +85,11 @@ div.buckets li {
 }
 
 div.files dd, div.dht dd{
-  margin-left: 400px
+  margin-left: 440px
 }
 
 div.files dt, div.dht dt{
-  width: 355px
+  width: 425px
 }
 
 div.buckets dl {
