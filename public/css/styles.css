@@ -46,7 +46,7 @@ nav a {
 
 nav ul {
   display: block;
-  width: 400px;
+  width: 500px;
   margin: 0 auto;
 }
 
@@ -131,3 +131,10 @@ main dt {
 input {
   color: black;
 }
+
+#drop_zone {
+  width: 100px;
+  height: 100px;
+  border: 2px dotted grey;
+}
+
