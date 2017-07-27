@@ -140,6 +140,8 @@ post '/save_to_uploads' do
   File.open(file_name, 'wb') do |f|
     f.write(decode_base64_content)
   end
+
+  NODE.generate_file_cache
   
   status 200
 end
