@@ -185,7 +185,7 @@ class Node
   def find_value(file_id, recipient_contact)
     results = @network.find_value(file_id, recipient_contact, self.to_contact)
 
-    if results['contacts'].is_a?(Array)
+    if results['contacts']
       results['contacts'].each do |r|
         @routing_table.insert(r)
       end
