@@ -183,7 +183,15 @@ class Node
   end
 
   def find_value(file_id, recipient_contact)
-    @network.find_value(file_id, recipient_contact, self.to_contact)
+    results = @network.find_value(file_id, recipient_contact, self.to_contact)
+
+    if results['contacts']
+      results['contacts'].each do |r|
+        @routing_table.insert(r)
+      end
+    end
+    
+    results
   end
 
   def iterative_find_value(query_id)
