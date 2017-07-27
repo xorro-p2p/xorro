@@ -44,6 +44,11 @@ get '/', '/debug/node' do
    erb :dht
  end
 
+ get '/drop_zone' do
+  @node = NODE
+  erb :drop_zone
+ end
+
 
 get '/files/:filename' do
   send_file File.join(File.expand_path(ENV['uploads']) , params[:filename])
@@ -125,6 +130,20 @@ post '/send_rpc_ping' do
   contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
   NODE.ping(contact)
   redirect '/'
+end
+
+post '/save_to_uploads' do
+  start = params[:data].index(',') + 1
+  file_data = params[:data][start..-1]
+  decode_base64_content = Base64.decode64(file_data)
+  file_name = ENV['uploads'] + '/' + params[:name]
+  File.open(file_name, 'wb') do |f|
+    f.write(decode_base64_content)
+  end
+
+  NODE.generate_file_cache
+  
+  status 200
 end
 
 

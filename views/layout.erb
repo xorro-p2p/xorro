@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Debug <%= @title %></title>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -33,6 +34,9 @@
         </li>
         <li>
           <a href="/debug/buckets">Buckets</a>
+        </li>
+        <li>
+          <a href="/drop_zone">Drop Zone</a>
         </li>
       </ul>
     </nav>
@@ -90,5 +94,6 @@
       <%= yield %>
     </div>
   </main>
+  <script src="/javascripts/drop_zone.js"></script>
 </body>
 </html>
