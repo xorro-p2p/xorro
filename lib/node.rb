@@ -30,9 +30,13 @@ class Node
     @is_super = true
   end
 
+  def demote
+    @is_super = false
+  end
+
   def activate
-    return if is_super
     @superport = ENV['SUPERPORT']
+    return if is_super
     result = JSON.parse(@network.get_info('localhost', @superport))
     contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
     ping(contact)
