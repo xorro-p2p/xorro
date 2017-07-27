@@ -4,11 +4,12 @@ require_relative "../lib/routing_table.rb"
 require_relative "../lib/fake_network_adapter.rb"
 require_relative "../lib/kbucket.rb"
 
-class NodeTest < Minitest::Test
+class NodeTest4bit < Minitest::Test
   def setup
     @kn = FakeNetworkAdapter.new
     ENV['bit_length'] = '4'
     ENV['k'] = '2'
+    ENV['alpha'] = '1'
   end
 
   def test_create_node

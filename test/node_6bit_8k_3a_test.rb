@@ -4,12 +4,12 @@ require_relative "../lib/routing_table.rb"
 require_relative "../lib/fake_network_adapter.rb"
 require_relative "../lib/kbucket.rb"
 
-class NodeTest160 < Minitest::Test
+class NodeTest6bit8k < Minitest::Test
   def setup
     @kn = FakeNetworkAdapter.new
-    ENV['bit_length'] = '160'
-    ENV['k'] = '2'
-    ENV['alpha'] = '1'
+    ENV['bit_length'] = '6'
+    ENV['k'] = '8'
+    ENV['alpha'] = '3'
   end
 
   def test_create_node
@@ -64,73 +64,105 @@ class NodeTest160 < Minitest::Test
 
   def test_receive_find_node
     node0 = Node.new('0', @kn)
-    node4 = Node.new('4', @kn)
-    node5 = Node.new('5', @kn)
+
+    node32 = Node.new('32', @kn)
+    node57 = Node.new('57', @kn)
+    node58 = Node.new('58', @kn)
+    node59 = Node.new('59', @kn)
+    node60 = Node.new('60', @kn)
+    node61 = Node.new('61', @kn)
+    node62 = Node.new('62', @kn)
+    node63 = Node.new('63', @kn)
+
+    node0.routing_table.insert(node32.to_contact)
+    node0.routing_table.insert(node57.to_contact)
+    node0.routing_table.insert(node58.to_contact)
+    node0.routing_table.insert(node59.to_contact)
+    node0.routing_table.insert(node60.to_contact)
+    node0.routing_table.insert(node61.to_contact)
+    node0.routing_table.insert(node62.to_contact)
+    node0.routing_table.insert(node63.to_contact)
+
     node12 = Node.new('12', @kn)
-    node7 = Node.new('7', @kn)
 
-    node4_contact = node4.to_contact
-    node5_contact = node5.to_contact
-    node12_contact = node12.to_contact
-
-    node0.routing_table.insert(node4_contact)
-    node0.routing_table.insert(node5_contact)
-    node0.routing_table.insert(node12_contact)
-
-    results = node0.receive_find_node('1', node7.to_contact)
+    results = node0.receive_find_node('1', node12.to_contact)
+    results.map! { |contact| contact.id }
 
     refute_empty(results)
-    assert_equal(2, results.size)
-    assert_includes(results, node4_contact)
-    assert_includes(results, node5_contact)
+    assert_equal(8, results.size)
+    assert_includes(results, '32')
+    assert_includes(results, '63')
   end
 
   def test_receive_find_node_multiple_buckets
-    # checking to see if results will be taken from multiple buckets
     node0 = Node.new('0', @kn)
-    node15 = Node.new('15', @kn)
-    node14 = Node.new('14', @kn)
-    node3 = Node.new('3', @kn)
+
+    node32 = Node.new('32', @kn)
+    node57 = Node.new('57', @kn)
+    node58 = Node.new('58', @kn)
+    node59 = Node.new('59', @kn)
+    node60 = Node.new('60', @kn)
+    node61 = Node.new('61', @kn)
+    node62 = Node.new('62', @kn)
+    node63 = Node.new('63', @kn)
     node7 = Node.new('7', @kn)
 
-    node15_contact = node15.to_contact
-    node14_contact = node14.to_contact
-    node3_contact = node3.to_contact
+    node0.routing_table.insert(node32.to_contact)
+    node0.routing_table.insert(node57.to_contact)
+    node0.routing_table.insert(node58.to_contact)
+    node0.routing_table.insert(node59.to_contact)
+    node0.routing_table.insert(node60.to_contact)
+    node0.routing_table.insert(node61.to_contact)
+    node0.routing_table.insert(node62.to_contact)
+    node0.routing_table.insert(node63.to_contact)
+    node0.routing_table.insert(node7.to_contact)
 
-    node0.routing_table.insert(node15_contact)
-    node0.routing_table.insert(node14_contact)
-    node0.routing_table.insert(node3_contact)
+    node12 = Node.new('12', @kn)
 
-    results = node0.receive_find_node('1', node7.to_contact)
+    results = node0.receive_find_node('1', node12.to_contact)
+    results.map! { |contact| contact.id }
 
     refute_empty(results)
-    assert_equal(2, results.size)
-    assert_includes(results, node15_contact)
-    assert_includes(results, node3_contact)
+    assert_equal(8, results.size)
+    assert_includes(results, '7')
+    assert_includes(results, '32')
+    assert_includes(results, '62')
   end
 
   def test_receive_find_node_multiple_buckets_starting_from_back
-    # checking to see if results will be taken from multiple buckets
     node0 = Node.new('0', @kn)
-    node4 = Node.new('4', @kn)
-    node5 = Node.new('5', @kn)
-    node12 = Node.new('12', @kn)
+
+    node57 = Node.new('57', @kn)
+    node58 = Node.new('58', @kn)
+    node59 = Node.new('59', @kn)
+    node60 = Node.new('60', @kn)
+    node61 = Node.new('61', @kn)
+    node62 = Node.new('62', @kn)
+    node63 = Node.new('63', @kn)
     node7 = Node.new('7', @kn)
+    node8 = Node.new('8', @kn)
 
-    node4_contact = node4.to_contact
-    node5_contact = node5.to_contact
-    node12_contact = node12.to_contact
+    node0.routing_table.insert(node57.to_contact)
+    node0.routing_table.insert(node58.to_contact)
+    node0.routing_table.insert(node59.to_contact)
+    node0.routing_table.insert(node60.to_contact)
+    node0.routing_table.insert(node61.to_contact)
+    node0.routing_table.insert(node62.to_contact)
+    node0.routing_table.insert(node63.to_contact)
+    node0.routing_table.insert(node7.to_contact)
+    node0.routing_table.insert(node8.to_contact)
 
-    node0.routing_table.insert(node4_contact)
-    node0.routing_table.insert(node5_contact)
-    node0.routing_table.insert(node12_contact)
+    node12 = Node.new('12', @kn)
 
-    results = node0.receive_find_node('13', node7.to_contact)
+    results = node0.receive_find_node('40', node12.to_contact)
+    results.map! { |contact| contact.id }
 
     refute_empty(results)
-    assert_equal(2, results.size)
-    assert_includes(results, node12_contact)
-    assert_includes(results, node4_contact)
+    assert_equal(8, results.size)
+    assert_includes(results, '57')
+    assert_includes(results, '63')
+    assert_includes(results, '7')
+    refute_includes(results, '8')
   end
 
   def test_receive_find_node_fewer_than_k_results
@@ -167,8 +199,9 @@ class NodeTest160 < Minitest::Test
     results = node0.receive_find_node('1', node7_contact)
 
     refute_includes(results, node7_contact)
-    assert_equal(2, results.size)
+    assert_equal(3, results.size)
     assert_includes(results, node15_contact)
+    assert_includes(results, node14_contact)
     assert_includes(results, node3_contact)
   end
 
@@ -190,9 +223,10 @@ class NodeTest160 < Minitest::Test
     results = node7.find_node('1', node0.to_contact)
 
     refute_empty(results)
-    assert_equal(2, results.size)
+    assert_equal(3, results.size)
     assert_includes(results, node4_contact)
     assert_includes(results, node5_contact)
+    assert_includes(results, node12_contact)
   end
 
   def test_receive_find_value_with_match
@@ -232,7 +266,7 @@ class NodeTest160 < Minitest::Test
     results = node0.receive_find_value('10', node7.to_contact)
 
     refute_empty(results['contacts'])
-    assert_equal(2, results['contacts'].size)
+    assert_equal(4, results['contacts'].size)
     assert_includes(results['contacts'], node12_contact)
     assert_includes(results['contacts'], node13_contact)
   end
@@ -268,12 +302,13 @@ class NodeTest160 < Minitest::Test
     results = node7.find_value('10', node0.to_contact)
 
     refute_empty(results['contacts'])
-    assert_equal(2, results['contacts'].size)
+    assert_equal(3, results['contacts'].size)
     assert_includes(results['contacts'], node12_contact)
+    assert_includes(results['contacts'], node4_contact)
     assert_includes(results['contacts'], node5_contact)
   end
 
-  def test_iterative_find_node
+  def test_iterative_find_node # test fails if alpha = 1
     node0 = Node.new('0', @kn)
     node4 = Node.new('4', @kn)
     node5 = Node.new('5', @kn)
@@ -293,12 +328,11 @@ class NodeTest160 < Minitest::Test
 
     result = node0.iterative_find_node('15')
     assert_instance_of(Array, result)
-    assert_equal(2, result.size)
+    assert_equal(4, result.size)
     assert_includes(result.map(&:id), node14_contact.id)
     assert_includes(result.map(&:id), node12_contact.id)
     # test that ping adds new contact to our routing table
-    bucket_index_of_node14 = Binary.shared_prefix_bit_length('0', '14')
-    assert_includes(node0.routing_table.buckets[bucket_index_of_node14].map(&:id), node14_contact.id)
+    assert_includes(node0.routing_table.buckets[0].map(&:id), node14_contact.id)
   end
 
   def test_iterative_store
@@ -321,6 +355,8 @@ class NodeTest160 < Minitest::Test
     node0.iterative_store('13', 'some_address')
 
     assert_equal('some_address', node12.dht_segment['13'])
+    assert_equal('some_address', node4.dht_segment['13'])
+    assert_equal('some_address', node5.dht_segment['13'])
     refute(node14.dht_segment['13'])    
   end
 
@@ -347,7 +383,7 @@ class NodeTest160 < Minitest::Test
     assert_instance_of(String, result)
     assert_equal('some_address', result)
     # store in second closest node
-    assert_equal('some_address', node12.dht_segment['15'])
+    assert_equal('some_address', node4.dht_segment['15'])
   end
 
   def test_iterative_find_value_with_no_match
@@ -371,7 +407,9 @@ class NodeTest160 < Minitest::Test
 
     result = node0.iterative_find_value('15')
     assert_instance_of(Array, result)
-    assert_equal(2, result.size)
+    assert_equal(4, result.size)
+    assert_includes(result.map(&:id), node4_contact.id)
+    assert_includes(result.map(&:id), node5_contact.id)
     assert_includes(result.map(&:id), node14_contact.id)
     assert_includes(result.map(&:id), node12_contact.id)
   end
