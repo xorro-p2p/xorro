@@ -17,7 +17,6 @@ class Node
     @network = network
     @port = port
     join(@network)
-    # @id = Binary.sha(num_string) # TEMP - using a fixed string for now to generate ID hash
     @id = num_string
     @routing_table = RoutingTable.new(self)
     generate_file_cache
@@ -37,7 +36,8 @@ class Node
   def activate
     @superport = ENV['SUPERPORT']
     return if is_super
-    result = JSON.parse(@network.get_info('localhost', @superport))
+    @super_ip = ENV['SUPERIP'] || 'localhost'
+    result = JSON.parse(@network.get_info(@super_ip, @superport))
     contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
     ping(contact)
     iterative_find_node(@id)
@@ -89,6 +89,17 @@ class Node
 
   def generate_file_id(file_content)
     Binary.sha(file_content).hex.to_s
+  end
+
+  def get(url)
+    file = @network.get(url)
+    if file
+      filename = ENV['uploads'] + '/' + File.basename(url)
+      File.open(filename, 'wb') do |f|
+        f.write(file.body)
+      end
+    end
+    add_file(file.body, File.basename(url))
   end
   
   def to_contact
