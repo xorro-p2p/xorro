@@ -1,6 +1,6 @@
 <% if @result.class == Array %>
   <% @result.each do |c| %>
-    <p><%= c.id %> </p>
+    <p><%= c.id %> | <a href="http://<%= c.ip %>:<%= c.port %>">http://<%= c.ip %>:<%= c.port %></a></p>
   <% end %>
 <% else %>
   <a href="<%= @result %>"><%= @result %></a>
