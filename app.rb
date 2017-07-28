@@ -49,6 +49,11 @@ get '/', '/debug/node' do
   erb :drop_zone
  end
 
+ get '/get_file' do
+  @node = NODE
+  erb :get_file
+ end
+
 
 get '/files/:filename' do
   send_file File.join(File.expand_path(ENV['uploads']) , params[:filename])
@@ -104,6 +109,15 @@ post '/send_find_value' do
   @node = NODE
   erb :test
   # redirect '/'
+end
+
+post '/get_file' do
+  query_id = params[:file_id]
+  result = NODE.iterative_find_value(query_id)
+  if result
+    NODE.get(result)
+  end
+  redirect "/files/" + File.basename(result)
 end
 
 post '/send_rpc_store' do
