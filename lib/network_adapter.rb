@@ -67,6 +67,15 @@ class NetworkAdapter
     response
   end
 
+  def get(url)
+    begin
+      response = HTTP.get(url)
+    rescue
+      response = false
+    end
+    response
+  end
+
 
   private 
 
