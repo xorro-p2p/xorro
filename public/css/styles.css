@@ -132,9 +132,59 @@ input {
   color: black;
 }
 
-#drop_zone {
-  width: 100px;
-  height: 100px;
-  border: 2px dotted grey;
+.box {
+  width: 600px;
+  color: black;
+  font-size: 16px;
+  background-color: #c8dadf;
+  position: relative;
+  padding: 100px 20px;
+  text-align: center;
+  outline: 1px dashed #92b0b3;
+  outline-offset: -10px;
+  -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+  -moz-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+  transition: outline-offset .15s ease-in-out, background-color .15s linear;
 }
+
+.box {
+  
+}
+
+.box_dragndrop,
+.box_uploading,
+.box_success,
+.box_error,
+.box_button {
+  display: none;
+}
+
+.box_dragndrop {
+  cursor: pointer;
+  display: inline;
+}
+
+.box.is-dragover {
+  outline: 1px dashed black;
+  background-color: white;
+  outline-offset: -15px;
+}
+
+.box.is-uploading .box_input {
+  visibility: none;
+}
+.box.is-uploading .box_uploading {
+  display: block;
+}
+
+.box_file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+
 
