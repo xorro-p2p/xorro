@@ -117,7 +117,7 @@ post '/get_file' do
   if result
     NODE.get(result)
   end
-  redirect "/files/" + File.basename(result)
+  redirect "/files/" + URI.escape(File.basename(result))
 end
 
 post '/send_rpc_store' do
