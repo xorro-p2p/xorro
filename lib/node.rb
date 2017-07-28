@@ -51,7 +51,7 @@ class Node
 
   def broadcast
     @files.keys.each do |k|
-      address = "http://" + @ip + ":" + @port.to_s + "/files/" + @files[k]
+      address = file_url(@files[k])
       iterative_store(k, address)
     end
   end
@@ -65,11 +65,30 @@ class Node
     cache = {}
 
     Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
-      file_hash = Binary.sha(File.read(file)).hex.to_s
+      file_hash = generate_file_id(File.read(file))
       cache[file_hash] = File.basename(file)
     end
     @files = cache
     sync
+  end
+
+  def add_to_cache(key, value)
+    @files[key] = value
+    sync
+  end
+
+  def add_file(data, name)
+    file_hash = generate_file_id(data)
+    add_to_cache(file_hash, name)
+    iterative_store(file_hash, file_url(name))
+  end
+
+  def file_url(filename)
+    "http://#{@ip}:#{@port}/files/#{filename}"
+  end
+
+  def generate_file_id(file_content)
+    Binary.sha(file_content).hex.to_s
   end
   
   def to_contact
@@ -101,7 +120,6 @@ class Node
   def receive_store(file_id, address, sender_contact)
     @dht_segment[file_id] = address
     @routing_table.insert(sender_contact)
-    # ping(sender_contact)
   end
 
   def iterative_store(file_id, address)

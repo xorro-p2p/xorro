@@ -137,12 +137,13 @@ post '/save_to_uploads' do
   file_data = params[:data][start..-1]
   decode_base64_content = Base64.decode64(file_data)
   file_name = ENV['uploads'] + '/' + params[:name]
+  
   File.open(file_name, 'wb') do |f|
     f.write(decode_base64_content)
   end
 
-  NODE.generate_file_cache
-  
+  NODE.add_file(decode_base64_content, params[:name])
+
   status 200
 end
 
