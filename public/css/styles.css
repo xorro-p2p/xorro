@@ -3,7 +3,7 @@ body {
   color: white;
   font-family: 'Courier New';
   font-weight: 100;
-  min-width: 1230px
+  min-width: 1420px
 }
 
 dd {
@@ -70,7 +70,7 @@ nav dl dd, nav dl dt {
 }
 
 div.files, div.dht, div.buckets {
-  width: 800px;
+  width: 1000px;
   margin: 0 auto
 }
 
@@ -89,7 +89,7 @@ div.files dd, div.dht dd{
 }
 
 div.files dt, div.dht dt{
-  width: 425px
+  width: 440px
 }
 
 div.buckets dl {
