@@ -91,15 +91,19 @@ class Node
     Binary.sha(file_content).hex.to_s
   end
 
+  def write_to_uploads(name, content)
+    file_name = ENV['uploads'] + '/' + name
+    File.open(file_name, 'wb') do |f|
+      f.write(content)
+    end
+  end
+
   def get(url)
     file = @network.get(url)
     if file
-      filename = ENV['uploads'] + '/' + File.basename(url)
-      File.open(filename, 'wb') do |f|
-        f.write(file.body)
-      end
+      write_to_uploads(File.basename(url), file.body)
+      add_file(file.body, File.basename(url))
     end
-    add_file(file.body, File.basename(url))
   end
   
   def to_contact

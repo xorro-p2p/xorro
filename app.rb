@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/multi_route'
 require 'sinatra/content_for'
+require 'sinatra/flash'
 require 'json'
 require 'erubis'
 require 'pry'
@@ -12,6 +13,7 @@ require_relative 'lib/contact.rb'
 require_relative 'lib/defaults.rb'
 require_relative 'lib/storage.rb'
 
+enable :sessions
 
 NETWORK = NetworkAdapter.new
 
@@ -59,6 +61,8 @@ get '/files/:filename' do
   send_file File.join(File.expand_path(ENV['uploads']) , params[:filename])
 end
 
+### RPC Routes
+
 post '/rpc/store' do
   file_id = params[:file_id]
   address = params[:address]
@@ -87,6 +91,8 @@ post '/rpc/ping' do
   status 200
 end
 
+
+
 post '/send_find_node' do
   query_id = params[:query_id]
   
@@ -114,10 +120,14 @@ end
 post '/get_file' do
   query_id = params[:file_id]
   result = NODE.iterative_find_value(query_id)
-  if result
+  if result && result.is_a?(String)
     NODE.get(result)
+    redirect "/files/" + URI.escape(File.basename(result))
+  else
+    @node = NODE
+    flash[:notice] = "Your file could not be found."
+    redirect "/get_file"
   end
-  redirect "/files/" + URI.escape(File.basename(result))
 end
 
 post '/send_rpc_store' do
@@ -152,12 +162,9 @@ post '/save_to_uploads' do
   decode_base64_content = Base64.decode64(file_data)
   file_name = ENV['uploads'] + '/' + params[:name]
   
-  File.open(file_name, 'wb') do |f|
-    f.write(decode_base64_content)
-  end
-
+  NODE.write_to_uploads(params[:name], decode_base64_content)
   NODE.add_file(decode_base64_content, params[:name])
-
+  
   status 200
 end
 
