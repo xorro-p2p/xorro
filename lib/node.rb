@@ -1,5 +1,7 @@
 require 'open-uri'
 require 'digest/sha1'
+require 'socket'
+require 'ngrok/tunnel'
 require_relative '../development.rb'
 require_relative 'binary.rb'
 require_relative 'routing_table.rb'
@@ -13,9 +15,9 @@ require 'pry'
 class Node
   attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super, :superport
   def initialize(num_string, network, port='80', is_super=false)
-    @ip = lookup_ip
-    @network = network
     @port = port
+    set_ip
+    @network = network
     join(@network)
     @id = num_string
     @routing_table = RoutingTable.new(self)
@@ -34,9 +36,10 @@ class Node
   end
 
   def activate
+    set_ip
     @superport = ENV['SUPERPORT']
     return if is_super
-    @super_ip = ENV['SUPERIP'] || 'localhost'
+    @super_ip = ENV['SUPERIP'] || @ip
     result = JSON.parse(@network.get_info(@super_ip, @superport))
     contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
     ping(contact)
@@ -56,9 +59,19 @@ class Node
     end
   end
 
+  def set_ip
+    @ip = lookup_ip
+  end
+
   def lookup_ip
-    'localhost'
-    #open('http://whatismyip.akamai.com').read
+    if ENV['WAN'] != 'true'
+      private_ip = Socket.ip_address_list.detect do |i|
+        i.ipv4_private?
+      end
+      private_ip ? private_ip.ip_address : 'localhost'
+    else
+      File.basename(NGROK)
+    end
   end
 
   def generate_file_cache
@@ -116,13 +129,6 @@ class Node
 
   def ping(contact)
     response = @network.ping(contact, to_contact)
-    # recipient_node = @network.get_node_by_contact(contact)
-
-    # if recipient_node
-    #   recipient_node.receive_ping(self.to_contact)
-    #   contact.update_last_seen
-    #   @routing_table.insert(contact)
-    # end 
     @routing_table.insert(contact) if response
     response
   end
