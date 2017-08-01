@@ -2,7 +2,10 @@
 
 while read p
   do 
-    kill $p 
+    kill -9 $p 
   done<tmp/pids.txt
 
+killall ngrok
+
 > tmp/pids.txt
+
