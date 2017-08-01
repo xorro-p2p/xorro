@@ -64,7 +64,9 @@ class Node
   end
 
   def lookup_ip
-    if ENV['WAN'] != 'true'
+    if ENV['AWS'] == 'true'
+      'supernode1.xorro-p2p.com'
+    elsif ENV['WAN'] != 'true'
       private_ip = Socket.ip_address_list.detect do |i|
         i.ipv4_private?
       end
