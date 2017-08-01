@@ -1,7 +1,17 @@
 #!/bin/bash
 
 help_message() {
-  echo 'duuuuuhhhhhhrrppppp'
+  echo
+  echo 'looks like you need some help using this tool.'
+  echo
+  echo 'usage:  "launch_public.sh local_port_number"'
+  echo
+  echo "This script does the following:"
+  echo "--Launches local node/sinatra instance on port number passed in."
+  echo "Creates ngrok tunnel to localhost."
+  echo "Starts communications with default supernode in AWS cloud on port 3500."
+  echo
+  echo "Node can be killed by running bin/kill_nodes.sh"
 }
 
 if [[ $# -ne 1 ]] || [[ $1 == '-h' ]]; then
