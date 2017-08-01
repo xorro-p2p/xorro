@@ -128,14 +128,26 @@ end
 
 post '/get_file' do
   query_id = params[:file_id]
-  result = NODE.iterative_find_value(query_id)
-  if result && result.is_a?(String)
-    NODE.get(result)
-    redirect "/files/" + URI.escape(File.basename(result))
+
+  if NODE.files[query_id]
+    redirect "/files/" + URI.escape(NODE.files[query_id])
   else
-    @node = NODE
-    flash[:notice] = "Your file could not be found."
-    redirect "/get_file"
+    if NODE.dht_segment[query_id]
+      result = NODE.select_address(query_id)
+    end
+
+    if result.nil?
+      result = NODE.iterative_find_value(query_id)
+    end
+
+    if result && result.is_a?(String)
+      NODE.get(result)
+      redirect "/files/" + URI.escape(File.basename(result))
+    else
+      @node = NODE
+      flash[:notice] = "Your file could not be found."
+      redirect "/get_file"
+    end
   end
 end
 

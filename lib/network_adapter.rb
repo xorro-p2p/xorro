@@ -76,6 +76,14 @@ class NetworkAdapter
     response
   end
 
+  def check_resource_status(url)
+    begin
+      response = HTTP.head(url).code
+    rescue
+      response = false
+    end
+    response
+  end
 
   private 
 
