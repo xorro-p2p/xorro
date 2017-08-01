@@ -27,7 +27,7 @@ if ENV['WAN'] == 'true'
   NGROK = Ngrok::Tunnel.start(port: settings.port)
 end
 
-NODE = Defaults.create_node(NETWORK, settings.port)
+NODE = Defaults.create_node(NETWORK, ENV['WAN'] == 'true' ? 80 : settings.port)
 NODE.activate
 
 get '/', '/debug/node' do
