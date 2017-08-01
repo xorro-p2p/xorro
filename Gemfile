@@ -7,6 +7,7 @@ gem "erubis"
 gem "http"
 gem "sinatra-flash"
 gem 'ngrok-tunnel'
+gem 'thin'
 
 group :test, :development do
   gem "minitest"
