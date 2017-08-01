@@ -1,4 +1,3 @@
-
 <div class="files">
   <h4>files</h4>
     <dl>
@@ -7,7 +6,7 @@
           <%= k %>
         </dt>
         <dd>
-          <a href="http://<%= @node.ip %>:<%= @node.port %>/files/<%= v %>"><%= v %></a>
+          <a href="/files/<%= v %>"><%= v %></a>
         </dd>
       <% end %>
     </dl>
