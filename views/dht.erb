@@ -6,7 +6,9 @@
           <%= k %>
         </dt>
         <dd>
-          <a href="<%= v %>"><%= v %></a>
+          <% v.each do |url| %>
+            <a href="<%= url %>"><%= url %></a><br />
+          <% end %>
         </dd>
       <% end %>
     </dl>

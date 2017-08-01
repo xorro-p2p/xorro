@@ -48,4 +48,8 @@ class FakeNetworkAdapter
       return false
     end
   end
+
+  def check_resource_status(address)
+    200
+  end
 end
