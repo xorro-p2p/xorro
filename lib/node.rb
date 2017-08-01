@@ -133,7 +133,12 @@ class Node
   end
 
   def receive_store(file_id, address, sender_contact)
-    @dht_segment[file_id] = address
+    if @dht_segment[file_id]
+      @dht_segment[file_id].push(address) unless @dht_segment[file_id].include?(address)
+    else
+      @dht_segment[file_id] = [address]
+    end
+
     @routing_table.insert(sender_contact)
   end
 
@@ -209,14 +214,33 @@ class Node
   def receive_find_value(file_id, sender_contact)
     result = {}
 
-    if dht_segment[file_id]
-      result['data'] = dht_segment[file_id]
+    if dht_segment[file_id] && !dht_segment[file_id].empty?
+      result['data'] = select_address(file_id)
     else
       result['contacts'] = receive_find_node(file_id, sender_contact)
     end
     @routing_table.insert(sender_contact)
     # ping(sender_contact)
     result
+  end
+
+  def select_address(file_id)
+    values = dht_segment[file_id].clone
+    
+    values.each do |address|
+      response = @network.check_resource_status(address)
+      if response == 200
+        return address
+      else
+        evict_address(file_id)
+      end
+    end
+
+    return nil
+  end
+
+  def evict_address(file_id)
+    dht_segment[file_id].shift
   end
 
   def find_value(file_id, recipient_contact)
@@ -232,7 +256,7 @@ class Node
   end
 
   def iterative_find_value(query_id)
-    return dht_segment[query_id] if dht_segment[query_id]
+    # return dht_segment[query_id] if dht_segment[query_id]
 
     shortlist = []
     results_returned = @routing_table.find_closest_contacts(query_id, nil, ENV['alpha'].to_i)
