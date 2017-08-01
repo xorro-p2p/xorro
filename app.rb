@@ -3,9 +3,11 @@ require 'sinatra/reloader'
 require 'sinatra/multi_route'
 require 'sinatra/content_for'
 require 'sinatra/flash'
+require 'ngrok/tunnel'
 require 'json'
 require 'erubis'
 require 'pry'
+require 'thin'
 require_relative 'development.rb'  ## ENV['uploads'] = "~/Desktop"
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
@@ -13,11 +15,17 @@ require_relative 'lib/contact.rb'
 require_relative 'lib/defaults.rb'
 require_relative 'lib/storage.rb'
 
+## must be used for app to server on IP other than localhost
+set :bind, '0.0.0.0'
+
 enable :sessions
 
 NETWORK = NetworkAdapter.new
-
 Defaults.setup(settings.port)
+
+if ENV['WAN'] == 'true'
+  NGROK = Ngrok::Tunnel.start(port: settings.port)
+end
 
 NODE = Defaults.create_node(NETWORK, settings.port)
 NODE.activate
@@ -27,6 +35,7 @@ get '/', '/debug/node' do
    @node = NODE
    @super = @node.is_super
    @superport = @node.superport || 'none'
+   @wan_mode = ENV['WAN'] == 'true'
    erb :node
  end
  
@@ -167,5 +176,9 @@ post '/save_to_uploads' do
   
   status 200
 end
+
+######  IMPORTANT - THIS IS REQUIRED, AS BOTH SINATRA AND NGROK HAVE CONFLICTING EXIT HOOKS
+##### MANUALLY STARTING SINATRA HERE IS A WORKAROUND
+Sinatra::Application.run!
 
 
