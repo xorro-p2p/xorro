@@ -29,7 +29,7 @@ module Defaults
       node = Node.new(new_id, network, port)
     end
     node.promote if ENV['SUPER'] == 'true'
-    node.demote if ENV['SUPER'] == 'false'
+    node.demote unless ENV['SUPER'] == 'false'
     node.sync
     node
   end
