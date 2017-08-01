@@ -5,7 +5,7 @@ while read p
     kill -9 $p 
   done<tmp/pids.txt
 
-killall ngrok
+killall ngrok 2>/dev/null
 
 > tmp/pids.txt
 
