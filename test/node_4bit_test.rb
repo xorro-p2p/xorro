@@ -59,7 +59,7 @@ class NodeTest4bit < Minitest::Test
     node1 = Node.new('1', @kn)
 
     node0.store('key', 'value', node1.to_contact)
-    assert_equal('value', node1.dht_segment['key'])
+    assert_equal(['value'], node1.dht_segment['key'])
   end
 
   def test_receive_find_node
@@ -198,7 +198,7 @@ class NodeTest4bit < Minitest::Test
   def test_receive_find_value_with_match
     # return a address
     node0 = Node.new('0', @kn) # node that received request
-    node0.dht_segment['10'] = 'some_address'
+    node0.dht_segment['10'] = ['some_address']
 
     node7 = Node.new('7', @kn) # node making the request
 
@@ -239,7 +239,7 @@ class NodeTest4bit < Minitest::Test
 
   def test_find_value_with_match
     node0 = Node.new('0', @kn) # node that received request
-    node0.dht_segment['10'] = 'some_address'
+    node0.dht_segment['10'] = ['some_address']
 
     node7 = Node.new('7', @kn) # node making the request
 
@@ -319,7 +319,7 @@ class NodeTest4bit < Minitest::Test
     node12.routing_table.insert(node14_contact)
     node0.iterative_store('13', 'some_address')
 
-    assert_equal('some_address', node12.dht_segment['13'])
+    assert_equal(['some_address'], node12.dht_segment['13'])
     refute(node14.dht_segment['13'])    
   end
 
@@ -346,7 +346,7 @@ class NodeTest4bit < Minitest::Test
     assert_instance_of(String, result)
     assert_equal('some_address', result)
     # store in second closest node
-    assert_equal('some_address', node12.dht_segment['15'])
+    assert_equal(['some_address'], node12.dht_segment['15'])
   end
 
   def test_iterative_find_value_with_no_match
