@@ -5,6 +5,8 @@ gem "sinatra"
 gem "json"
 gem "erubis"
 gem "http"
+gem "sinatra-flash"
+gem 'ngrok-tunnel'
 
 group :test, :development do
   gem "minitest"
