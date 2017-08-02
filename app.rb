@@ -138,10 +138,10 @@ post '/get_file' do
   query_id = params[:file_id]
 
   if NODE.files[query_id]
-    redirect "/files/" + URI.escape(NODE.files[query_id])
+    redirect URI.escape(NODE.files[query_id])
   else
     result = nil
-    
+
     if NODE.dht_segment[query_id]
       result = NODE.select_address(query_id)
     end
@@ -152,7 +152,9 @@ post '/get_file' do
 
     if result && result.is_a?(String)
       NODE.get(result)
-      redirect "/files/" + URI.escape(File.basename(result))
+
+      # when do we redirect?
+      # redirect "/files/" + URI.escape(File.basename(result))
     else
       @node = NODE
       flash[:notice] = "Your file could not be found."
