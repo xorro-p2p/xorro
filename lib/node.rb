@@ -106,9 +106,66 @@ class Node
     Binary.sha(file_content).hex.to_s
   end
 
+  def shard_file(file)
+    # read in file
+    # use chunker to split each file
+    # after each chunk is created: give it a hash id, save it to uploads/shards, add to manifest,
+    # and broadcast each shard
+    size = File.stat(file).size
+    manifest = create_manifest(File.basename(url), size)
+
+    File.open(file, "r") do |fh_in|
+      until fh_in.eof?
+        piece = fh_in.read(262144)
+        piece_hash = generate_file_id(piece)
+
+        manifest[:pieces].push(piece_hash)
+        write_to_shards(piece_hash, piece)
+        add_to_cache(piece_hash, '/shards/' + piece_hash)
+      end
+    end
+
+    write_manifest(manifest)
+    # NODE.write_to_uploads(params[:name], decode_base64_content)
+    # NODE.add_file(decode_base64_content, params[:name])
+  end
+
+  def add_shard(name, data)
+    write_to_shards(name, data)
+    add_to_cache(name, name)
+
+  end
+
+  def create_manifest(file_name, file_size)
+    return {
+      :file_name => file_name,
+      :length => file_size,
+      :pieces => []
+    }
+  end
+
+  def write_manifest(obj)
+    file_name = generate_file_id(obj)
+    # convert obj to json and save to file cache
+  end
+
   def write_to_uploads(name, content)
     file_name = ENV['uploads'] + '/' + name
     File.open(file_name, 'wb') do |f|
+      f.write(content)
+    end
+  end
+
+  def write_to_shards(name, content)
+    file_name = ENV['shards'] + '/' + name
+    File.open(file_name, 'wb') do |f|
+      f.write(content)
+    end
+  end
+
+  def write_to_manifests(name, content)
+    file_name = ENV['manifests'] + '/' + name
+    File.open(file_name + '.xro', 'wb') do |f|
       f.write(content)
     end
   end
