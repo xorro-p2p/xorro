@@ -81,8 +81,19 @@ class Node
 
     Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = generate_file_id(File.read(file))
-      cache[file_hash] = File.basename(file)
+      cache[file_hash] = '/files/' + File.basename(file)
     end
+
+    Dir.glob(File.expand_path(ENV['shards'] + '/*')).select { |f| File.file?(f) }.each do |file|
+      file_hash = File.basename(file)
+      cache[file_hash] = '/shards/' + File.basename(file)
+    end
+
+    Dir.glob(File.expand_path(ENV['manifests'] + '/*')).select { |f| File.file?(f) }.each do |file|
+      file_hash = File.basename(file, ".xro")
+      cache[file_hash] = '/manifests/' + File.basename(file)
+    end
+
     @files = cache
     sync
   end
@@ -98,8 +109,8 @@ class Node
     iterative_store(file_hash, file_url(name))
   end
 
-  def file_url(filename)
-    "http://#{@ip}:#{@port}/files/#{filename}"
+  def file_url(filepath)
+    "http://#{@ip}:#{@port}#{filepath}"
   end
 
   def generate_file_id(file_content)
