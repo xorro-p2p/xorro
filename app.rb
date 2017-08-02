@@ -140,6 +140,8 @@ post '/get_file' do
   if NODE.files[query_id]
     redirect "/files/" + URI.escape(NODE.files[query_id])
   else
+    result = nil
+    
     if NODE.dht_segment[query_id]
       result = NODE.select_address(query_id)
     end
