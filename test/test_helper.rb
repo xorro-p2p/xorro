@@ -1,6 +1,8 @@
 require 'minitest/autorun'
 require 'minitest/reporters'
 ENV['uploads'] = "~/Desktop"
+ENV['shards'] = "~/Desktop"
+ENV['manifests'] = "~/Desktop"
 ENV['bit_length'] = "6"
 ENV['k'] = "2"
 ENV['alpha'] = "1"
