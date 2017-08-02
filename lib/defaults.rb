@@ -3,21 +3,30 @@ require 'yaml'
 module Defaults
   def self.setup(port)
     node_homes = File.expand_path("~/Desktop/node_homes")
-    Dir.mkdir(node_homes) unless Dir.exists?(node_homes)
+    safe_mkdir(node_homes)
     create_node_home(node_homes, port)
   end
 
   def self.create_node_home(node_homes, port)
     node_home = File.join(node_homes, port.to_s)
-    Dir.mkdir(node_home) unless Dir.exists?(node_home)
-    create_uploads_folder(node_home)
+    safe_mkdir(node_home)
+    create_subfolders(node_home)
     ENV['home'] = node_home
   end
 
-  def self.create_uploads_folder(node_home)
+  def self.create_subfolders(node_home)
     uploads = File.join(node_home, "/uploads")
-    Dir.mkdir(uploads) unless Dir.exists?(uploads)
-    ENV['uploads'] = uploads
+    manifests = File.join(node_home, "/manifests")
+    shards = File.join(node_home, "/shards")
+
+    [uploads, manifests, shards].each do |f|
+      safe_mkdir(f)
+      ENV[File.basename(f)] = f
+    end
+
+    # ENV['uploads'] = uploads
+    # ENV['manifests'] = manifests
+    # ENV['shards'] = shards
   end
 
   def self.create_node(network, port)
@@ -36,5 +45,9 @@ module Defaults
 
   def self.new_id
     rand(2 ** ENV['bit_length'].to_i).to_s
+  end
+
+  def self.safe_mkdir(dir)
+    Dir.mkdir(dir) unless Dir.exists?(dir)
   end
 end
