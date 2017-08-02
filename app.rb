@@ -70,6 +70,14 @@ get '/files/:filename' do
   send_file File.join(File.expand_path(ENV['uploads']) , params[:filename])
 end
 
+get '/manifests/:filename' do
+  send_file File.join(File.expand_path(ENV['manifests']) , params[:filename])
+end
+
+get '/shards/:filename' do
+  send_file File.join(File.expand_path(ENV['shards']) , params[:filename])
+end
+
 ### RPC Routes
 
 post '/rpc/store' do
