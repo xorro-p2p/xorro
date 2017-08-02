@@ -118,12 +118,8 @@ class Node
   end
 
   def shard_file(file)
-    # read in file
-    # use chunker to split each file
-    # after each chunk is created: give it a hash id, save it to uploads/shards, add to manifest,
-    # and broadcast each shard
     size = File.stat(file).size
-    manifest = create_manifest(File.basename(url), size)
+    manifest = create_manifest(File.basename(file), size)
 
     File.open(file, "r") do |fh_in|
       until fh_in.eof?
@@ -131,20 +127,19 @@ class Node
         piece_hash = generate_file_id(piece)
 
         manifest[:pieces].push(piece_hash)
-        write_to_shards(piece_hash, piece)
-        add_to_cache(piece_hash, '/shards/' + piece_hash)
+        add_shard(piece_hash, piece)
       end
     end
 
-    write_manifest(manifest)
-    # NODE.write_to_uploads(params[:name], decode_base64_content)
-    # NODE.add_file(decode_base64_content, params[:name])
+    add_manifest(manifest)
   end
 
   def add_shard(name, data)
-    write_to_shards(name, data)
-    add_to_cache(name, name)
+    file_path = '/shards/' + name
 
+    write_to_shards(name, data)
+    add_to_cache(name, file_path)
+    iterative_store(name, file_url(file_path))
   end
 
   def create_manifest(file_name, file_size)
@@ -155,9 +150,13 @@ class Node
     }
   end
 
-  def write_manifest(obj)
-    file_name = generate_file_id(obj)
-    # convert obj to json and save to file cache
+  def add_manifest(obj)
+    file_hash = generate_file_id(obj.to_s)
+    file_path = '/manifests/' + file_hash
+
+    write_to_manifests(file_hash, obj)
+    add_to_cache(file_hash, file_path)
+    iterative_store(file_hash, file_url(file_path))
   end
 
   def write_to_uploads(name, content)
@@ -177,7 +176,7 @@ class Node
   def write_to_manifests(name, content)
     file_name = ENV['manifests'] + '/' + name
     File.open(file_name + '.xro', 'wb') do |f|
-      f.write(content)
+      f.write(content.to_json)
     end
   end
 
