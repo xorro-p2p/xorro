@@ -123,11 +123,11 @@ class Node
 
     File.open(file, "r") do |fh_in|
       until fh_in.eof?
-        piece = fh_in.read(262144)
+        piece = fh_in.read(262144) #1048576
         piece_hash = generate_file_id(piece)
 
         manifest[:pieces].push(piece_hash)
-        add_shard(piece_hash, piece)
+        add_shard(piece_hash, piece) unless @files[piece_hash]
       end
     end
 
@@ -150,13 +150,17 @@ class Node
     }
   end
 
-  def add_manifest(obj)
-    file_hash = generate_file_id(obj.to_s)
-    file_path = '/manifests/' + file_hash
+  def add_manifest(obj, file_id=nil)
+    if file_id.nil?
+      file_id = generate_file_id(obj.to_s)
+      obj = obj.to_json
+    end
 
-    write_to_manifests(file_hash, obj)
-    add_to_cache(file_hash, file_path)
-    iterative_store(file_hash, file_url(file_path))
+    file_path = '/manifests/' + file_id + '.xro'
+
+    write_to_manifests(file_id, obj)
+    add_to_cache(file_id, file_path)
+    iterative_store(file_id, file_url(file_path))
   end
 
   def write_to_uploads(name, content)
@@ -176,15 +180,51 @@ class Node
   def write_to_manifests(name, content)
     file_name = ENV['manifests'] + '/' + name
     File.open(file_name + '.xro', 'wb') do |f|
-      f.write(content.to_json)
+      f.write(content)
     end
   end
 
   def get(url)
     file = @network.get(url)
+
     if file
-      write_to_uploads(File.basename(url), file.body)
-      add_file(file.body, File.basename(url))
+      if File.extname(url) == '.xro'
+        add_manifest(file.body, File.basename(url, File.extname(url)))
+        reassemble_shards(File.basename(url))
+      else
+        add_shard(File.basename(url), file.body)
+      end
+    end
+  end
+
+  def reassemble_shards(file)
+    file_name = ENV['manifests'] + '/' + file
+
+    manifest = JSON.load(File.read(file_name))
+    shards = manifest['pieces']
+    shard_count = shards.length
+
+    shards.each do |shard|
+      next if @files[shard]
+      result = iterative_find_value(shard)
+      get(result) if result
+
+      shard_content = File.read(ENV['shards'] + '/' + File.basename(result))
+      if generate_file_id(shard_content) == shard
+        shard_count -= 1
+      end
+    end
+
+    if shard_count == 0
+      shard_paths = shards.map do |shard|
+        ENV['shards'] + '/' + shard
+      end
+
+      shard_paths.each do |path|
+        File.open(ENV['uploads'] + '/' + manifest['file_name'], 'a') do |f|
+          f.write(File.read(path))
+        end
+      end
     end
   end
   
