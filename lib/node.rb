@@ -117,10 +117,66 @@ class Node
     Binary.sha(file_content).hex.to_s
   end
 
+  def shard_file(file)
+    size = File.stat(file).size
+    manifest = create_manifest(File.basename(file), size)
+
+    File.open(file, "r") do |fh_in|
+      until fh_in.eof?
+        piece = fh_in.read(262144)
+        piece_hash = generate_file_id(piece)
+
+        manifest[:pieces].push(piece_hash)
+        add_shard(piece_hash, piece)
+      end
+    end
+
+    add_manifest(manifest)
+  end
+
+  def add_shard(name, data)
+    file_path = '/shards/' + name
+
+    write_to_shards(name, data)
+    add_to_cache(name, file_path)
+    iterative_store(name, file_url(file_path))
+  end
+
+  def create_manifest(file_name, file_size)
+    return {
+      :file_name => file_name,
+      :length => file_size,
+      :pieces => []
+    }
+  end
+
+  def add_manifest(obj)
+    file_hash = generate_file_id(obj.to_s)
+    file_path = '/manifests/' + file_hash
+
+    write_to_manifests(file_hash, obj)
+    add_to_cache(file_hash, file_path)
+    iterative_store(file_hash, file_url(file_path))
+  end
+
   def write_to_uploads(name, content)
     file_name = ENV['uploads'] + '/' + name
     File.open(file_name, 'wb') do |f|
       f.write(content)
+    end
+  end
+
+  def write_to_shards(name, content)
+    file_name = ENV['shards'] + '/' + name
+    File.open(file_name, 'wb') do |f|
+      f.write(content)
+    end
+  end
+
+  def write_to_manifests(name, content)
+    file_name = ENV['manifests'] + '/' + name
+    File.open(file_name + '.xro', 'wb') do |f|
+      f.write(content.to_json)
     end
   end
 

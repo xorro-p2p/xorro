@@ -140,6 +140,8 @@ post '/get_file' do
   if NODE.files[query_id]
     redirect "/files/" + URI.escape(NODE.files[query_id])
   else
+    result = nil
+    
     if NODE.dht_segment[query_id]
       result = NODE.select_address(query_id)
     end
@@ -192,7 +194,9 @@ post '/save_to_uploads' do
   file_name = ENV['uploads'] + '/' + params[:name]
   
   NODE.write_to_uploads(params[:name], decode_base64_content)
-  NODE.add_file(decode_base64_content, params[:name])
+  NODE.add_to_cache(NODE.generate_file_id(decode_base64_content), '/files/' + params[:name])
+
+  NODE.shard_file(file_name)
   
   status 200
 end
