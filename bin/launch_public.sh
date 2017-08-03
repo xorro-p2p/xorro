@@ -14,14 +14,14 @@ help_message() {
   echo "Node can be killed by running bin/kill_nodes.sh"
 }
 
-if [[ $# -ne 1 ]] || [[ $1 == '-h' ]]; then
+if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
   help_message
   exit 0
 fi
 
 launch_public() {
-  SUPERPORT='3500' SUPERIP='supernode1.xorro-p2p.com' WAN=true nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  SUPERPORT='9999' SUPERIP='supernode1.xorro-p2p.com' WAN=true nohup ruby app.rb -p 9999 >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
-launch_public $@
+launch_public

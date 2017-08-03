@@ -9,14 +9,14 @@ help_message() {
   echo "This script is specifically for launching the AWS supernode.  AWS public DNS record will be hard coded into nodes @ip ivar."
 }
 
-if [[ $# -ne 1 ]] || [[ $1 == '-h' ]]; then
+if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
   help_message
   exit 0
 fi
 
 launch_aws() {
-  SUPERPORT='' SUPER=true AWS=true nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  SUPERPORT='' SUPER=true AWS=true nohup ruby app.rb -p 9999 >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
-launch_aws $@
+launch_aws
