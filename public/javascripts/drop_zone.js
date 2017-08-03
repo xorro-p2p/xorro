@@ -1,5 +1,4 @@
 var $form = $('.box');
-var $input = $form.find('input[type="file"]')
 var $fileInput = $('.box_file');
 var droppedFiles = false;
 
