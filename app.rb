@@ -32,51 +32,80 @@ NODE = Defaults.create_node(NETWORK, ENV['WAN'] == 'true' ? 80 : settings.port)
 NODE.activate
 NODE.buckets_refresh(600)
 
+
 get '/', '/debug/node' do
    @title = "Node Info"
    @refresh = '<meta http-equiv="refresh" content="5">'
    @node = NODE
-   @super = @node.is_super
    @superport = @node.superport || 'none'
-   @wan_mode = ENV['WAN'] == 'true'
    erb :node
- end
+end
 
-  get '/debug/data' do
+get '/debug/data' do
    @title = "Data"
    @node = NODE
-   @super = @node.is_super
    @superport = @node.superport || 'none'
-   @wan_mode = ENV['WAN'] == 'true'
    erb :data
- end
+end
  
- get '/debug/buckets' do
-   @title = "K-Buckets"
-   @node = NODE
-   @super = @node.is_super
-   @superport = @node.superport || 'none'
-   erb :buckets
- end
+get '/debug/buckets' do
+  @title = "K-Buckets"
+  @node = NODE
+  @superport = @node.superport || 'none'
+  erb :buckets
+end
  
- get '/', '/debug/dht' do
-   @title = "DHT Segment"
-   @node = NODE
-   @super = @node.is_super
-   @superport = @node.superport || 'none'
-   erb :dht
- end
+get '/debug/dht' do
+  @title = "DHT Segment"
+  @node = NODE
+  @superport = @node.superport || 'none'
+  erb :dht
+end
 
- get '/drop_zone' do
+get '/drop_zone' do
   @node = NODE
   erb :drop_zone
- end
+end
 
- get '/get_file' do
+get '/get_file' do
   @node = NODE
   erb :get_file
- end
+end
 
+post '/get_file' do
+  query_id = params[:file_id]
+
+  if NODE.manifests[query_id]
+    redirect URI.escape(NODE.files[query_id])
+  else
+    result = nil
+
+    if NODE.dht_segment[query_id]
+      result = NODE.select_address(query_id)
+    end
+
+    if result.nil?
+      result = NODE.iterative_find_value(query_id)
+    end
+
+    if result && result.is_a?(String)
+      Thread.new { NODE.get(result) }
+      flash[:notice] = "Your file should be downloaded shortly."
+      redirect "/"
+    else
+      @node = NODE
+      flash[:notice] = "Your file could not be found."
+      redirect "/get_file"
+    end
+  end
+end
+
+get '/info' do
+  NODE.to_contact.to_json
+end
+
+
+### File retreival routes
 
 get '/files/:filename' do
   send_file File.join(File.expand_path(ENV['files']) , params[:filename])
@@ -89,6 +118,7 @@ end
 get '/shards/:filename' do
   send_file File.join(File.expand_path(ENV['shards']) , params[:filename])
 end
+
 
 ### RPC Routes
 
@@ -120,7 +150,8 @@ post '/rpc/ping' do
   status 200
 end
 
-
+# debugging rpc control methods.
+# these initiate an rpc call from the current node to other nodes
 
 post '/send_find_node' do
   query_id = params[:query_id]
@@ -131,10 +162,6 @@ post '/send_find_node' do
   erb :test
 end
 
-get '/info' do
-  NODE.to_contact.to_json
-end
-
 post '/send_find_value' do
   query_id = params[:file_id]
   
@@ -142,37 +169,6 @@ post '/send_find_value' do
   
   @node = NODE
   erb :test
-end
-
-post '/get_file' do
-  query_id = params[:file_id]
-
-  if NODE.manifests[query_id]
-    redirect URI.escape(NODE.files[query_id])
-  else
-    result = nil
-
-    if NODE.dht_segment[query_id]
-      result = NODE.select_address(query_id)
-    end
-
-    if result.nil?
-      result = NODE.iterative_find_value(query_id)
-    end
-
-    if result && result.is_a?(String)
-      Thread.new { NODE.get(result) }
-      flash[:notice] = "Your file should be downloaded shortly."
-      redirect "/"
-
-      # when do we redirect?
-      # redirect "/files/" + URI.escape(File.basename(result))
-    else
-      @node = NODE
-      flash[:notice] = "Your file could not be found."
-      redirect "/get_file"
-    end
-  end
 end
 
 post '/send_rpc_store' do
