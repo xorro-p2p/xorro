@@ -8,6 +8,7 @@ require 'json'
 require 'erubis'
 require 'pry'
 require 'thin'
+require 'concurrent'
 require_relative 'development.rb'  ## ENV['uploads'] = "~/Desktop"
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
@@ -29,6 +30,22 @@ end
 
 NODE = Defaults.create_node(NETWORK, ENV['WAN'] == 'true' ? 80 : settings.port)
 NODE.activate
+
+
+# NODE.routing_table.buckets.each do |bucket|
+#   all_contacts = bucket.contacts
+#   size = all_contacts.size
+#   if size > 0
+#     task = Concurrent::TimerTask.new(execution_interval: 600) do
+#       contact_id = all_contacts[rand(size)].id
+#       logger.info rand(size)
+#       NODE.iterative_find_node(contact_id)
+#     end
+#     task.execute
+#   end
+# end
+
+
 
 get '/', '/debug/node' do
    @title = "Node Info"
