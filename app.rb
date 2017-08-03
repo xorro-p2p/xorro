@@ -6,7 +6,6 @@ require 'sinatra/flash'
 require 'ngrok/tunnel'
 require 'json'
 require 'erubis'
-require 'pry'
 require 'thin'
 require 'concurrent'
 require_relative 'development.rb'  ## ENV['files'] = "~/Desktop"
