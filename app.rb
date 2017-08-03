@@ -147,7 +147,7 @@ end
 post '/get_file' do
   query_id = params[:file_id]
 
-  if NODE.data[query_id]
+  if NODE.manifests[query_id]
     redirect URI.escape(NODE.files[query_id])
   else
     result = nil

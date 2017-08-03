@@ -13,7 +13,7 @@ require 'pry'
 
 
 class Node
-  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super, :superport, :data
+  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super, :superport, :manifests, :shards
   def initialize(num_string, network, port='80', is_super=false)
     @port = port
     set_ip
@@ -22,7 +22,8 @@ class Node
     @id = num_string
     @routing_table = RoutingTable.new(self)
     generate_file_cache
-    generate_data_cache
+    generate_manifest_cache
+    generate_shard_cache
     @dht_segment = {}
     @is_super = false
     @superport = nil
@@ -49,9 +50,14 @@ class Node
   end
 
   def broadcast
-    @data.keys.each do |k|
-      address = file_url(@data[k])
+    @manifests.keys.each do |k|
+      address = file_url(@manifests[k])
       iterative_store(k, address)
+    end
+
+    @shards.keys.each do |s|
+      address = file_url(@shards[s])
+      iterative_store(s, address)
     end
   end
 
@@ -72,7 +78,18 @@ class Node
     end
   end
 
-  def generate_data_cache
+  def generate_manifest_cache
+    cache = {}
+
+    Dir.glob(File.expand_path(ENV['manifests'] + '/*')).select { |f| File.file?(f) }.each do |file|
+      file_hash = File.basename(file, ".xro")
+      cache[file_hash] = '/manifests/' + File.basename(file)
+    end
+
+    @manifests = cache
+  end
+
+  def generate_shard_cache
     cache = {}
 
     Dir.glob(File.expand_path(ENV['shards'] + '/*')).select { |f| File.file?(f) }.each do |file|
@@ -80,12 +97,7 @@ class Node
       cache[file_hash] = '/shards/' + File.basename(file)
     end
 
-    Dir.glob(File.expand_path(ENV['manifests'] + '/*')).select { |f| File.file?(f) }.each do |file|
-      file_hash = File.basename(file, ".xro")
-      cache[file_hash] = '/manifests/' + File.basename(file)
-    end
-
-    @data = cache
+    @shards = cache
   end
 
   def generate_file_cache
@@ -101,7 +113,6 @@ class Node
 
   def add_to_cache(cache, key, value)
     cache[key] = value
-    sync
   end
 
   def file_url(filepath)
@@ -115,25 +126,27 @@ class Node
   def shard_file(file, id)
     size = File.stat(file).size
     manifest = create_manifest(File.basename(file), size)
+    shard_size = size <= 1048576 ? size / 2 : 1048576
 
     File.open(file, "r") do |fh_in|
       until fh_in.eof?
-        piece = fh_in.read(262144) #1048576
+        piece = fh_in.read(shard_size) 
         piece_hash = generate_file_id(piece)
 
         manifest[:pieces].push(piece_hash)
-        add_shard(piece_hash, piece) unless @data[piece_hash]
+        add_shard(piece_hash, piece) unless @shards[piece_hash]
       end
     end
 
     add_manifest(manifest.to_json, id)
+    sync
   end
 
   def add_shard(name, data)
     file_path = '/shards/' + name
 
     write_to_subfolder(ENV['shards'], name, data)
-    add_to_cache(@data, name, file_path)
+    add_to_cache(@shards, name, file_path)
     iterative_store(name, file_url(file_path))
   end
 
@@ -150,7 +163,7 @@ class Node
     file_path = '/manifests/' + file_name
 
     write_to_subfolder(ENV['manifests'], file_name, obj)
-    add_to_cache(@data, file_id, file_path)
+    add_to_cache(@manifests, file_id, file_path)
     iterative_store(file_id, file_url(file_path))
   end
 
@@ -182,7 +195,7 @@ class Node
     shard_count = shards.length
 
     shards.each do |shard|
-      next if @files[shard]
+      next if @shards[shard]
       result = iterative_find_value(shard)
       get(result) if result
 
@@ -205,6 +218,7 @@ class Node
 
       add_to_cache(@files, File.basename(file, '.xro'), '/files/' + manifest['file_name'])
     end
+    sync
   end
   
   def to_contact
