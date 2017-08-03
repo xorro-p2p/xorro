@@ -195,9 +195,10 @@ class Node
     shard_count = shards.length
 
     shards.each do |shard|
-      next if @shards[shard]
-      result = iterative_find_value(shard)
-      get(result) if result
+      if @shards[shard].nil?
+        result = iterative_find_value(shard)
+        get(result) if result
+      end
 
       shard_content = File.read(ENV['shards'] + '/' + File.basename(result))
       if generate_file_id(shard_content) == shard
