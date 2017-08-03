@@ -15,14 +15,14 @@ module Defaults
   end
 
   def self.create_subfolders(node_home)
-    uploads = File.join(node_home, "/uploads")
+    files = File.join(node_home, "/files")
     manifests = File.join(node_home, "/manifests")
     shards = File.join(node_home, "/shards")
 
-    [uploads, manifests, shards].each do |f|
+    [files, manifests, shards].each do |f|
       safe_mkdir(f)
       ENV[File.basename(f)] = f
-      ### ENV['shards'] + ENV['manifests'] + ENV['uploads']
+      ### ENV['shards'] + ENV['manifests'] + ENV['files']
     end
   end
 

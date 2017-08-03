@@ -91,7 +91,7 @@ class Node
   def generate_file_cache
     cache = {}
 
-    Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
+    Dir.glob(File.expand_path(ENV['files'] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = generate_file_id(File.read(file))
       cache[file_hash] = '/files/' + File.basename(file)
     end
@@ -103,12 +103,6 @@ class Node
     cache[key] = value
     sync
   end
-
-  # def add_file(data, name)
-  #   file_hash = generate_file_id(data)
-  #   add_to_cache(file_hash, name)
-  #   iterative_store(file_hash, file_url(name))
-  # end
 
   def file_url(filepath)
     "http://#{@ip}:#{@port}#{filepath}"
@@ -128,7 +122,7 @@ class Node
         piece_hash = generate_file_id(piece)
 
         manifest[:pieces].push(piece_hash)
-        add_shard(piece_hash, piece) unless @files[piece_hash]
+        add_shard(piece_hash, piece) unless @data[piece_hash]
       end
     end
 
@@ -152,11 +146,6 @@ class Node
   end
 
   def add_manifest(obj, file_id)
-    # if file_id.nil?
-    #   # file_id = generate_file_id(obj.to_s)
-    #   obj = obj.to_json
-    # end
-
     file_name = file_id + '.xro'
     file_path = '/manifests/' + file_name
 
@@ -209,7 +198,7 @@ class Node
       end
 
       shard_paths.each do |path|
-        File.open(ENV['uploads'] + '/' + manifest['file_name'], 'a') do |f|
+        File.open(ENV['files'] + '/' + manifest['file_name'], 'a') do |f|
           f.write(File.read(path))
         end
       end

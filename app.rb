@@ -8,7 +8,7 @@ require 'json'
 require 'erubis'
 require 'pry'
 require 'thin'
-require_relative 'development.rb'  ## ENV['uploads'] = "~/Desktop"
+require_relative 'development.rb'  ## ENV['files'] = "~/Desktop"
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
 require_relative 'lib/contact.rb'
@@ -32,7 +32,7 @@ NODE.activate
 
 get '/', '/debug/node' do
    @title = "Node Info"
-   @refresh = '<meta http-equiv="refresh" content="10">'
+   @refresh = '<meta http-equiv="refresh" content="3">'
    @node = NODE
    @super = @node.is_super
    @superport = @node.superport || 'none'
@@ -77,7 +77,7 @@ get '/', '/debug/node' do
 
 
 get '/files/:filename' do
-  send_file File.join(File.expand_path(ENV['uploads']) , params[:filename])
+  send_file File.join(File.expand_path(ENV['files']) , params[:filename])
 end
 
 get '/manifests/:filename' do
@@ -199,14 +199,14 @@ post '/send_rpc_ping' do
   redirect '/'
 end
 
-post '/save_to_uploads' do
+post '/save_to_files' do
   start = params[:data].index(',') + 1
   file_data = params[:data][start..-1]
   decode_base64_content = Base64.decode64(file_data)
   file_id = NODE.generate_file_id(decode_base64_content)
-  file_name = ENV['uploads'] + '/' + params[:name]
+  file_name = ENV['files'] + '/' + params[:name]
   
-  NODE.write_to_subfolder(ENV['uploads'], params[:name], decode_base64_content)
+  NODE.write_to_subfolder(ENV['files'], params[:name], decode_base64_content)
   NODE.add_to_cache(NODE.files, file_id, '/files/' + params[:name])
 
   Thread.new {
