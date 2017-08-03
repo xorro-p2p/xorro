@@ -27,12 +27,8 @@ class Node
     @superport = nil
   end
 
-  def promote
-    @is_super = true
-  end
-
-  def demote
-    @is_super = false
+  def set_super
+    @is_super = ENV['SUPER'] == 'true'
   end
 
   def activate
