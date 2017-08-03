@@ -395,4 +395,18 @@ class Node
   def sync
     Storage.write_to_disk(self)
   end
+
+  def buckets_refresh(refresh_time)
+    routing_table.buckets.each do |bucket|
+      all_contacts = bucket.contacts
+      size = all_contacts.size
+      if size > 0
+        task = Concurrent::TimerTask.new(execution_interval: refresh_time) do
+          contact_id = all_contacts[rand(size)].id
+          iterative_find_node(contact_id)
+        end
+        task.execute
+      end
+    end
+  end
 end
