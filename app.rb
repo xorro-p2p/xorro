@@ -30,7 +30,7 @@ end
 
 NODE = Defaults.create_node(NETWORK, ENV['WAN'] == 'true' ? 80 : settings.port)
 NODE.activate
-NODE.buckets_refresh(5)
+NODE.buckets_refresh(600)
 
 get '/', '/debug/node' do
    @title = "Node Info"
