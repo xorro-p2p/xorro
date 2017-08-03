@@ -9,7 +9,7 @@ require 'erubis'
 require 'pry'
 require 'thin'
 require 'concurrent'
-require_relative 'development.rb'  ## ENV['uploads'] = "~/Desktop"
+require_relative 'development.rb'  ## ENV['files'] = "~/Desktop"
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
 require_relative 'lib/contact.rb'
@@ -34,11 +34,21 @@ NODE.buckets_refresh(600)
 
 get '/', '/debug/node' do
    @title = "Node Info"
+   @refresh = '<meta http-equiv="refresh" content="5">'
    @node = NODE
    @super = @node.is_super
    @superport = @node.superport || 'none'
    @wan_mode = ENV['WAN'] == 'true'
    erb :node
+ end
+
+  get '/debug/data' do
+   @title = "Data"
+   @node = NODE
+   @super = @node.is_super
+   @superport = @node.superport || 'none'
+   @wan_mode = ENV['WAN'] == 'true'
+   erb :data
  end
  
  get '/debug/buckets' do
@@ -69,7 +79,7 @@ get '/', '/debug/node' do
 
 
 get '/files/:filename' do
-  send_file File.join(File.expand_path(ENV['uploads']) , params[:filename])
+  send_file File.join(File.expand_path(ENV['files']) , params[:filename])
 end
 
 get '/manifests/:filename' do
@@ -119,7 +129,6 @@ post '/send_find_node' do
   
   @node = NODE
   erb :test
-  # redirect '/'
 end
 
 get '/info' do
@@ -133,13 +142,12 @@ post '/send_find_value' do
   
   @node = NODE
   erb :test
-  # redirect '/'
 end
 
 post '/get_file' do
   query_id = params[:file_id]
 
-  if NODE.files[query_id]
+  if NODE.data[query_id]
     redirect URI.escape(NODE.files[query_id])
   else
     result = nil
@@ -153,7 +161,9 @@ post '/get_file' do
     end
 
     if result && result.is_a?(String)
-      NODE.get(result)
+      Thread.new { NODE.get(result) }
+      flash[:notice] = "Your file should be downloaded shortly."
+      redirect "/"
 
       # when do we redirect?
       # redirect "/files/" + URI.escape(File.basename(result))
@@ -191,16 +201,19 @@ post '/send_rpc_ping' do
   redirect '/'
 end
 
-post '/save_to_uploads' do
+post '/save_to_files' do
   start = params[:data].index(',') + 1
   file_data = params[:data][start..-1]
   decode_base64_content = Base64.decode64(file_data)
-  file_name = ENV['uploads'] + '/' + params[:name]
+  file_id = NODE.generate_file_id(decode_base64_content)
+  file_name = ENV['files'] + '/' + params[:name]
   
-  NODE.write_to_subfolder(ENV['uploads'], params[:name], decode_base64_content)
-  NODE.add_to_cache(NODE.generate_file_id(decode_base64_content), '/files/' + params[:name])
+  NODE.write_to_subfolder(ENV['files'], params[:name], decode_base64_content)
+  NODE.add_to_cache(NODE.files, file_id, '/files/' + params[:name])
 
-  NODE.shard_file(file_name)
+  Thread.new {
+    NODE.shard_file(file_name, file_id)
+  }
   
   status 200
 end

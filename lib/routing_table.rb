@@ -21,7 +21,6 @@ class RoutingTable
 
   # insert a new node into one of the k-buckets
   def insert(contact)
-    # raise ArgumentError, 'cannot add self' if contact.id == @node_id
     return if contact.id == @node_id
 
     bucket = find_closest_bucket(contact.id)

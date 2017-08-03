@@ -13,7 +13,7 @@ require 'pry'
 
 
 class Node
-  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super, :superport
+  attr_accessor :ip, :id, :port, :files, :routing_table, :dht_segment, :is_super, :superport, :data
   def initialize(num_string, network, port='80', is_super=false)
     @port = port
     set_ip
@@ -22,6 +22,7 @@ class Node
     @id = num_string
     @routing_table = RoutingTable.new(self)
     generate_file_cache
+    generate_data_cache
     @dht_segment = {}
     @is_super = false
     @superport = nil
@@ -48,8 +49,8 @@ class Node
   end
 
   def broadcast
-    @files.keys.each do |k|
-      address = file_url(@files[k])
+    @data.keys.each do |k|
+      address = file_url(@data[k])
       iterative_store(k, address)
     end
   end
@@ -71,13 +72,8 @@ class Node
     end
   end
 
-  def generate_file_cache
+  def generate_data_cache
     cache = {}
-
-    Dir.glob(File.expand_path(ENV['uploads'] + '/*')).select { |f| File.file?(f) }.each do |file|
-      file_hash = generate_file_id(File.read(file))
-      cache[file_hash] = '/files/' + File.basename(file)
-    end
 
     Dir.glob(File.expand_path(ENV['shards'] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = File.basename(file)
@@ -89,18 +85,23 @@ class Node
       cache[file_hash] = '/manifests/' + File.basename(file)
     end
 
+    @data = cache
+  end
+
+  def generate_file_cache
+    cache = {}
+
+    Dir.glob(File.expand_path(ENV['files'] + '/*')).select { |f| File.file?(f) }.each do |file|
+      file_hash = generate_file_id(File.read(file))
+      cache[file_hash] = '/files/' + File.basename(file)
+    end
+
     @files = cache
   end
 
-  def add_to_cache(key, value)
-    @files[key] = value
+  def add_to_cache(cache, key, value)
+    cache[key] = value
     sync
-  end
-
-  def add_file(data, name)
-    file_hash = generate_file_id(data)
-    add_to_cache(file_hash, name)
-    iterative_store(file_hash, file_url(name))
   end
 
   def file_url(filepath)
@@ -111,7 +112,7 @@ class Node
     Binary.sha(file_content).hex.to_s
   end
 
-  def shard_file(file)
+  def shard_file(file, id)
     size = File.stat(file).size
     manifest = create_manifest(File.basename(file), size)
 
@@ -121,18 +122,18 @@ class Node
         piece_hash = generate_file_id(piece)
 
         manifest[:pieces].push(piece_hash)
-        add_shard(piece_hash, piece) unless @files[piece_hash]
+        add_shard(piece_hash, piece) unless @data[piece_hash]
       end
     end
 
-    add_manifest(manifest)
+    add_manifest(manifest.to_json, id)
   end
 
   def add_shard(name, data)
     file_path = '/shards/' + name
 
     write_to_subfolder(ENV['shards'], name, data)
-    add_to_cache(name, file_path)
+    add_to_cache(@data, name, file_path)
     iterative_store(name, file_url(file_path))
   end
 
@@ -144,17 +145,12 @@ class Node
     }
   end
 
-  def add_manifest(obj, file_id=nil)
-    if file_id.nil?
-      file_id = generate_file_id(obj.to_s)
-      obj = obj.to_json
-    end
-
+  def add_manifest(obj, file_id)
     file_name = file_id + '.xro'
     file_path = '/manifests/' + file_name
 
     write_to_subfolder(ENV['manifests'], file_name, obj)
-    add_to_cache(file_id, file_path)
+    add_to_cache(@data, file_id, file_path)
     iterative_store(file_id, file_url(file_path))
   end
 
@@ -202,10 +198,12 @@ class Node
       end
 
       shard_paths.each do |path|
-        File.open(ENV['uploads'] + '/' + manifest['file_name'], 'a') do |f|
+        File.open(ENV['files'] + '/' + manifest['file_name'], 'a') do |f|
           f.write(File.read(path))
         end
       end
+
+      add_to_cache(@files, File.basename(file, '.xro'), '/files/' + manifest['file_name'])
     end
   end
   

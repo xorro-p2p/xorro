@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <% if @refresh %>
+    <%= @refresh %>
+  <% end %>
   <title>Debug <%= @title %></title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <script src="/javascripts/jquery-3.2.1.min.js"></script>
@@ -28,6 +31,9 @@
       <ul>
         <li>
           <a href="/debug/node">Node</a>
+        </li>
+        <li>
+          <a href="/debug/data">Data</a>
         </li>
         <li>
           <a href="/debug/dht">DHT</a> 
