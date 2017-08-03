@@ -8,6 +8,7 @@ require 'json'
 require 'erubis'
 require 'pry'
 require 'thin'
+require 'concurrent'
 require_relative 'development.rb'  ## ENV['files'] = "~/Desktop"
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
@@ -29,10 +30,11 @@ end
 
 NODE = Defaults.create_node(NETWORK, ENV['WAN'] == 'true' ? 80 : settings.port)
 NODE.activate
+NODE.buckets_refresh(600)
 
 get '/', '/debug/node' do
    @title = "Node Info"
-   @refresh = '<meta http-equiv="refresh" content="3">'
+   @refresh = '<meta http-equiv="refresh" content="5">'
    @node = NODE
    @super = @node.is_super
    @superport = @node.superport || 'none'

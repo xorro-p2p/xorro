@@ -31,7 +31,7 @@ $form.on('submit', function(e) {
 
   for (var i = 0, f; f = droppedFiles[i]; i++) {
     var reader = new FileReader();
-    
+
     reader.onload = (function(theFile) {
       return function(e) {
         $.ajax({

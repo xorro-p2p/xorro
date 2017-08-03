@@ -8,6 +8,7 @@ gem "http"
 gem "sinatra-flash"
 gem 'ngrok-tunnel'
 gem 'thin'
+gem 'concurrent-ruby', require: 'concurrent'
 
 group :test, :development do
   gem "minitest"
