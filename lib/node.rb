@@ -45,7 +45,6 @@ class Node
 
   def join(network)
     network.nodes.push(self)
-    sync
   end
 
   def broadcast
@@ -91,7 +90,6 @@ class Node
     end
 
     @files = cache
-    sync
   end
 
   def add_to_cache(key, value)
