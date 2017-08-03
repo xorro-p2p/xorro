@@ -1,7 +1,15 @@
 <div class="files">
   <h4>data</h4>
     <dl>
-      <% @node.data.each do |k,v| %>
+      <% @node.shards.each do |k,v| %>
+        <dt>
+          <%= k %>
+        </dt>
+        <dd>
+          <a href="<%= v %>"><%= v %></a>
+        </dd>
+      <% end %>
+      <% @node.manifests.each do |k,v| %>
         <dt>
           <%= k %>
         </dt>
