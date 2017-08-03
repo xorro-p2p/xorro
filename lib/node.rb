@@ -303,7 +303,6 @@ class Node
       break if results_returned.empty? || closest_contact.nil? ||
                Binary.xor_distance_map(query_id, results_returned).min >= Binary.xor_distance(closest_contact.id, query_id)
     end
-
     return shortlist
   end
 

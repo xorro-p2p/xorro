@@ -1,4 +1,5 @@
 var $form = $('.box');
+var $input = $form.find('input[type="file"]')
 var $fileInput = $('.box_file');
 var droppedFiles = false;
 
@@ -31,7 +32,7 @@ $form.on('submit', function(e) {
 
   for (var i = 0, f; f = droppedFiles[i]; i++) {
     var reader = new FileReader();
-    
+
     reader.onload = (function(theFile) {
       return function(e) {
         $.ajax({
