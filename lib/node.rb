@@ -27,12 +27,8 @@ class Node
     @superport = nil
   end
 
-  def promote
-    @is_super = true
-  end
-
-  def demote
-    @is_super = false
+  def set_super
+    @is_super = ENV['SUPER'] == 'true'
   end
 
   def activate
@@ -49,7 +45,6 @@ class Node
 
   def join(network)
     network.nodes.push(self)
-    sync
   end
 
   def broadcast
@@ -95,7 +90,6 @@ class Node
     end
 
     @files = cache
-    sync
   end
 
   def add_to_cache(key, value)
@@ -137,7 +131,7 @@ class Node
   def add_shard(name, data)
     file_path = '/shards/' + name
 
-    write_to_shards(name, data)
+    write_to_subfolder(ENV['shards'], name, data)
     add_to_cache(name, file_path)
     iterative_store(name, file_url(file_path))
   end
@@ -156,30 +150,17 @@ class Node
       obj = obj.to_json
     end
 
-    file_path = '/manifests/' + file_id + '.xro'
+    file_name = file_id + '.xro'
+    file_path = '/manifests/' + file_name
 
-    write_to_manifests(file_id, obj)
+    write_to_subfolder(ENV['manifests'], file_name, obj)
     add_to_cache(file_id, file_path)
     iterative_store(file_id, file_url(file_path))
   end
 
-  def write_to_uploads(name, content)
-    file_name = ENV['uploads'] + '/' + name
+  def write_to_subfolder(destination, name, content)
+    file_name = destination + '/' + name
     File.open(file_name, 'wb') do |f|
-      f.write(content)
-    end
-  end
-
-  def write_to_shards(name, content)
-    file_name = ENV['shards'] + '/' + name
-    File.open(file_name, 'wb') do |f|
-      f.write(content)
-    end
-  end
-
-  def write_to_manifests(name, content)
-    file_name = ENV['manifests'] + '/' + name
-    File.open(file_name + '.xro', 'wb') do |f|
       f.write(content)
     end
   end
@@ -319,7 +300,7 @@ class Node
         contact.active = true
       end
 
-      break if results_returned.empty? || 
+      break if results_returned.empty? || closest_contact.nil? ||
                Binary.xor_distance_map(query_id, results_returned).min >= Binary.xor_distance(closest_contact.id, query_id)
     end
 

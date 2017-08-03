@@ -22,11 +22,8 @@ module Defaults
     [uploads, manifests, shards].each do |f|
       safe_mkdir(f)
       ENV[File.basename(f)] = f
+      ### ENV['shards'] + ENV['manifests'] + ENV['uploads']
     end
-
-    # ENV['uploads'] = uploads
-    # ENV['manifests'] = manifests
-    # ENV['shards'] = shards
   end
 
   def self.create_node(network, port)
@@ -37,8 +34,7 @@ module Defaults
     else
       node = Node.new(new_id, network, port)
     end
-    node.promote if ENV['SUPER'] == 'true'
-    node.demote unless ENV['SUPER'] == 'true'
+    node.set_super
     node.sync
     node
   end

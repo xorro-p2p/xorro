@@ -195,7 +195,7 @@ post '/save_to_uploads' do
   decode_base64_content = Base64.decode64(file_data)
   file_name = ENV['uploads'] + '/' + params[:name]
   
-  NODE.write_to_uploads(params[:name], decode_base64_content)
+  NODE.write_to_subfolder(ENV['uploads'], params[:name], decode_base64_content)
   NODE.add_to_cache(NODE.generate_file_id(decode_base64_content), '/files/' + params[:name])
 
   NODE.shard_file(file_name)
