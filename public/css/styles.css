@@ -100,10 +100,13 @@ div.contact {
   display: inline-block;
 }
 
-dt {
+dt, td{
   color: green;
   width: 100px;
   text-align: right;
+}
+td {
+  padding: 0 10px
 }
 
 dt::after {

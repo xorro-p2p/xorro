@@ -1,23 +1,22 @@
 <div class="files">
   <h4>data</h4>
-    <dl>
-      <% @node.shards.each do |k,v| %>
-        <dt>
-          <%= k %>
-        </dt>
-        <dd>
-          <a href="<%= v %>"><%= v %></a>
-        </dd>
-      <% end %>
-      <% @node.manifests.each do |k,v| %>
-        <dt>
-          <%= k %>
-        </dt>
-        <dd>
-          <a href="<%= v %>"><%= v %></a>
-        </dd>
-      <% end %>
-    </dl>
+  <table>
+    <% @node.shards.each do |k,v| %>
+      <tr>
+        <td><%= k %></td>
+        <td><a href="<%= v %>"><%= v %></a></td>
+      </tr>
+    <% end %>
+  </table>
+  <br>
+  <table>
+    <% @node.manifests.each do |k,v| %>
+      <tr>
+        <td><%= k %></td>
+        <td><a href="<%= v %>"><%= v %></a></td>
+      </tr>
+    <% end %>
+  </table>
 </div>
 
 

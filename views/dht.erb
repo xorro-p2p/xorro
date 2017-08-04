@@ -1,15 +1,15 @@
 <div class="dht">
   <h4>dht segment</h4>
-    <dl>
-      <% @node.dht_segment.each do |k,v| %>
-        <dt>
-          <%= k %>
-        </dt>
-        <dd>
-          <% v.each do |url| %>
+  <table>
+    <% @node.dht_segment.each do |k,v| %>
+    <tr>
+      <td><%= k %></td>
+      <td>
+        <% v.each do |url| %>
             <a href="<%= url %>"><%= url %></a><br />
           <% end %>
-        </dd>
-      <% end %>
-    </dl>
+      </td>
+    </tr>
+    <% end %>
+  </table>
 </div>
