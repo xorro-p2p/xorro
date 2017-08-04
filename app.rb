@@ -46,9 +46,10 @@ class XorroNode < Sinatra::Base
   end
   refresh_task.execute
 
-  reboardcast_task = Concurrent::TimerTask.new(execution_interval: 3600, timeout_interval: 3600) do
+  rebroadcast_task = Concurrent::TimerTask.new(execution_interval: 3600, timeout_interval: 3600) do
     NODE.broadcast
   end
+  rebroadcast_task.execute
 
   get '/', '/debug/node' do
      @title = "Node Info"
