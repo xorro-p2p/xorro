@@ -52,14 +52,14 @@ class Node
   end
 
   def broadcast
-    @manifests.keys.each do |k|
-      address = file_url(@manifests[k])
-      iterative_store(k, address)
+    @manifests.each do |mk, mv|
+      address = file_url(mv)
+      iterative_store(mk, address)
     end
 
-    @shards.keys.each do |s|
-      address = file_url(@shards[s])
-      iterative_store(s, address)
+    @shards.each do |sk, sv|
+      address = file_url(sv)
+      iterative_store(sk, address)
     end
   end
 
@@ -411,16 +411,13 @@ class Node
     Storage.write_to_disk(self)
   end
 
-  def buckets_refresh(refresh_time)
+  def buckets_refresh
     routing_table.buckets.each do |bucket|
       all_contacts = bucket.contacts
       size = all_contacts.size
       if size > 0
-        task = Concurrent::TimerTask.new(execution_interval: refresh_time) do
-          contact_id = all_contacts[rand(size)].id
-          iterative_find_node(contact_id)
-        end
-        task.execute
+        contact_id = all_contacts[rand(size)].id
+        iterative_find_node(contact_id)
       end
     end
   end

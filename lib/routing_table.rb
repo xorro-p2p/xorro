@@ -33,9 +33,7 @@ class RoutingTable
     end
 
     if bucket.is_full?
-      if bucket.is_splittable? && room_for_another_bucket? &&
-         (node_is_closer(contact.id, bucket) ||
-          bucket.is_redistributable?(@node_id, @buckets.index(bucket)))
+      if is_bucket_splittable?(bucket, contact)
         split(bucket)
         insert(contact)
       else
@@ -44,6 +42,12 @@ class RoutingTable
     else
       bucket.add(contact)
     end
+  end
+
+  def is_bucket_splittable?(bucket, contact)
+    bucket.hasnt_been_split? &&
+    room_for_another_bucket? &&
+    (node_is_closer(contact.id, bucket) || bucket.is_redistributable?(@node_id, @buckets.index(bucket)))
   end
 
   # find the bucket that has the matching/closest XOR distance

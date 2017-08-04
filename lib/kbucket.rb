@@ -33,7 +33,7 @@ class KBucket
   end
 
   # is this the bucket that has the longest shared_bits_length?
-  def is_splittable?
+  def hasnt_been_split?
     @splittable
   end
 
