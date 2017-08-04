@@ -105,8 +105,13 @@ dt, td{
   width: 100px;
   text-align: right;
 }
+
 td {
-  padding: 0 10px
+  padding: 10px 10px
+}
+
+tr {
+  border: 1px dotted grey
 }
 
 dt::after {
