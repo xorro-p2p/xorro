@@ -2,7 +2,7 @@ require 'yaml'
 
 module Defaults
   def self.setup(port)
-    node_homes = File.expand_path("~/Desktop/node_homes")
+    node_homes = File.expand_path("~/Desktop/xorro_homes")
     safe_mkdir(node_homes)
     create_node_home(node_homes, port)
   end
@@ -11,7 +11,7 @@ module Defaults
     node_home = File.join(node_homes, port.to_s)
     safe_mkdir(node_home)
     create_subfolders(node_home)
-    ENV['home'] = node_home
+    ENV['xorro_home'] = node_home
   end
 
   def self.create_subfolders(node_home)

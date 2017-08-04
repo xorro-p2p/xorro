@@ -37,7 +37,7 @@ launch_range() {
 }
 
 launch_node() {
-  SUPERPORT=$SUPERPORT SUPER=false nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  PORT=$1 SUPERPORT=$SUPERPORT SUPER=false nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 

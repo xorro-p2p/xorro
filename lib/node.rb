@@ -45,7 +45,6 @@ class Node
       iterative_find_node(@id)
       broadcast
     }
-
   end
 
   def join(network)
@@ -77,7 +76,7 @@ class Node
       end
       private_ip ? private_ip.ip_address : 'localhost'
     else
-      File.basename(NGROK)
+      File.basename(XorroNode::NGROK)
     end
   end
 
