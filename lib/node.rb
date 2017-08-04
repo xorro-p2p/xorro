@@ -200,7 +200,7 @@ class Node
         get(result) if result
       end
 
-      shard_content = File.read(ENV['shards'] + '/' + File.basename(result))
+      shard_content = File.read(ENV['shards'] + '/' + shard)
       if generate_file_id(shard_content) == shard
         shard_count -= 1
       end
@@ -211,8 +211,8 @@ class Node
         ENV['shards'] + '/' + shard
       end
 
-      shard_paths.each do |path|
-        File.open(ENV['files'] + '/' + manifest['file_name'], 'a') do |f|
+      File.open(ENV['files'] + '/' + manifest['file_name'], 'a') do |f|
+        shard_paths.each do |path|
           f.write(File.read(path))
         end
       end
