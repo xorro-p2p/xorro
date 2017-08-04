@@ -282,7 +282,7 @@ class Node
     # If the requestor does receive such a triple, it should discard it.
     # A node must never put its own nodeID into a bucket as a contact.
 
-    results = @network.find_node(query_id, recipient_contact, self.to_contact)
+    results = @network.find_node(query_id, recipient_contact, to_contact)
     results.each do |r|
       @routing_table.insert(r)
     end
