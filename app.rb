@@ -40,7 +40,14 @@ class XorroNode < Sinatra::Base
 
   NODE = Defaults.create_node(network, ENV['WAN'] == 'true' ? 80 : settings.port)
   NODE.activate
-  NODE.buckets_refresh(600)
+  refresh_task = Concurrent::TimerTask.new(execution_interval: 20, timeout_interval: 20) do
+    NODE.buckets_refresh
+  end
+  refresh_task.execute
+
+  reboardcast_task = Concurrent::TimerTask.new(execution_interval: 10, timeout_interval: 10) do
+    NODE.broadcast
+  end
 
   get '/', '/debug/node' do
      @title = "Node Info"
