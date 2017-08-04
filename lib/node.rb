@@ -333,22 +333,22 @@ class Node
   end
 
   def select_address(file_id)
-    values = dht_segment[file_id].clone
+    values = dht_segment[file_id].clone.shuffle
     
     values.each do |address|
       response = @network.check_resource_status(address)
       if response == 200
         return address
       else
-        evict_address(file_id)
+        evict_address(file_id, address)
       end
     end
 
     return nil
   end
 
-  def evict_address(file_id)
-    dht_segment[file_id].shift
+  def evict_address(file_id, address)
+    dht_segment[file_id].delete(address)
   end
 
   def find_value(file_id, recipient_contact)
