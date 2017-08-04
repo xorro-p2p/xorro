@@ -21,7 +21,7 @@ class NetworkAdapter
   end
 
   def find_node(query_id, recipient_contact, sender_contact)
-    info_hash = {:node_id => query_id, :id => sender_contact.id, :port => sender_contact.port}
+    info_hash = {:node_id => query_id, :id => sender_contact.id, :ip => sender_contact.ip, :port => sender_contact.port}
     begin
       response = call_rpc_find_node(recipient_contact.ip, recipient_contact.port, info_hash)
       closest_nodes = JSON.parse(response) 
@@ -32,7 +32,7 @@ class NetworkAdapter
   end
 
   def find_value(file_id, recipient_contact, sender_contact)
-    info_hash = {:file_id => file_id, :id => sender_contact.id, :port => sender_contact.port}
+    info_hash = {:file_id => file_id, :id => sender_contact.id, :ip => sender_contact.ip, :port => sender_contact.port}
     begin
       response = call_rpc_find_value(recipient_contact.ip, recipient_contact.port, info_hash)
       result = JSON.parse(response)
