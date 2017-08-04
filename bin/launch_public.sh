@@ -20,7 +20,7 @@ if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
 fi
 
 launch_public() {
-  SUPERPORT='9999' SUPERIP='supernode1.xorro-p2p.com' WAN=true nohup ruby app.rb -p 9999 >> tmp/nohup.out &
+  PORT=9999 SUPERPORT=9999 SUPERIP='supernode1.xorro-p2p.com' WAN=true nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 

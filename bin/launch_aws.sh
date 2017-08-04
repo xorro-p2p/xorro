@@ -14,9 +14,9 @@ if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
   exit 0
 fi
 
-launch_aws() {
-  SUPERPORT='' SUPER=true AWS=true nohup ruby app.rb -p 9999 >> tmp/nohup.out &
+launch_aws_super() {
+  PORT=9999 SUPERPORT='' SUPER=true AWS=true nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
-launch_aws
+launch_aws_super

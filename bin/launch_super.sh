@@ -28,7 +28,7 @@ if [[ $# -ne 1 ]] || [[ $1 == '-h' ]]; then
 fi
 
 launch_super() {
-  SUPERPORT='' SUPER=true nohup ruby app.rb -p $1 >> tmp/nohup.out &
+  PORT=$1 SUPERPORT='' SUPER=true nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
