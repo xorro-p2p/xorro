@@ -40,12 +40,13 @@ class XorroNode < Sinatra::Base
 
   NODE = Defaults.create_node(network, ENV['WAN'] == 'true' ? 80 : settings.port)
   NODE.activate
-  refresh_task = Concurrent::TimerTask.new(execution_interval: 20, timeout_interval: 20) do
+
+  refresh_task = Concurrent::TimerTask.new(execution_interval: 600, timeout_interval: 600) do
     NODE.buckets_refresh
   end
   refresh_task.execute
 
-  reboardcast_task = Concurrent::TimerTask.new(execution_interval: 10, timeout_interval: 10) do
+  reboardcast_task = Concurrent::TimerTask.new(execution_interval: 3600, timeout_interval: 3600) do
     NODE.broadcast
   end
 
