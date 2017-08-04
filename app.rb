@@ -7,6 +7,7 @@ require 'ngrok/tunnel'
 require 'json'
 require 'erubis'
 require 'thin'
+require 'yaml'
 require 'concurrent'
 require_relative 'development.rb'  ## ENV['files'] = "~/Desktop"
 require_relative 'lib/node.rb'
@@ -24,7 +25,13 @@ NETWORK = NetworkAdapter.new
 Defaults.setup(settings.port)
 
 if ENV['WAN'] == 'true'
-  NGROK = Ngrok::Tunnel.start(port: settings.port)
+  authfile = ENV['HOME'] + "/.ngrok2/ngrok.yml"
+  if File.exists?(authfile)
+    authtoken = authfile["authtoken"]
+    NGROK = Ngrok::Tunnel.start(port: settings.port, authtoken: authtoken)
+  else
+    NGROK = Ngrok::Tunnel.start(port: settings.port)
+  end
 end
 
 NODE = Defaults.create_node(NETWORK, ENV['WAN'] == 'true' ? 80 : settings.port)

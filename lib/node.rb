@@ -41,8 +41,11 @@ class Node
     result = JSON.parse(@network.get_info(@super_ip, @superport))
     contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
     ping(contact)
-    iterative_find_node(@id)
-    broadcast
+    Thread.new {
+      iterative_find_node(@id)
+      broadcast
+    }
+
   end
 
   def join(network)
