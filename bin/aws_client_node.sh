@@ -19,4 +19,4 @@ launch_aws_client() {
   echo $! >> tmp/pids.txt
 }
 
-launch_aws_client
+launch_aws_client $@
