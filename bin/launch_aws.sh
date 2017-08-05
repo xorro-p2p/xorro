@@ -15,7 +15,7 @@ if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
 fi
 
 launch_aws_super() {
-  PORT=9999 SUPERPORT='' SUPER=true AWS=true nohup ruby app.rb >> tmp/nohup.out &
+  PORT=9999 SUPERPORT='' SUPER=true FQDN=supernode1.xorro-p2p.com nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
