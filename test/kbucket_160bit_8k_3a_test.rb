@@ -69,13 +69,13 @@ class KBucketTest160bit8k < Minitest::Test
     @bucket.add({ :id => '6', :ip => '' })
     @bucket.add({ :id => '7', :ip => '' })
 
-    assert(@bucket.is_full?)
+    assert(@bucket.full?)
   end
 
   def test_bucket_is_not_full
     @bucket.add(@contact)
 
-    refute(@bucket.is_full?)
+    refute(@bucket.full?)
   end
 
   def test_find_contact_by_id
@@ -117,7 +117,7 @@ class KBucketTest160bit8k < Minitest::Test
     @bucket.add(Node.new(no_shared_id7, @kn).to_contact)
     @bucket.add(Node.new(shared_bits_id, @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     assert(result)
   end
 
@@ -140,7 +140,7 @@ class KBucketTest160bit8k < Minitest::Test
     @bucket.add(Node.new(no_shared_id7, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id8, @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     refute(result)
   end
 
