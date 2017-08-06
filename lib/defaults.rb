@@ -40,10 +40,10 @@ module Defaults
   end
 
   def self.new_id
-    rand(2 ** ENV['bit_length'].to_i).to_s
+    rand(2**ENV['bit_length'].to_i).to_s
   end
 
   def self.safe_mkdir(dir)
-    Dir.mkdir(dir) unless Dir.exists?(dir)
+    Dir.mkdir(dir) unless Dir.exist?(dir)
   end
 end
