@@ -13,7 +13,5 @@ gem 'concurrent-ruby', require: 'concurrent'
 group :test, :development do
   gem "minitest"
   gem "minitest-reporters"
-  gem "racksh"
-  gem "pry"
   gem "sinatra-contrib"
 end

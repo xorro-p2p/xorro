@@ -1,7 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/reloader'
 require 'sinatra/multi_route'
-require 'sinatra/content_for'
 require 'sinatra/flash'
 require 'ngrok/tunnel'
 require 'json'
@@ -9,19 +8,17 @@ require 'erubis'
 require 'thin'
 require 'yaml'
 require 'concurrent'
-require_relative 'development.rb'  ## ENV['files'] = "~/Desktop"
+require_relative 'development.rb'
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
 require_relative 'lib/contact.rb'
 require_relative 'lib/defaults.rb'
 require_relative 'lib/storage.rb'
 
-## must be used for app to server on IP other than localhost
-
 class XorroNode < Sinatra::Base
   register Sinatra::MultiRoute
   register Sinatra::Flash
-  
+
   set :bind, '0.0.0.0'
   enable :sessions
 
@@ -30,7 +27,7 @@ class XorroNode < Sinatra::Base
 
   if ENV['WAN'] == 'true'
     authfile = ENV['HOME'] + "/.ngrok2/ngrok.yml"
-    if File.exists?(authfile)
+    if File.exist?(authfile)
       authtoken = authfile["authtoken"]
       NGROK = Ngrok::Tunnel.start(port: settings.port, authtoken: authtoken)
     else
@@ -52,27 +49,27 @@ class XorroNode < Sinatra::Base
   rebroadcast_task.execute
 
   get '/', '/debug/node' do
-     @title = "Node Info"
-     @refresh = '<meta http-equiv="refresh" content="5">'
-     @node = NODE
-     @superport = @node.superport || 'none'
-     erb :node
+    @title = "Node Info"
+    @refresh = '<meta http-equiv="refresh" content="5">'
+    @node = NODE
+    @superport = @node.superport || 'none'
+    erb :node
   end
 
   get '/debug/data' do
-     @title = "Data"
-     @node = NODE
-     @superport = @node.superport || 'none'
-     erb :data
+    @title = "Data"
+    @node = NODE
+    @superport = @node.superport || 'none'
+    erb :data
   end
-   
+
   get '/debug/buckets' do
     @title = "K-Buckets"
     @node = NODE
     @superport = @node.superport || 'none'
     erb :buckets
   end
-   
+
   get '/debug/dht' do
     @title = "DHT Segment"
     @node = NODE
@@ -92,9 +89,10 @@ class XorroNode < Sinatra::Base
 
   post '/get_file' do
     query_id = params[:file_id]
+    file_url = NODE.files[query_id]
 
-    if NODE.files[query_id]
-      redirect URI.escape(NODE.files[query_id])
+    if file_url && File.exist?(ENV['files'] + "/" + File.basename(file_url))
+      redirect URI.escape(file_url)
     else
       result = nil
 
@@ -122,48 +120,46 @@ class XorroNode < Sinatra::Base
     NODE.to_contact.to_json
   end
 
-
   ### File retreival routes
 
   get '/files/:filename' do
-    send_file File.join(File.expand_path(ENV['files']) , params[:filename])
+    send_file File.join(File.expand_path(ENV['files']), params[:filename])
   end
 
   get '/manifests/:filename' do
-    send_file File.join(File.expand_path(ENV['manifests']) , params[:filename])
+    send_file File.join(File.expand_path(ENV['manifests']), params[:filename])
   end
 
   get '/shards/:filename' do
-    send_file File.join(File.expand_path(ENV['shards']) , params[:filename])
+    send_file File.join(File.expand_path(ENV['shards']), params[:filename])
   end
-
 
   ### RPC Routes
 
   post '/rpc/store' do
     file_id = params[:file_id]
     address = params[:address]
-    contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port].to_i)
     NODE.receive_store(file_id, address, contact)
     status 200
   end
 
   post '/rpc/find_node' do
     node_id = params[:node_id]
-    contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port].to_i)
     result = NODE.receive_find_node(node_id, contact)
     result.to_json
   end
 
   post '/rpc/find_value' do
     file_id = params[:file_id]
-    contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port].to_i)
     result = NODE.receive_find_value(file_id, contact)
     result.to_json
   end
 
   post '/rpc/ping' do
-    contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port].to_i)
     NODE.receive_ping(contact)
     status 200
   end
@@ -173,18 +169,14 @@ class XorroNode < Sinatra::Base
 
   post '/send_find_node' do
     query_id = params[:query_id]
-    
     @result = NODE.iterative_find_node(query_id)
-    
     @node = NODE
     erb :test
   end
 
   post '/send_find_value' do
     query_id = params[:file_id]
-    
     @result = NODE.iterative_find_value(query_id)
-    
     @node = NODE
     erb :test
   end
@@ -207,10 +199,7 @@ class XorroNode < Sinatra::Base
   end
 
   post '/send_rpc_ping' do
-    id = params[:id]
-    ip = params[:ip]
-    port = params[:port]
-    contact = Contact.new({id: params[:id], ip: params[:ip], port: params[:port].to_i})
+    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port].to_i)
     NODE.ping(contact)
     redirect '/'
   end
@@ -221,14 +210,11 @@ class XorroNode < Sinatra::Base
     decode_base64_content = Base64.decode64(file_data)
     file_id = NODE.generate_file_id(decode_base64_content)
     file_name = ENV['files'] + '/' + params[:name]
-    
+
     NODE.write_to_subfolder(ENV['files'], params[:name], decode_base64_content)
     NODE.add_to_cache(NODE.files, file_id, '/files/' + params[:name])
 
-    Thread.new {
-      NODE.shard_file(file_name, file_id)
-    }
-    
+    Thread.new { NODE.shard_file(file_name, file_id) }
     status 200
   end
 
