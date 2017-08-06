@@ -6,10 +6,10 @@ require_relative "../lib/kbucket.rb"
 
 class NodeTest160 < Minitest::Test
   def setup
-    @kn = FakeNetworkAdapter.new
     ENV['bit_length'] = '160'
     ENV['k'] = '2'
     ENV['alpha'] = '1'
+    @kn = FakeNetworkAdapter.new
   end
 
   def test_create_node

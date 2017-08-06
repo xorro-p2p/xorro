@@ -420,9 +420,10 @@ class NodeTest160bit8k < Minitest::Test
     result = node0.iterative_find_value('15')
     assert_instance_of(Array, result)
     assert_equal(4, result.size)
-    assert_includes(result.map(&:id), node4_contact.id)
-    assert_includes(result.map(&:id), node5_contact.id)
-    assert_includes(result.map(&:id), node14_contact.id)
-    assert_includes(result.map(&:id), node12_contact.id)
+    ids = result.map(&:id)
+    assert_includes(ids, node4_contact.id)
+    assert_includes(ids, node5_contact.id)
+    assert_includes(ids, node14_contact.id)
+    assert_includes(ids, node12_contact.id)
   end
 end

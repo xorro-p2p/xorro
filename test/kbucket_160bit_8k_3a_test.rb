@@ -7,13 +7,14 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class KBucketTest160bit8k < Minitest::Test
   def setup
+    ENV['bit_length'] = '160'
+    ENV['k'] = '8'
+    ENV['alpha'] = '3'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit_length'] = '160'
-    ENV['k'] = '8'
-    ENV['alpha'] = '3'
+    @largest = 2 ** ENV['bit_length'].to_i
   end
 
   def test_create_bucket
@@ -98,13 +99,13 @@ class KBucketTest160bit8k < Minitest::Test
   end
 
   def test_is_redistributable
-    no_shared_id = ((2 ** ENV['bit_length'].to_i) - 1).to_s
-    no_shared_id2 = ((2 ** ENV['bit_length'].to_i) - 2).to_s
-    no_shared_id3 = ((2 ** ENV['bit_length'].to_i) - 3).to_s
-    no_shared_id4 = ((2 ** ENV['bit_length'].to_i) - 4).to_s
-    no_shared_id5 = ((2 ** ENV['bit_length'].to_i) - 5).to_s
-    no_shared_id6 = ((2 ** ENV['bit_length'].to_i) - 6).to_s
-    no_shared_id7 = ((2 ** ENV['bit_length'].to_i) - 7).to_s
+    no_shared_id = (@largest - 1).to_s
+    no_shared_id2 = (@largest - 2).to_s
+    no_shared_id3 = (@largest - 3).to_s
+    no_shared_id4 = (@largest - 4).to_s
+    no_shared_id5 = (@largest - 5).to_s
+    no_shared_id6 = (@largest - 6).to_s
+    no_shared_id7 = (@largest - 7).to_s
     shared_bits_id = '1'
     
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
@@ -121,14 +122,14 @@ class KBucketTest160bit8k < Minitest::Test
   end
 
   def test_is_not_redistributable
-    no_shared_id = ((2 ** ENV['bit_length'].to_i) - 1).to_s
-    no_shared_id2 = ((2 ** ENV['bit_length'].to_i) - 2).to_s
-    no_shared_id3 = ((2 ** ENV['bit_length'].to_i) - 3).to_s
-    no_shared_id4 = ((2 ** ENV['bit_length'].to_i) - 4).to_s
-    no_shared_id5 = ((2 ** ENV['bit_length'].to_i) - 5).to_s
-    no_shared_id6 = ((2 ** ENV['bit_length'].to_i) - 6).to_s
-    no_shared_id7 = ((2 ** ENV['bit_length'].to_i) - 7).to_s
-    no_shared_id8 = ((2 ** ENV['bit_length'].to_i) - 8).to_s
+    no_shared_id = (@largest - 1).to_s
+    no_shared_id2 = (@largest - 2).to_s
+    no_shared_id3 = (@largest - 3).to_s
+    no_shared_id4 = (@largest - 4).to_s
+    no_shared_id5 = (@largest - 5).to_s
+    no_shared_id6 = (@largest - 6).to_s
+    no_shared_id7 = (@largest - 7).to_s
+    no_shared_id8 = (@largest - 8).to_s
     
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)

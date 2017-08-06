@@ -7,12 +7,12 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class KBucketTest6 < Minitest::Test
   def setup
+    ENV['bit_length'] = '6'
+    ENV['k'] = '2'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit_length'] = '6'
-    ENV['k'] = '2'
   end
 
   def test_create_bucket

@@ -7,12 +7,13 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class KBucketTest160 < Minitest::Test
   def setup
+    ENV['bit_length'] = '160'
+    ENV['k'] = '2'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit_length'] = '160'
-    ENV['k'] = '2'
+    @largest = 2 ** ENV['bit_length'].to_i
   end
 
   def test_create_bucket
@@ -99,8 +100,8 @@ class KBucketTest160 < Minitest::Test
   end
 
   def test_is_not_redistributable
-    no_shared_id = ((2 ** ENV['bit_length'].to_i) - 1).to_s
-    no_shared_id2 = ((2 ** ENV['bit_length'].to_i) - 2).to_s
+    no_shared_id = (@largest - 1).to_s
+    no_shared_id2 = (@largest - 2).to_s
     
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)

@@ -7,11 +7,12 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class RoutingTableTest160 < Minitest::Test
   def setup
+    ENV['bit_length'] = '160'
+    ENV['k'] = '2'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @routing_table = @node.routing_table
-    ENV['bit_length'] = '160'
-    ENV['k'] = '2'
+    @two_to_159 = 2 ** (ENV['bit_length'].to_i - 1)
   end
 
   def test_create_routing_table
@@ -42,7 +43,7 @@ class RoutingTableTest160 < Minitest::Test
   def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length
     @routing_table.create_bucket
 
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = (@two_to_159).to_s
 
     result = @routing_table.find_closest_bucket(no_shared_id)
 
@@ -163,7 +164,7 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_redistribute_one_bucket_to_two
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = (@two_to_159).to_s
     node_no_shared = Node.new(no_shared_id, @kn)
     node3 = Node.new('3', @kn)
 
@@ -179,7 +180,7 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_splittable_but_contains_at_least_1_closer_element
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = (@two_to_159).to_s
 
     node3 = Node.new('3', @kn)
     node_no_shared = Node.new(no_shared_id, @kn)
@@ -193,9 +194,9 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_not_splittable
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
-    no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
-    no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
+    no_shared_id = (@two_to_159).to_s
+    no_shared_id2 = (@two_to_159 + 1).to_s
+    no_shared_id3 = (@two_to_159 + 2).to_s
 
     node_no_shared_1 = Node.new(no_shared_id, @kn)
     node_no_shared_2 = Node.new(no_shared_id2, @kn)
@@ -221,9 +222,9 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_not_splittable_and_head_node_live
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
-    no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
-    no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
+    no_shared_id = (@two_to_159).to_s
+    no_shared_id2 = (@two_to_159 + 1).to_s
+    no_shared_id3 = (@two_to_159 + 2).to_s
 
     node_no_shared_1 = Node.new(no_shared_id, @kn)
     node_no_shared_2 = Node.new(no_shared_id2, @kn)
@@ -250,9 +251,9 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_not_splittable_and_head_node_not_live
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
-    no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
-    no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
+    no_shared_id = (@two_to_159).to_s
+    no_shared_id2 = (@two_to_159 + 1).to_s
+    no_shared_id3 = (@two_to_159 + 2).to_s
 
     node_no_shared_1 = Node.new(no_shared_id, @kn)
     node_no_shared_2 = Node.new(no_shared_id2, @kn)
