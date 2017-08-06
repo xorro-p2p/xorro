@@ -1,10 +1,9 @@
 require_relative '../development.rb'
 require_relative 'binary.rb'
 require_relative 'kbucket.rb'
-require 'pry'
 
 class RoutingTable
-  attr_accessor :node, :node_id, :buckets
+  attr_reader :node, :node_id, :buckets
 
   def initialize(current_node)
     @node = current_node
@@ -12,14 +11,6 @@ class RoutingTable
     @buckets = [KBucket.new(@node)]
   end
 
-  include Enumerable
-  def each(&block)
-    @buckets.each do |b|
-      yield b
-    end
-  end
-
-  # insert a new node into one of the k-buckets
   def insert(contact)
     return if contact.id == @node_id
 
@@ -32,7 +23,7 @@ class RoutingTable
       return
     end
 
-    if bucket.is_full?
+    if bucket.full?
       if is_bucket_splittable?(bucket, contact)
         split(bucket)
         insert(contact)
@@ -46,11 +37,10 @@ class RoutingTable
 
   def is_bucket_splittable?(bucket, contact)
     bucket.hasnt_been_split? &&
-    room_for_another_bucket? &&
-    (node_is_closer(contact.id, bucket) || bucket.is_redistributable?(@node_id, @buckets.index(bucket)))
+      room_for_another_bucket? &&
+      (node_is_closer(contact.id, bucket) || bucket.redistributable?(@node_id, @buckets.index(bucket)))
   end
 
-  # find the bucket that has the matching/closest XOR distance
   def find_closest_bucket(id)
     idx = Binary.shared_prefix_bit_length(@node_id, id)
     buckets[idx] || buckets.last
@@ -60,28 +50,26 @@ class RoutingTable
     closest_bucket = find_closest_bucket(id)
     results = []
 
-    
     bucket_idx = @buckets.index(closest_bucket)
     further_bucket_idx = bucket_idx - 1
 
-    fill_closest_contacts(results, bucket_idx, sender_contact, to_right_side = true, quantity)
-    fill_closest_contacts(results, further_bucket_idx, sender_contact, to_right_side = false, quantity)
-    
+    fill_closest_contacts(results, bucket_idx, sender_contact, true, quantity)
+    fill_closest_contacts(results, further_bucket_idx, sender_contact, false, quantity)
+
     results
   end
 
   def fill_closest_contacts(results, start_idx, sender_contact, to_right_side, quantity)
     mover = to_right_side ? 1 : -1
 
-    until results.size == quantity || start_idx == buckets.size || start_idx < 0 do
+    until results.size == quantity || start_idx == buckets.size || start_idx < 0
       current_bucket = @buckets[start_idx]
 
       current_bucket.each do |contact|
-
         if sender_contact
           results.push(contact) if results.size < quantity && contact.id != sender_contact.id
-        else
-          results.push(contact) if results.size < quantity
+        elsif results.size < quantity
+          results.push(contact)
         end
       end
 
@@ -120,7 +108,7 @@ class RoutingTable
 
     movers.each do |m|
       old_bucket.delete(m)
-      new_bucket.contacts.push(m)    ####TODO REFACTOR THIS IT IS NOT GOOD
+      new_bucket.contacts.push(m)
     end
   end
 end
