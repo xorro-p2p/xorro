@@ -22,15 +22,15 @@ module Binary
   end
 
   def self.select_closest_xor(id, array)
-    xors = array.map do |el| 
+    xors = array.map do |el|
       el.id.to_i ^ id.to_i
     end
     idx = xors.index(xors.min)
-    idx ? array[idx] : nil 
+    idx ? array[idx] : nil
   end
 
   def self.xor_distance_map(id, array)
-    array.map { |obj| xor_distance(id, obj.id)}
+    array.map { |obj| xor_distance(id, obj.id) }
   end
 
   def self.sort_by_xor!(id, array)
