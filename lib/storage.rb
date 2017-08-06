@@ -2,12 +2,12 @@ require 'yaml'
 
 module Storage
   def self.file_exists?(file_name='id.yml')
-    File.exists?(File.join(ENV['xorro_home'], file_name))
+    File.exist?(File.join(ENV['xorro_home'], file_name))
   end
 
   def self.valid_node?(file_name='id.yml')
     file = YAML.load_file(File.join(ENV['xorro_home'], file_name))
-    file && file.id && file.id.to_i.between?(0, 2 ** ENV['bit_length'].to_i)
+    file && file.id && file.id.to_i.between?(0, 2**ENV['bit_length'].to_i)
   end
 
   def self.load_file(file_name='id.yml')
