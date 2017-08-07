@@ -30,7 +30,6 @@ module Defaults
     if Storage.file_exists? && Storage.valid_node?
       node = Storage.load_file
       node.generate_file_cache
-      node.port = port
     else
       node = Node.new(new_id, network, port)
     end
