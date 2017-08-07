@@ -11,8 +11,7 @@ require_relative 'storage.rb'
 require 'json'
 
 class Node
-  attr_accessor :port
-  attr_reader :ip, :id, :files, :routing_table, :dht_segment, :is_super, :superport, :manifests, :shards
+  attr_reader :ip, :port, :id, :files, :routing_table, :dht_segment, :is_super, :superport, :manifests, :shards
 
   def initialize(num_string, network, port='80')
     @port = port
