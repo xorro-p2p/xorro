@@ -1,8 +1,8 @@
 require 'minitest/autorun'
 require 'minitest/reporters'
-ENV['files'] = "~/Desktop"
-ENV['shards'] = "~/Desktop"
-ENV['manifests'] = "~/Desktop"
+ENV['files'] = "/dev/null"
+ENV['shards'] = "/dev/null"
+ENV['manifests'] = "/dev/null"
 ENV['bit_length'] = "6"
 ENV['k'] = "2"
 ENV['alpha'] = "1"

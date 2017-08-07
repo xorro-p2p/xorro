@@ -7,11 +7,12 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class RoutingTableTest160 < Minitest::Test
   def setup
+    ENV['bit_length'] = '160'
+    ENV['k'] = '2'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @routing_table = @node.routing_table
-    ENV['bit_length'] = '160'
-    ENV['k'] = '2'
+    @two_to159 = 2**(ENV['bit_length'].to_i - 1)
   end
 
   def test_create_routing_table
@@ -19,7 +20,7 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_node_with_duplicate_id
-    new_node = Node.new('0',@kn)
+    new_node = Node.new('0', @kn)
 
     @routing_table.insert(new_node)
     assert_equal(0, @routing_table.buckets[0].size)
@@ -42,21 +43,21 @@ class RoutingTableTest160 < Minitest::Test
   def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length
     @routing_table.create_bucket
 
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = @two_to159.to_s
 
     result = @routing_table.find_closest_bucket(no_shared_id)
 
-    assert_equal(result, @routing_table.buckets[0])    
+    assert_equal(result, @routing_table.buckets[0])
   end
 
   def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_bug
     @routing_table.create_bucket
 
-    no_shared_id = (2 ** (ENV['bit_length'].to_i) - 1).to_s
+    no_shared_id = (2**ENV['bit_length'].to_i - 1).to_s
 
     result = @routing_table.find_closest_bucket(no_shared_id)
-    
-    assert_equal(result, @routing_table.buckets[0])    
+
+    assert_equal(result, @routing_table.buckets[0])
   end
 
   def test_insert_find_closest_bucket_with_two_buckets_one_shared_bit
@@ -104,11 +105,11 @@ class RoutingTableTest160 < Minitest::Test
     node7 = Node.new(node_id, @kn)
 
     index_of_inserted_bucket = Binary.shared_prefix_bit_length('0', node_id)
-    
+
     @routing_table.insert(node14.to_contact)
     @routing_table.insert(node15.to_contact)
     @routing_table.insert(node7.to_contact)
- 
+
     assert_equal(index_of_inserted_bucket + 1, @routing_table.buckets.size)
   end
 
@@ -156,14 +157,13 @@ class RoutingTableTest160 < Minitest::Test
 
     index_of_last_bucket = Binary.shared_prefix_bit_length('0', '7')
 
-
     assert_equal(1, @routing_table.buckets[index_of_last_bucket].contacts.size)
     assert_equal(2, @routing_table.buckets[index_of_last_bucket - 1].contacts.size)
     assert_equal(index_of_last_bucket + 1, @routing_table.buckets.size)
   end
 
   def test_redistribute_one_bucket_to_two
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = @two_to159.to_s
     node_no_shared = Node.new(no_shared_id, @kn)
     node3 = Node.new('3', @kn)
 
@@ -179,7 +179,7 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_splittable_but_contains_at_least_1_closer_element
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = @two_to159.to_s
 
     node3 = Node.new('3', @kn)
     node_no_shared = Node.new(no_shared_id, @kn)
@@ -193,22 +193,18 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_not_splittable
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
-    no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
-    no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
+    no_shared_id = @two_to159.to_s
+    no_shared_id2 = (@two_to159 + 1).to_s
+    no_shared_id3 = (@two_to159 + 2).to_s
 
     node_no_shared_1 = Node.new(no_shared_id, @kn)
     node_no_shared_2 = Node.new(no_shared_id2, @kn)
-    
 
     @routing_table.insert(node_no_shared_1.to_contact)
     @routing_table.insert(node_no_shared_2.to_contact)
 
     node7 = Node.new('7', @kn)
     node6 = Node.new('6', @kn)
-
-    a = Binary.shared_prefix_bit_length('0', no_shared_id)
-    b = Binary.shared_prefix_bit_length('0', no_shared_id2)
 
     @routing_table.insert(node7.to_contact)
     @routing_table.insert(node6.to_contact)
@@ -221,13 +217,12 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_not_splittable_and_head_node_live
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
-    no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
-    no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
+    no_shared_id = @two_to159.to_s
+    no_shared_id2 = (@two_to159 + 1).to_s
+    no_shared_id3 = (@two_to159 + 2).to_s
 
     node_no_shared_1 = Node.new(no_shared_id, @kn)
     node_no_shared_2 = Node.new(no_shared_id2, @kn)
-    
 
     @routing_table.insert(node_no_shared_1.to_contact)
     @routing_table.insert(node_no_shared_2.to_contact)
@@ -235,14 +230,11 @@ class RoutingTableTest160 < Minitest::Test
     node7 = Node.new('7', @kn)
     node6 = Node.new('6', @kn)
 
-    a = Binary.shared_prefix_bit_length('0', no_shared_id)
-    b = Binary.shared_prefix_bit_length('0', no_shared_id2)
-
     @routing_table.insert(node7.to_contact)
     @routing_table.insert(node6.to_contact)
 
     node_no_shared_3 = Node.new(no_shared_id3, @kn)
-    @routing_table.insert(node_no_shared_3.to_contact)  
+    @routing_table.insert(node_no_shared_3.to_contact)
 
     assert_equal(no_shared_id, @routing_table.buckets[0].tail.id)
     assert_equal(no_shared_id2, @routing_table.buckets[0].head.id)
@@ -250,13 +242,12 @@ class RoutingTableTest160 < Minitest::Test
   end
 
   def test_insert_if_bucket_full_and_not_splittable_and_head_node_not_live
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
-    no_shared_id2 = (2 ** (ENV['bit_length'].to_i - 1) + 1).to_s
-    no_shared_id3 = (2 ** (ENV['bit_length'].to_i - 1) + 2).to_s
+    no_shared_id = @two_to159.to_s
+    no_shared_id2 = (@two_to159 + 1).to_s
+    no_shared_id3 = (@two_to159 + 2).to_s
 
     node_no_shared_1 = Node.new(no_shared_id, @kn)
     node_no_shared_2 = Node.new(no_shared_id2, @kn)
-    
 
     @routing_table.insert(node_no_shared_1.to_contact)
     @routing_table.insert(node_no_shared_2.to_contact)
@@ -264,16 +255,13 @@ class RoutingTableTest160 < Minitest::Test
     node7 = Node.new('7', @kn)
     node6 = Node.new('6', @kn)
 
-    a = Binary.shared_prefix_bit_length('0', no_shared_id)
-    b = Binary.shared_prefix_bit_length('0', no_shared_id2)
-
     @routing_table.insert(node7.to_contact)
     @routing_table.insert(node6.to_contact)
 
     @kn.nodes.delete_at(1)
 
     node_no_shared_3 = Node.new(no_shared_id3, @kn)
-    @routing_table.insert(node_no_shared_3.to_contact)  
+    @routing_table.insert(node_no_shared_3.to_contact)
 
     assert_equal(no_shared_id3, @routing_table.buckets[0].tail.id)
     assert_equal(no_shared_id2, @routing_table.buckets[0].head.id)

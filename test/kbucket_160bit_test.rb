@@ -7,12 +7,13 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class KBucketTest160 < Minitest::Test
   def setup
+    ENV['bit_length'] = '160'
+    ENV['k'] = '2'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit_length'] = '160'
-    ENV['k'] = '2'
+    @largest = 2**ENV['bit_length'].to_i
   end
 
   def test_create_bucket
@@ -51,7 +52,7 @@ class KBucketTest160 < Minitest::Test
 
   def test_head_tail_two_contacts
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert_equal(@bucket.contacts[0], @bucket.head)
     assert_equal(@bucket.contacts[1], @bucket.tail)
@@ -59,15 +60,15 @@ class KBucketTest160 < Minitest::Test
 
   def test_bucket_is_full
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
-    assert(@bucket.is_full?)
+    assert(@bucket.full?)
   end
 
   def test_bucket_is_not_full
     @bucket.add(@contact)
 
-    refute(@bucket.is_full?)
+    refute(@bucket.full?)
   end
 
   def test_find_contact_by_id
@@ -94,18 +95,18 @@ class KBucketTest160 < Minitest::Test
     @bucket.add(Node.new('15', @kn).to_contact)
     @bucket.add(Node.new('7', @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     assert(result)
   end
 
   def test_is_not_redistributable
-    no_shared_id = ((2 ** ENV['bit_length'].to_i) - 1).to_s
-    no_shared_id2 = ((2 ** ENV['bit_length'].to_i) - 2).to_s
-    
+    no_shared_id = (@largest - 1).to_s
+    no_shared_id2 = (@largest - 2).to_s
+
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     refute(result)
   end
 

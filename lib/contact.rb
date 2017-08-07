@@ -1,10 +1,9 @@
 require 'json'
 
 class Contact
-  attr_reader :id, :ip, :port, :last_seen
-  attr_accessor :active
+  attr_reader :id, :ip, :port, :last_seen, :active
 
-  def initialize(options)    ### {id: '2342342', ip: '23.24.55.8', port: 80}
+  def initialize(options) ### {id: '2342342', ip: '23.24.55.8', port: 80}
     @id = options[:id]
     @ip = options[:ip] || 'localhost'
     @port = options[:port] || 80
@@ -12,11 +11,15 @@ class Contact
     @active = nil
   end
 
+  def activate
+    @active = true
+  end
+
   def update_last_seen
     @last_seen = Time.now
   end
 
-  def as_json(options={})
+  def as_json
     {
       id: @id,
       ip: @ip,
@@ -24,7 +27,7 @@ class Contact
     }
   end
 
-  def to_json(*options)
-    as_json(*options).to_json(*options)
+  def to_json
+    as_json.to_json
   end
 end

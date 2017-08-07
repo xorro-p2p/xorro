@@ -37,9 +37,7 @@ class NodeTest6bit8k < Minitest::Test
     refute(node0.ping(Contact.new(id: '3', ip: '')))
   end
 
-  def test_ping_dead_node
-    
-  end
+  def test_ping_dead_node; end
 
   def test_receive_ping
     node0 = Node.new('0', @kn)
@@ -86,7 +84,7 @@ class NodeTest6bit8k < Minitest::Test
     node12 = Node.new('12', @kn)
 
     results = node0.receive_find_node('1', node12.to_contact)
-    results.map! { |contact| contact.id }
+    results.map!(&:id)
 
     refute_empty(results)
     assert_equal(8, results.size)
@@ -120,7 +118,7 @@ class NodeTest6bit8k < Minitest::Test
     node12 = Node.new('12', @kn)
 
     results = node0.receive_find_node('1', node12.to_contact)
-    results.map! { |contact| contact.id }
+    results.map!(&:id)
 
     refute_empty(results)
     assert_equal(8, results.size)
@@ -155,7 +153,7 @@ class NodeTest6bit8k < Minitest::Test
     node12 = Node.new('12', @kn)
 
     results = node0.receive_find_node('40', node12.to_contact)
-    results.map! { |contact| contact.id }
+    results.map!(&:id)
 
     refute_empty(results)
     assert_equal(8, results.size)
@@ -357,7 +355,7 @@ class NodeTest6bit8k < Minitest::Test
     assert_equal(['some_address'], node12.dht_segment['13'])
     assert_equal(['some_address'], node4.dht_segment['13'])
     assert_equal(['some_address'], node5.dht_segment['13'])
-    refute(node14.dht_segment['13'])    
+    refute(node14.dht_segment['13'])
   end
 
   def test_iterative_find_value_with_match
@@ -408,9 +406,10 @@ class NodeTest6bit8k < Minitest::Test
     result = node0.iterative_find_value('15')
     assert_instance_of(Array, result)
     assert_equal(4, result.size)
-    assert_includes(result.map(&:id), node4_contact.id)
-    assert_includes(result.map(&:id), node5_contact.id)
-    assert_includes(result.map(&:id), node14_contact.id)
-    assert_includes(result.map(&:id), node12_contact.id)
+    ids = result.map(&:id)
+    assert_includes(ids, node4_contact.id)
+    assert_includes(ids, node5_contact.id)
+    assert_includes(ids, node14_contact.id)
+    assert_includes(ids, node12_contact.id)
   end
 end

@@ -2,9 +2,7 @@ require_relative '../development.rb'
 require_relative 'binary.rb'
 
 class KBucket
-  # K = ENV['k'].to_i # hardcoding k value for now
-  attr_reader :splittable
-  attr_accessor :contacts, :node
+  attr_reader :splittable, :contacts, :node
 
   def initialize(node)
     @node = node
@@ -13,7 +11,7 @@ class KBucket
   end
 
   include Enumerable
-  def each(&block)
+  def each
     @contacts.each do |c|
       yield c
     end
@@ -28,7 +26,7 @@ class KBucket
     @contacts.last
   end
 
-  def is_full?
+  def full?
     @contacts.size == ENV['k'].to_i
   end
 
@@ -43,7 +41,7 @@ class KBucket
     end
   end
 
-  def is_redistributable?(node_id, index)
+  def redistributable?(node_id, index)
     shared_bit_lengths = Binary.shared_prefix_bit_length_map(node_id, @contacts)
 
     has_moveable_value = shared_bit_lengths.any? do |bit_length|
@@ -58,11 +56,6 @@ class KBucket
     @node.sync
   end
 
-  # if this bucket already includes the contact, move existing contact to tail and discard new contact
-  # if this bucket doesn't include the contact and @contacts.size < K, insert new contact as tail
-  # if this bucket doesn't include the contact and bucket is full
-  # ping head; delete head if it doesn't respond and insert new contact as tail
-  # move head to tail end if it does respond, discard new contact
   def add(contact)
     @contacts.push contact
     @node.sync
@@ -75,7 +68,6 @@ class KBucket
       @node.sync
     else
       delete(head)
-      # insert new contact as tail
       add(new_contact)
     end
   end

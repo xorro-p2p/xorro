@@ -7,13 +7,14 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class KBucketTest160bit8k < Minitest::Test
   def setup
+    ENV['bit_length'] = '160'
+    ENV['k'] = '8'
+    ENV['alpha'] = '3'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit_length'] = '160'
-    ENV['k'] = '8'
-    ENV['alpha'] = '3'
+    @largest = 2**ENV['bit_length'].to_i
   end
 
   def test_create_bucket
@@ -52,7 +53,7 @@ class KBucketTest160bit8k < Minitest::Test
 
   def test_head_tail_two_contacts
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert_equal(@bucket.contacts[0], @bucket.head)
     assert_equal(@bucket.contacts[1], @bucket.tail)
@@ -60,21 +61,21 @@ class KBucketTest160bit8k < Minitest::Test
 
   def test_bucket_is_full
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
-    @bucket.add({ :id => '2', :ip => '' })
-    @bucket.add({ :id => '3', :ip => '' })
-    @bucket.add({ :id => '4', :ip => '' })
-    @bucket.add({ :id => '5', :ip => '' })
-    @bucket.add({ :id => '6', :ip => '' })
-    @bucket.add({ :id => '7', :ip => '' })
+    @bucket.add(id: '1', ip: '')
+    @bucket.add(id: '2', ip: '')
+    @bucket.add(id: '3', ip: '')
+    @bucket.add(id: '4', ip: '')
+    @bucket.add(id: '5', ip: '')
+    @bucket.add(id: '6', ip: '')
+    @bucket.add(id: '7', ip: '')
 
-    assert(@bucket.is_full?)
+    assert(@bucket.full?)
   end
 
   def test_bucket_is_not_full
     @bucket.add(@contact)
 
-    refute(@bucket.is_full?)
+    refute(@bucket.full?)
   end
 
   def test_find_contact_by_id
@@ -98,15 +99,15 @@ class KBucketTest160bit8k < Minitest::Test
   end
 
   def test_is_redistributable
-    no_shared_id = ((2 ** ENV['bit_length'].to_i) - 1).to_s
-    no_shared_id2 = ((2 ** ENV['bit_length'].to_i) - 2).to_s
-    no_shared_id3 = ((2 ** ENV['bit_length'].to_i) - 3).to_s
-    no_shared_id4 = ((2 ** ENV['bit_length'].to_i) - 4).to_s
-    no_shared_id5 = ((2 ** ENV['bit_length'].to_i) - 5).to_s
-    no_shared_id6 = ((2 ** ENV['bit_length'].to_i) - 6).to_s
-    no_shared_id7 = ((2 ** ENV['bit_length'].to_i) - 7).to_s
+    no_shared_id = (@largest - 1).to_s
+    no_shared_id2 = (@largest - 2).to_s
+    no_shared_id3 = (@largest - 3).to_s
+    no_shared_id4 = (@largest - 4).to_s
+    no_shared_id5 = (@largest - 5).to_s
+    no_shared_id6 = (@largest - 6).to_s
+    no_shared_id7 = (@largest - 7).to_s
     shared_bits_id = '1'
-    
+
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id3, @kn).to_contact)
@@ -116,20 +117,20 @@ class KBucketTest160bit8k < Minitest::Test
     @bucket.add(Node.new(no_shared_id7, @kn).to_contact)
     @bucket.add(Node.new(shared_bits_id, @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     assert(result)
   end
 
   def test_is_not_redistributable
-    no_shared_id = ((2 ** ENV['bit_length'].to_i) - 1).to_s
-    no_shared_id2 = ((2 ** ENV['bit_length'].to_i) - 2).to_s
-    no_shared_id3 = ((2 ** ENV['bit_length'].to_i) - 3).to_s
-    no_shared_id4 = ((2 ** ENV['bit_length'].to_i) - 4).to_s
-    no_shared_id5 = ((2 ** ENV['bit_length'].to_i) - 5).to_s
-    no_shared_id6 = ((2 ** ENV['bit_length'].to_i) - 6).to_s
-    no_shared_id7 = ((2 ** ENV['bit_length'].to_i) - 7).to_s
-    no_shared_id8 = ((2 ** ENV['bit_length'].to_i) - 8).to_s
-    
+    no_shared_id = (@largest - 1).to_s
+    no_shared_id2 = (@largest - 2).to_s
+    no_shared_id3 = (@largest - 3).to_s
+    no_shared_id4 = (@largest - 4).to_s
+    no_shared_id5 = (@largest - 5).to_s
+    no_shared_id6 = (@largest - 6).to_s
+    no_shared_id7 = (@largest - 7).to_s
+    no_shared_id8 = (@largest - 8).to_s
+
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id3, @kn).to_contact)
@@ -139,7 +140,7 @@ class KBucketTest160bit8k < Minitest::Test
     @bucket.add(Node.new(no_shared_id7, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id8, @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     refute(result)
   end
 

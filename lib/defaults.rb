@@ -30,7 +30,6 @@ module Defaults
     if Storage.file_exists? && Storage.valid_node?
       node = Storage.load_file
       node.generate_file_cache
-      node.port = port
     else
       node = Node.new(new_id, network, port)
     end
@@ -40,10 +39,10 @@ module Defaults
   end
 
   def self.new_id
-    rand(2 ** ENV['bit_length'].to_i).to_s
+    rand(2**ENV['bit_length'].to_i).to_s
   end
 
   def self.safe_mkdir(dir)
-    Dir.mkdir(dir) unless Dir.exists?(dir)
+    Dir.mkdir(dir) unless Dir.exist?(dir)
   end
 end

@@ -13,5 +13,4 @@ class NetworkAdapterTest < Minitest::Test
   def test_kn_has_nodes
     assert_equal([], @kn.nodes)
   end
-
 end

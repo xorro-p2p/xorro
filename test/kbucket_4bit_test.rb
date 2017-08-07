@@ -7,12 +7,12 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class KBucketTest < Minitest::Test
   def setup
+    ENV['bit_length'] = '4'
+    ENV['k'] = '2'
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    ENV['bit_length'] = '4'
-    ENV['k'] = '2'
   end
 
   def test_create_bucket
@@ -51,7 +51,7 @@ class KBucketTest < Minitest::Test
 
   def test_head_tail_two_contacts
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert_equal(@bucket.contacts[0], @bucket.head)
     assert_equal(@bucket.contacts[1], @bucket.tail)
@@ -59,15 +59,15 @@ class KBucketTest < Minitest::Test
 
   def test_bucket_is_full
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
-    assert(@bucket.is_full?)
+    assert(@bucket.full?)
   end
 
   def test_bucket_is_not_full
     @bucket.add(@contact)
 
-    refute(@bucket.is_full?)
+    refute(@bucket.full?)
   end
 
   def test_find_contact_by_id
@@ -94,7 +94,7 @@ class KBucketTest < Minitest::Test
     @bucket.add(Node.new('15', @kn).to_contact)
     @bucket.add(Node.new('7', @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     assert(result)
   end
 
@@ -102,7 +102,7 @@ class KBucketTest < Minitest::Test
     @bucket.add(Node.new('15', @kn).to_contact)
     @bucket.add(Node.new('14', @kn).to_contact)
 
-    result = @bucket.is_redistributable?('0', 0)
+    result = @bucket.redistributable?('0', 0)
     refute(result)
   end
 
