@@ -19,7 +19,7 @@ class RoutingTableTest160bit8k < Minitest::Test
   end
 
   def test_insert_node_with_duplicate_id
-    new_node = Node.new('0',@kn)
+    new_node = Node.new('0', @kn)
 
     @routing_table.insert(new_node)
     assert_equal(0, @routing_table.buckets[0].size)
@@ -48,22 +48,22 @@ class RoutingTableTest160bit8k < Minitest::Test
 
     result = @routing_table.find_closest_bucket(no_shared_id)
 
-    assert_equal(result, @routing_table.buckets[0])    
+    assert_equal(result, @routing_table.buckets[0])
   end
 
   def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_bug
     @routing_table.create_bucket
 
-    no_shared_id = (2 ** (ENV['bit_length'].to_i) - 1).to_s
+    no_shared_id = (2**(ENV['bit_length'].to_i) - 1).to_s
 
     result = @routing_table.find_closest_bucket(no_shared_id)
-    
-    assert_equal(result, @routing_table.buckets[0])    
+
+    assert_equal(result, @routing_table.buckets[0])
   end
 
   def test_insert_find_closest_bucket_with_two_buckets_one_shared_bit
     @routing_table.create_bucket
-    one_shared_id = (2 ** (ENV['bit_length'].to_i - 2)).to_s
+    one_shared_id = (2**(ENV['bit_length'].to_i - 2)).to_s
 
     result = @routing_table.find_closest_bucket(one_shared_id)
 
@@ -121,7 +121,7 @@ class RoutingTableTest160bit8k < Minitest::Test
     @routing_table.insert(node7.to_contact)
 
     index_of_second_last_bucket = Binary.shared_prefix_bit_length('0', '56')
-    
+
     assert_equal(index_of_second_last_bucket + 2, @routing_table.buckets.size)
     assert_equal(8, @routing_table.buckets[index_of_second_last_bucket].contacts.size)
     assert_equal(1, @routing_table.buckets.last.contacts.size)
@@ -216,7 +216,7 @@ class RoutingTableTest160bit8k < Minitest::Test
   end
 
   def test_redistribute_one_bucket_to_two
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = (2**(ENV['bit_length'].to_i - 1)).to_s
     node_no_shared = Node.new(no_shared_id, @kn)
     node3 = Node.new('3', @kn)
 

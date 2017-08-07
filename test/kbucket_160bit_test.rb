@@ -13,7 +13,7 @@ class KBucketTest160 < Minitest::Test
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    @largest = 2 ** ENV['bit_length'].to_i
+    @largest = 2**ENV['bit_length'].to_i
   end
 
   def test_create_bucket
@@ -52,7 +52,7 @@ class KBucketTest160 < Minitest::Test
 
   def test_head_tail_two_contacts
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert_equal(@bucket.contacts[0], @bucket.head)
     assert_equal(@bucket.contacts[1], @bucket.tail)
@@ -60,7 +60,7 @@ class KBucketTest160 < Minitest::Test
 
   def test_bucket_is_full
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert(@bucket.full?)
   end
@@ -102,7 +102,7 @@ class KBucketTest160 < Minitest::Test
   def test_is_not_redistributable
     no_shared_id = (@largest - 1).to_s
     no_shared_id2 = (@largest - 2).to_s
-    
+
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)
 

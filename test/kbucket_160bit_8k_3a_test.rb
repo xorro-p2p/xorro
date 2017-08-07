@@ -14,7 +14,7 @@ class KBucketTest160bit8k < Minitest::Test
     @node = Node.new('0', @kn)
     @bucket = KBucket.new(@node)
     @contact = @node.to_contact
-    @largest = 2 ** ENV['bit_length'].to_i
+    @largest = 2**ENV['bit_length'].to_i
   end
 
   def test_create_bucket
@@ -53,7 +53,7 @@ class KBucketTest160bit8k < Minitest::Test
 
   def test_head_tail_two_contacts
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert_equal(@bucket.contacts[0], @bucket.head)
     assert_equal(@bucket.contacts[1], @bucket.tail)
@@ -61,13 +61,13 @@ class KBucketTest160bit8k < Minitest::Test
 
   def test_bucket_is_full
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
-    @bucket.add({ :id => '2', :ip => '' })
-    @bucket.add({ :id => '3', :ip => '' })
-    @bucket.add({ :id => '4', :ip => '' })
-    @bucket.add({ :id => '5', :ip => '' })
-    @bucket.add({ :id => '6', :ip => '' })
-    @bucket.add({ :id => '7', :ip => '' })
+    @bucket.add(id: '1', ip: '')
+    @bucket.add(id: '2', ip: '')
+    @bucket.add(id: '3', ip: '')
+    @bucket.add(id: '4', ip: '')
+    @bucket.add(id: '5', ip: '')
+    @bucket.add(id: '6', ip: '')
+    @bucket.add(id: '7', ip: '')
 
     assert(@bucket.full?)
   end
@@ -107,7 +107,7 @@ class KBucketTest160bit8k < Minitest::Test
     no_shared_id6 = (@largest - 6).to_s
     no_shared_id7 = (@largest - 7).to_s
     shared_bits_id = '1'
-    
+
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id3, @kn).to_contact)
@@ -130,7 +130,7 @@ class KBucketTest160bit8k < Minitest::Test
     no_shared_id6 = (@largest - 6).to_s
     no_shared_id7 = (@largest - 7).to_s
     no_shared_id8 = (@largest - 8).to_s
-    
+
     @bucket.add(Node.new(no_shared_id, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id2, @kn).to_contact)
     @bucket.add(Node.new(no_shared_id3, @kn).to_contact)

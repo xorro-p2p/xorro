@@ -19,10 +19,7 @@ class RoutingTableTest < Minitest::Test
   end
 
   def test_insert_node_with_duplicate_id
-    new_node = Node.new('0',@kn)
-
-    new_node = Node.new('0',@kn)
-
+    new_node = Node.new('0', @kn)
     @routing_table.insert(new_node)
     assert_equal(0, @routing_table.buckets[0].size)
   end
@@ -63,7 +60,7 @@ class RoutingTableTest < Minitest::Test
   end
 
   def test_insert_find_closest_bucket_with_k_buckets_no_exact_shared_bits
-    3.times do 
+    3.times do
       @routing_table.create_bucket
     end
 

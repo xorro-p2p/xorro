@@ -37,9 +37,7 @@ class NodeTest160 < Minitest::Test
     refute(node0.ping(Contact.new(id: '3', ip: '')))
   end
 
-  def test_ping_dead_node
-    
-  end
+  def test_ping_dead_node; end
 
   def test_receive_ping
     node0 = Node.new('0', @kn)
@@ -321,7 +319,7 @@ class NodeTest160 < Minitest::Test
     node0.iterative_store('13', 'some_address')
 
     assert_equal(['some_address'], node12.dht_segment['13'])
-    refute(node14.dht_segment['13'])    
+    refute(node14.dht_segment['13'])
   end
 
   def test_iterative_find_value_with_match

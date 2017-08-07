@@ -51,7 +51,7 @@ class KBucketTest6 < Minitest::Test
 
   def test_head_tail_two_contacts
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert_equal(@bucket.contacts[0], @bucket.head)
     assert_equal(@bucket.contacts[1], @bucket.tail)
@@ -59,7 +59,7 @@ class KBucketTest6 < Minitest::Test
 
   def test_bucket_is_full
     @bucket.add(@contact)
-    @bucket.add({ :id => '1', :ip => '' })
+    @bucket.add(id: '1', ip: '')
 
     assert(@bucket.full?)
   end

@@ -37,9 +37,7 @@ class NodeTest6 < Minitest::Test
     refute(node0.ping(Contact.new(id: '3', ip: '')))
   end
 
-  def test_ping_dead_node
-    
-  end
+  def test_ping_dead_node; end
 
   def test_receive_ping
     node0 = Node.new('0', @kn)

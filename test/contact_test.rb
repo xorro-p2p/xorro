@@ -7,10 +7,7 @@ class ContactTest < Minitest::Test
   def setup
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
-    @options = {
-      :id => @node.id,
-      :ip => @node.ip,
-    }
+    @options = { id: @node.id, ip: @node.ip }
   end
 
   def test_create_contact

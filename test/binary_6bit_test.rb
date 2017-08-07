@@ -32,20 +32,20 @@ class BinaryTest6 < Minitest::Test
   def test_sha
     assert_equal('aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d', Binary.sha('hello'))
     assert_equal('356a192b7913b04c54574d18c28d46e6395428ab', Binary.sha('1'))
-    assert_equal( 40, Binary.sha(rand(333).to_s).size)
-    assert_equal( Binary.sha('should be the same'), Binary.sha('should be the same'))
+    assert_equal(40, Binary.sha(rand(333).to_s).size)
+    assert_equal(Binary.sha('should be the same'), Binary.sha('should be the same'))
   end
 
   def test_select_closest_xor
-    array = ['1', '2','3','4','5'].map {|i| Contact.new({id: i})}
+    array = ['1', '2', '3', '4', '5'].map { |i| Contact.new(id: i) }
     assert_equal(Binary.select_closest_xor('0', array).id, '1')
     assert_equal(Binary.select_closest_xor('5', array).id, '5')
     assert_equal(Binary.select_closest_xor('15', array).id, '5')
   end
 
   def test_sort_by_xor!
-    array = ['1', '2','3','4','5']
-    shuffled = array.shuffle.map {|i| Contact.new({id: i})}
+    array = ['1', '2', '3', '4', '5']
+    shuffled = array.shuffle.map { |i| Contact.new(id: i) }
     result = Binary.sort_by_xor!('0', shuffled).map(&:id)
     assert_equal(array, result)
   end
