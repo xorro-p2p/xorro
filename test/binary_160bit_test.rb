@@ -4,8 +4,8 @@ require_relative "../lib/contact.rb"
 
 class BinaryTest160 < Minitest::Test
   def setup
-    ENV['bit_length'] = '160'
-    ENV['k'] = '2'
+    Defaults::ENVIRONMENT[:bit_length] = 160
+    Defaults::ENVIRONMENT[:k] = 2
   end
 
   def test_xor_distance
@@ -18,7 +18,7 @@ class BinaryTest160 < Minitest::Test
   end
 
   def test_shared_prefix_bit_length
-    no_shared_id = ((2**ENV['bit_length'].to_i) - 1).to_s
+    no_shared_id = ((2**Defaults::ENVIRONMENT[:bit_length]) - 1).to_s
 
     assert_equal(159, Binary.shared_prefix_bit_length('0', '1'))
     assert_equal(160, Binary.shared_prefix_bit_length('1', '1'))

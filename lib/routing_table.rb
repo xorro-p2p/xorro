@@ -1,4 +1,5 @@
-require_relative '../development.rb'
+require_relative '../config.rb'
+require_relative 'defaults.rb'
 require_relative 'binary.rb'
 require_relative 'kbucket.rb'
 
@@ -46,7 +47,7 @@ class RoutingTable
     buckets[idx] || buckets.last
   end
 
-  def find_closest_contacts(id, sender_contact = nil, quantity = ENV['k'].to_i)
+  def find_closest_contacts(id, sender_contact = nil, quantity = Defaults::ENVIRONMENT[:k])
     closest_bucket = find_closest_bucket(id)
     results = []
 
@@ -82,7 +83,7 @@ class RoutingTable
   end
 
   def room_for_another_bucket?
-    buckets.size < ENV['bit_length'].to_i
+    buckets.size < Defaults::ENVIRONMENT[:bit_length]
   end
 
   def create_bucket

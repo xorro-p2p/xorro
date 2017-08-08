@@ -4,8 +4,8 @@ require_relative "../lib/contact.rb"
 
 class BinaryTest6 < Minitest::Test
   def setup
-    ENV['bit_length'] = '6'
-    ENV['k'] = '2'
+    Defaults::ENVIRONMENT[:bit_length] = 6
+    Defaults::ENVIRONMENT[:k] = 2
   end
 
   def test_xor_distance
