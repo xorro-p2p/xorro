@@ -51,14 +51,11 @@ class Node
   end
 
   def broadcast
-    @manifests.each do |mk, mv|
-      address = file_url(mv)
-      iterative_store(mk, address)
-    end
-
-    @shards.each do |sk, sv|
-      address = file_url(sv)
-      iterative_store(sk, address)
+    [@manifests, @shards].each do |hash|
+      hash.each do |k,v|
+        address = file_url(v)
+        iterative_store(k, address)
+      end
     end
   end
 
@@ -78,36 +75,30 @@ class Node
   end
 
   def generate_manifest_cache
-    cache = {}
+    @manifests = {}
 
     Dir.glob(File.expand_path(Defaults::ENVIRONMENT[:manifests] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = File.basename(file, ".xro")
-      cache[file_hash] = '/manifests/' + File.basename(file)
+      @manifests[file_hash] = '/manifests/' + File.basename(file)
     end
-
-    @manifests = cache
   end
 
   def generate_shard_cache
-    cache = {}
+    @shards = {}
 
     Dir.glob(File.expand_path(Defaults::ENVIRONMENT[:shards] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = File.basename(file)
-      cache[file_hash] = '/shards/' + File.basename(file)
+      @shards[file_hash] = '/shards/' + File.basename(file)
     end
-
-    @shards = cache
   end
 
   def generate_file_cache
-    cache = {}
+    @files = {}
 
     Dir.glob(File.expand_path(Defaults::ENVIRONMENT[:files] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = generate_file_id(File.read(file))
-      cache[file_hash] = '/files/' + File.basename(file)
+      @files[file_hash] = '/files/' + File.basename(file)
     end
-
-    @files = cache
   end
 
   def add_to_cache(cache, key, value)
@@ -305,7 +296,6 @@ class Node
       result['contacts'] = receive_find_node(file_id, sender_contact)
     end
     @routing_table.insert(sender_contact)
-    # ping(sender_contact)
     result
   end
 

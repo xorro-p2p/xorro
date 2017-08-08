@@ -3,16 +3,19 @@ require_relative 'contact.rb'
 
 class NetworkAdapter
   attr_reader :nodes
+
+  TO_CONTACT = Proc.new do |contact| 
+    Contact.new(id: contact['id'], ip: contact['ip'], port: contact['port'].to_i)
+  end
+
   def initialize
     @nodes = []
   end
 
   def store(file_id, address, recipient_contact, sender_contact)
-    info_hash = { file_id: file_id, address: address, port: sender_contact.port, id: sender_contact.id, ip: sender_contact.ip }
-    url = recipient_contact.ip
-    port = recipient_contact.port
+    info_hash = hashify(sender_contact, file_id: file_id, address: address)
     begin
-      response = call_rpc_store(url, port, info_hash)
+      response = call_rpc(recipient_contact, 'store', info_hash)
     rescue
       response = false
     end
@@ -20,34 +23,34 @@ class NetworkAdapter
   end
 
   def find_node(query_id, recipient_contact, sender_contact)
-    info_hash = { node_id: query_id, id: sender_contact.id, ip: sender_contact.ip, port: sender_contact.port }
+    info_hash = hashify(sender_contact, node_id: query_id)
     begin
-      response = call_rpc_find_node(recipient_contact.ip, recipient_contact.port, info_hash)
+      response = call_rpc(recipient_contact, 'find_node', info_hash)
       closest_nodes = JSON.parse(response)
     rescue
       closest_nodes = []
     end
-    closest_nodes.map! { |contact| Contact.new(id: contact['id'], ip: contact['ip'], port: contact['port'].to_i) }
+    closest_nodes.map!(&TO_CONTACT)
   end
 
   def find_value(file_id, recipient_contact, sender_contact)
-    info_hash = { file_id: file_id, id: sender_contact.id, ip: sender_contact.ip, port: sender_contact.port }
+    info_hash = hashify(sender_contact, file_id: file_id)
     begin
-      response = call_rpc_find_value(recipient_contact.ip, recipient_contact.port, info_hash)
+      response = call_rpc(recipient_contact, 'find_value', info_hash)
       result = JSON.parse(response)
     rescue
       result = {}
     end
     if result['contacts']
-      result['contacts'].map! { |contact| Contact.new(id: contact['id'], ip: contact['ip'], port: contact['port'].to_i) }
+      result['contacts'].map!(&TO_CONTACT)
     end
     result
   end
 
-  def ping(contact, sender_contact)
-    info_hash = { port: sender_contact.port, id: sender_contact.id, ip: sender_contact.ip }
+  def ping(recipient_contact, sender_contact)
+    info_hash = hashify(sender_contact)
     begin
-      response = call_rpc_ping(contact.ip, contact.port, info_hash)
+      response = call_rpc(recipient_contact, 'ping', info_hash)
     rescue
       return false
     end
@@ -83,20 +86,17 @@ class NetworkAdapter
 
   private
 
-  def call_rpc_ping(url, port, info_hash)
-    HTTP.post('http://' + url + ':' + port.to_s + '/rpc/ping', form: info_hash)
+  def hashify(sender, options = {})
+    { id: sender.id,
+      ip: sender.ip,
+      port: sender.port
+    }.merge(options)
   end
 
-  def call_rpc_store(url, port, info_hash)
-    HTTP.post('http://' + url + ':' + port.to_s + '/rpc/store', form: info_hash)
-  end
-
-  def call_rpc_find_node(url, port, info_hash)
-    HTTP.post('http://' + url + ':' + port.to_s + '/rpc/find_node', form: info_hash)
-  end
-
-  def call_rpc_find_value(url, port, info_hash)
-    HTTP.post('http://' + url + ':' + port.to_s + '/rpc/find_value', form: info_hash)
+  def call_rpc(recipient_contact, path, info_hash)
+    url = recipient_contact.ip
+    port = recipient_contact.port
+    HTTP.post('http://' + url + ':' + port.to_s + "/rpc/#{path}", form: info_hash)
   end
 
   def call_get_info(url, port)
