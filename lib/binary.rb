@@ -1,4 +1,5 @@
 require 'digest/sha1'
+require_relative 'defaults'
 
 module Binary
   def self.xor_distance(id_string1, id_string2)
@@ -6,9 +7,9 @@ module Binary
   end
 
   def self.shared_prefix_bit_length(id_string1, id_string2)
-    return ENV['bit_length'].to_i if id_string1 == id_string2
+    return Defaults::ENVIRONMENT[:bit_length] if id_string1 == id_string2
     distance = xor_distance(id_string1, id_string2)
-    ENV['bit_length'].to_i - distance.to_s(2).size
+    Defaults::ENVIRONMENT[:bit_length] - distance.to_s(2).size
   end
 
   def self.sha(str)

@@ -2,13 +2,13 @@ require 'open-uri'
 require 'digest/sha1'
 require 'socket'
 require 'ngrok/tunnel'
-require_relative '../development.rb'
+require 'json'
+require_relative '../config.rb'
 require_relative 'binary.rb'
 require_relative 'routing_table.rb'
 require_relative 'contact.rb'
 require_relative 'network_adapter.rb'
 require_relative 'storage.rb'
-require 'json'
 
 class Node
   attr_reader :ip, :port, :id, :files, :routing_table, :dht_segment, :is_super, :superport, :manifests, :shards
@@ -80,7 +80,7 @@ class Node
   def generate_manifest_cache
     cache = {}
 
-    Dir.glob(File.expand_path(ENV['manifests'] + '/*')).select { |f| File.file?(f) }.each do |file|
+    Dir.glob(File.expand_path(Defaults::ENVIRONMENT[:manifests] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = File.basename(file, ".xro")
       cache[file_hash] = '/manifests/' + File.basename(file)
     end
@@ -91,7 +91,7 @@ class Node
   def generate_shard_cache
     cache = {}
 
-    Dir.glob(File.expand_path(ENV['shards'] + '/*')).select { |f| File.file?(f) }.each do |file|
+    Dir.glob(File.expand_path(Defaults::ENVIRONMENT[:shards] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = File.basename(file)
       cache[file_hash] = '/shards/' + File.basename(file)
     end
@@ -102,7 +102,7 @@ class Node
   def generate_file_cache
     cache = {}
 
-    Dir.glob(File.expand_path(ENV['files'] + '/*')).select { |f| File.file?(f) }.each do |file|
+    Dir.glob(File.expand_path(Defaults::ENVIRONMENT[:files] + '/*')).select { |f| File.file?(f) }.each do |file|
       file_hash = generate_file_id(File.read(file))
       cache[file_hash] = '/files/' + File.basename(file)
     end
@@ -144,7 +144,7 @@ class Node
   def add_shard(name, data)
     file_path = '/shards/' + name
 
-    write_to_subfolder(ENV['shards'], name, data)
+    write_to_subfolder(Defaults::ENVIRONMENT[:shards], name, data)
     add_to_cache(@shards, name, file_path)
     iterative_store(name, file_url(file_path))
   end
@@ -157,7 +157,7 @@ class Node
     file_name = file_id + '.xro'
     file_path = '/manifests/' + file_name
 
-    write_to_subfolder(ENV['manifests'], file_name, obj)
+    write_to_subfolder(Defaults::ENVIRONMENT[:manifests], file_name, obj)
     add_to_cache(@manifests, file_id, file_path)
     iterative_store(file_id, file_url(file_path))
   end
@@ -183,19 +183,19 @@ class Node
   end
 
   def reassemble_shards(file)
-    file_name = ENV['manifests'] + '/' + file
+    file_name = Defaults::ENVIRONMENT[:manifests] + '/' + file
 
     manifest = JSON.parse(File.read(file_name))
     shards = manifest['pieces']
     shard_count = shards.length
 
     shards.each do |shard|
-      if !File.exist?(ENV['shards'] + '/' + shard)
+      if !File.exist?(Defaults::ENVIRONMENT[:shards] + '/' + shard)
         result = iterative_find_value(shard)
         get(result) if result
       end
 
-      shard_content = File.read(ENV['shards'] + '/' + shard)
+      shard_content = File.read(Defaults::ENVIRONMENT[:shards] + '/' + shard)
       if generate_file_id(shard_content) == shard
         shard_count -= 1
       end
@@ -203,10 +203,10 @@ class Node
 
     if shard_count.zero?
       shard_paths = shards.map do |shard|
-        ENV['shards'] + '/' + shard
+        Defaults::ENVIRONMENT[:shards] + '/' + shard
       end
 
-      File.open(ENV['files'] + '/' + manifest['file_name'], 'a') do |f|
+      File.open(Defaults::ENVIRONMENT[:files] + '/' + manifest['file_name'], 'a') do |f|
         shard_paths.each do |path|
           f.write(File.read(path))
         end
@@ -275,10 +275,10 @@ class Node
 
   def iterative_find_node(query_id)
     shortlist = []
-    results_returned = @routing_table.find_closest_contacts(query_id, nil, ENV['alpha'].to_i)
+    results_returned = @routing_table.find_closest_contacts(query_id, nil, Defaults::ENVIRONMENT[:alpha])
 
-    until shortlist.select(&:active).size == ENV['k'].to_i
-      shortlist.push(results_returned.pop.clone) until results_returned.empty? || shortlist.size == ENV['k'].to_i
+    until shortlist.select(&:active).size == Defaults::ENVIRONMENT[:k]
+      shortlist.push(results_returned.pop.clone) until results_returned.empty? || shortlist.size == Defaults::ENVIRONMENT[:k]
       closest_contact = Binary.select_closest_xor(query_id, shortlist)
 
       # once we get past happy path, we only iterate over items not yet probed
@@ -342,10 +342,10 @@ class Node
     # return dht_segment[query_id] if dht_segment[query_id]
 
     shortlist = []
-    results_returned = @routing_table.find_closest_contacts(query_id, nil, ENV['alpha'].to_i)
+    results_returned = @routing_table.find_closest_contacts(query_id, nil, Defaults::ENVIRONMENT[:alpha])
 
-    until shortlist.select(&:active).size == ENV['k'].to_i
-      shortlist.push(results_returned.pop.clone) until results_returned.empty? || shortlist.size == ENV['k'].to_i
+    until shortlist.select(&:active).size == Defaults::ENVIRONMENT[:k]
+      shortlist.push(results_returned.pop.clone) until results_returned.empty? || shortlist.size == Defaults::ENVIRONMENT[:k]
       # closest_contact = Binary.select_closest_xor(query_id, shortlist)
       Binary.sort_by_xor!(id, shortlist)
       closest_contact = shortlist[0]

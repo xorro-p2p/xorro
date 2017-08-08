@@ -8,7 +8,8 @@ require 'erubis'
 require 'thin'
 require 'yaml'
 require 'concurrent'
-require_relative 'development.rb'
+require_relative 'config.rb'
+require_relative 'lib/defaults.rb'
 require_relative 'lib/node.rb'
 require_relative 'lib/network_adapter.rb'
 require_relative 'lib/contact.rb'
@@ -91,7 +92,7 @@ class XorroNode < Sinatra::Base
     query_id = params[:file_id]
     file_url = NODE.files[query_id]
 
-    if file_url && File.exist?(ENV['files'] + "/" + File.basename(file_url))
+    if file_url && File.exist?(Defaults::ENVIRONMENT[:files] + "/" + File.basename(file_url))
       redirect URI.escape(file_url)
     else
       result = nil
@@ -123,15 +124,15 @@ class XorroNode < Sinatra::Base
   ### File retreival routes
 
   get '/files/:filename' do
-    send_file File.join(File.expand_path(ENV['files']), params[:filename])
+    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:files]), params[:filename])
   end
 
   get '/manifests/:filename' do
-    send_file File.join(File.expand_path(ENV['manifests']), params[:filename])
+    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:manifests]), params[:filename])
   end
 
   get '/shards/:filename' do
-    send_file File.join(File.expand_path(ENV['shards']), params[:filename])
+    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:shards]), params[:filename])
   end
 
   ### RPC Routes
@@ -209,9 +210,9 @@ class XorroNode < Sinatra::Base
     file_data = params[:data][start..-1]
     decode_base64_content = Base64.decode64(file_data)
     file_id = NODE.generate_file_id(decode_base64_content)
-    file_name = ENV['files'] + '/' + params[:name]
+    file_name = Defaults::ENVIRONMENT[:files] + '/' + params[:name]
 
-    NODE.write_to_subfolder(ENV['files'], params[:name], decode_base64_content)
+    NODE.write_to_subfolder(Defaults::ENVIRONMENT[:files], params[:name], decode_base64_content)
     NODE.add_to_cache(NODE.files, file_id, '/files/' + params[:name])
 
     Thread.new { NODE.shard_file(file_name, file_id) }

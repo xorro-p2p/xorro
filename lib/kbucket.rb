@@ -1,4 +1,5 @@
-require_relative '../development.rb'
+require_relative '../config.rb'
+require_relative 'defaults.rb'
 require_relative 'binary.rb'
 
 class KBucket
@@ -27,7 +28,7 @@ class KBucket
   end
 
   def full?
-    @contacts.size == ENV['k'].to_i
+    @contacts.size == Defaults::ENVIRONMENT[:k]
   end
 
   # is this the bucket that has the longest shared_bits_length?

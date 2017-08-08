@@ -7,11 +7,11 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class RoutingTableTest160bit8k < Minitest::Test
   def setup
+    Defaults::ENVIRONMENT[:bit_length] = 160
+    Defaults::ENVIRONMENT[:k] = 8
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @routing_table = @node.routing_table
-    ENV['bit_length'] = '160'
-    ENV['k'] = '8'
   end
 
   def test_create_routing_table
@@ -44,7 +44,7 @@ class RoutingTableTest160bit8k < Minitest::Test
   def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length
     @routing_table.create_bucket
 
-    no_shared_id = (2 ** (ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = (2 ** (Defaults::ENVIRONMENT[:bit_length] - 1)).to_s
 
     result = @routing_table.find_closest_bucket(no_shared_id)
 
@@ -54,7 +54,7 @@ class RoutingTableTest160bit8k < Minitest::Test
   def test_insert_find_closest_bucket_with_two_buckets_no_shared_bit_length_bug
     @routing_table.create_bucket
 
-    no_shared_id = (2**(ENV['bit_length'].to_i) - 1).to_s
+    no_shared_id = (2**(Defaults::ENVIRONMENT[:bit_length]) - 1).to_s
 
     result = @routing_table.find_closest_bucket(no_shared_id)
 
@@ -63,7 +63,7 @@ class RoutingTableTest160bit8k < Minitest::Test
 
   def test_insert_find_closest_bucket_with_two_buckets_one_shared_bit
     @routing_table.create_bucket
-    one_shared_id = (2**(ENV['bit_length'].to_i - 2)).to_s
+    one_shared_id = (2**(Defaults::ENVIRONMENT[:bit_length] - 2)).to_s
 
     result = @routing_table.find_closest_bucket(one_shared_id)
 
@@ -78,7 +78,7 @@ class RoutingTableTest160bit8k < Minitest::Test
   end
 
   def test_insert_find_closest_bucket_with_full_buckets_with_arbitrary_shared_bits
-    total_buckets = ENV['bit_length'].to_i - 1 # create bucket equal to k
+    total_buckets = Defaults::ENVIRONMENT[:bit_length] - 1 # create bucket equal to k
 
     total_buckets.times do
       @routing_table.create_bucket
@@ -216,7 +216,7 @@ class RoutingTableTest160bit8k < Minitest::Test
   end
 
   def test_redistribute_one_bucket_to_two
-    no_shared_id = (2**(ENV['bit_length'].to_i - 1)).to_s
+    no_shared_id = (2**(Defaults::ENVIRONMENT[:bit_length] - 1)).to_s
     node_no_shared = Node.new(no_shared_id, @kn)
     node3 = Node.new('3', @kn)
 

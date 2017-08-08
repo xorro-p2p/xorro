@@ -1,12 +1,13 @@
 require 'minitest/autorun'
 require 'minitest/reporters'
-ENV['files'] = "/dev/null"
-ENV['shards'] = "/dev/null"
-ENV['manifests'] = "/dev/null"
-ENV['bit_length'] = "6"
-ENV['k'] = "2"
-ENV['alpha'] = "1"
-ENV['development'] = "true"
+require_relative '../lib/defaults.rb'
+Defaults::ENVIRONMENT[:files] = "/dev/null"
+Defaults::ENVIRONMENT[:shards] = "/dev/null"
+Defaults::ENVIRONMENT[:manifests] = "/dev/null"
+Defaults::ENVIRONMENT[:bit_length] = 6
+Defaults::ENVIRONMENT[:k] = 2
+Defaults::ENVIRONMENT[:alpha] = 1
+Defaults::ENVIRONMENT[:test] = true
 
 reporter_options = { color: true }
 Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new(reporter_options)]

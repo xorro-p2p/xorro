@@ -1,8 +1,14 @@
 require 'yaml'
 
 module Defaults
+  ENVIRONMENT = {
+    k: 8,
+    bit_length: 160,
+    alpha: 3
+  }
+
   def self.setup(port)
-    node_homes = File.expand_path("~/Desktop/xorro_homes")
+    node_homes = File.expand_path(ENV['node_homes'])
     safe_mkdir(node_homes)
     create_node_home(node_homes, port)
   end
@@ -11,7 +17,7 @@ module Defaults
     node_home = File.join(node_homes, port.to_s)
     safe_mkdir(node_home)
     create_subfolders(node_home)
-    ENV['xorro_home'] = node_home
+    ENVIRONMENT[:xorro_home] = node_home
   end
 
   def self.create_subfolders(node_home)
@@ -21,8 +27,8 @@ module Defaults
 
     [files, manifests, shards].each do |f|
       safe_mkdir(f)
-      ENV[File.basename(f)] = f
-      ### ENV['shards'] + ENV['manifests'] + ENV['files']
+      ENVIRONMENT[File.basename(f).to_sym] = f
+      ### :shards, :files, :manifests
     end
   end
 
@@ -39,7 +45,7 @@ module Defaults
   end
 
   def self.new_id
-    rand(2**ENV['bit_length'].to_i).to_s
+    rand(2**ENVIRONMENT[:bit_length]).to_s
   end
 
   def self.safe_mkdir(dir)

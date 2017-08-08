@@ -7,11 +7,11 @@ require_relative "../lib/fake_network_adapter.rb"
 
 class RoutingTableTest6 < Minitest::Test
   def setup
+    Defaults::ENVIRONMENT[:bit_length] = 6
+    Defaults::ENVIRONMENT[:k] = 2
     @kn = FakeNetworkAdapter.new
     @node = Node.new('0', @kn)
     @routing_table = @node.routing_table
-    ENV['bit_length'] = '6'
-    ENV['k'] = '2'
   end
 
   def test_create_routing_table
