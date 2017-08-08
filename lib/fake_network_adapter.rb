@@ -5,10 +5,6 @@ class FakeNetworkAdapter
     @nodes = []
   end
 
-  def get_node_by_contact(contact)
-    @nodes.find { |n| n.id == contact.id }
-  end
-
   def store(file_id, address, recipient_contact, sender_contact)
     recipient_node = get_node_by_contact(recipient_contact)
     recipient_node.receive_store(file_id, address, sender_contact)
@@ -22,7 +18,6 @@ class FakeNetworkAdapter
     closest_nodes = recipient_node.receive_find_node(query_id, sender_contact)
     node = get_node_by_contact(sender_contact)
     node.ping(recipient_contact)
-
     closest_nodes
   end
 
@@ -31,10 +26,6 @@ class FakeNetworkAdapter
     node = get_node_by_contact(sender_contact)
     node.ping(recipient_contact)
     recipient_node.receive_find_value(file_id, sender_contact)
-  end
-
-  def get_info
-    nil
   end
 
   def ping(contact, sender_contact)
@@ -49,7 +40,17 @@ class FakeNetworkAdapter
     end
   end
 
+  def get_info
+    nil
+  end
+
   def check_resource_status(_address)
     200
+  end
+
+  private
+
+  def get_node_by_contact(contact)
+    @nodes.find { |n| n.id == contact.id }
   end
 end
