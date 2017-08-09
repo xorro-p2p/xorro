@@ -12,10 +12,8 @@ require_relative 'storage.rb'
 
 class Node
   attr_reader :ip, :port, :id, :files, :routing_table, :dht_segment, :is_super, :superport, :manifests, :shards
-
   def initialize(num_string, network, port='80')
     @port = port
-    set_ip
     @network = network
     join(@network)
     @id = num_string
@@ -32,8 +30,8 @@ class Node
     @is_super = ENV['SUPER'] == 'true'
   end
 
-  def activate
-    set_ip
+  def activate(port)
+    set_ip(port)
     @superport = ENV['SUPERPORT']
     return if is_super
     @super_ip = ENV['SUPERIP'] || @ip
@@ -69,7 +67,7 @@ class Node
     if file
       if File.extname(url) == '.xro'
         add_manifest(file.body, File.basename(url, File.extname(url)))
-        compile_shards(file.body)
+        compile_shards(file.body, File.basename(url))
       else
         add_shard(File.basename(url), file.body)
       end
@@ -312,14 +310,29 @@ class Node
     network.nodes.push(self)
   end
 
-  def lookup_ip
+  def set_ip(port)
+    @ip = lookup_ip(port)
+  end
+
+  def lookup_ip(port)
     if ENV['FQDN']
       ENV['FQDN']
-    elsif ENV['WAN'] != 'true'
+    elsif ENV['WAN'] == 'true'
+      ngrok = initialize_ngrok(port)
+      File.basename(ngrok)
+    else
       private_ip = Socket.ip_address_list.detect(&:ipv4_private?)
       private_ip ? private_ip.ip_address : 'localhost'
+    end
+  end
+
+  def initialize_ngrok(port)
+    authfile = ENV['HOME'] + "/.ngrok2/ngrok.yml"
+    if File.exist?(authfile)
+      authtoken = authfile["authtoken"]
+      ngrok = Ngrok::Tunnel.start(port: port, authtoken: authtoken)
     else
-      File.basename(XorroNode::NGROK)
+      ngrok = Ngrok::Tunnel.start(port: port)
     end
   end
 
@@ -339,8 +352,8 @@ class Node
     end
   end
 
-  def compile_shards(file_body)
-    manifest = JSON.parse(file_body)
+  def compile_shards(manifest_body, manifest_name)
+    manifest = JSON.parse(manifest_body)
     shards_ids = manifest['pieces']
     shard_count = shards_ids.length
 
@@ -351,7 +364,7 @@ class Node
 
     if shard_count.zero?
       reassemble_shards(shards_ids, manifest)
-      add_to_cache(@files, File.basename(file, '.xro'), '/files/' + manifest['file_name'])
+      add_to_cache(@files, File.basename(manifest_name, '.xro'), '/files/' + manifest['file_name'])
     end
     sync
   end
@@ -377,10 +390,6 @@ class Node
 
     add_manifest(manifest.to_json, id)
     sync
-  end
-
-  def set_ip
-    @ip = lookup_ip
   end
 
   def store_at_second_closest(shortlist, contact, query_id, data)
