@@ -209,13 +209,7 @@ class XorroNode < Sinatra::Base
     start = params[:data].index(',') + 1
     file_data = params[:data][start..-1]
     decode_base64_content = Base64.decode64(file_data)
-    file_id = NODE.generate_file_id(decode_base64_content)
-    file_name = Defaults::ENVIRONMENT[:files] + '/' + params[:name]
-
-    NODE.write_to_subfolder(Defaults::ENVIRONMENT[:files], params[:name], decode_base64_content)
-    NODE.add_to_cache(NODE.files, file_id, '/files/' + params[:name])
-
-    Thread.new { NODE.shard_file(file_name, file_id) }
+    NODE.save_file(params[:name], decode_base64_content)
     status 200
   end
 
