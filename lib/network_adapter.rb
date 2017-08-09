@@ -4,10 +4,6 @@ require_relative 'contact.rb'
 class NetworkAdapter
   attr_reader :nodes
 
-  TO_CONTACT = Proc.new do |contact|
-    Contact.new(id: contact['id'], ip: contact['ip'], port: contact['port'].to_i)
-  end
-
   def initialize
     @nodes = []
   end
@@ -30,7 +26,7 @@ class NetworkAdapter
     rescue
       closest_nodes = []
     end
-    closest_nodes.map!(&TO_CONTACT)
+    contactify!(closest_nodes)
   end
 
   def find_value(file_id, recipient_contact, sender_contact)
@@ -42,7 +38,7 @@ class NetworkAdapter
       result = {}
     end
     if result['contacts']
-      result['contacts'].map!(&TO_CONTACT)
+      contactify!(result['contacts'])
     end
     result
   end
@@ -85,6 +81,12 @@ class NetworkAdapter
   end
 
   private
+
+  def contactify!(array)
+    array.map! do |contact|
+      Contact.new(id: contact['id'], ip: contact['ip'], port: contact['port'].to_i)
+    end
+  end
 
   def hashify(sender, options = {})
     { id: sender.id,
