@@ -69,7 +69,7 @@ class Node
     if file
       if File.extname(url) == '.xro'
         add_manifest(file.body, File.basename(url, File.extname(url)))
-        compile_shards(file.body)
+        compile_shards(file.body, File.basename(url))
       else
         add_shard(File.basename(url), file.body)
       end
@@ -339,8 +339,8 @@ class Node
     end
   end
 
-  def compile_shards(file_body)
-    manifest = JSON.parse(file_body)
+  def compile_shards(manifest_body, manifest_name)
+    manifest = JSON.parse(manifest_body)
     shards_ids = manifest['pieces']
     shard_count = shards_ids.length
 
@@ -351,7 +351,7 @@ class Node
 
     if shard_count.zero?
       reassemble_shards(shards_ids, manifest)
-      add_to_cache(@files, File.basename(file, '.xro'), '/files/' + manifest['file_name'])
+      add_to_cache(@files, File.basename(manifest_name, '.xro'), '/files/' + manifest['file_name'])
     end
     sync
   end
