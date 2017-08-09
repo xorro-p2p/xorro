@@ -37,7 +37,7 @@ class Node
     @superport = ENV['SUPERPORT']
     return if is_super
     @super_ip = ENV['SUPERIP'] || @ip
-    result = JSON.parse(@network.get_info(@super_ip, @superport))
+    result = JSON.parse(@network.info(@super_ip, @superport))
     contact = Contact.new(id: result['id'], ip: result['ip'], port: result['port'])
     ping(contact)
     Thread.new do

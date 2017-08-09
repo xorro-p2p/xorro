@@ -4,7 +4,7 @@ require_relative 'contact.rb'
 class NetworkAdapter
   attr_reader :nodes
 
-  TO_CONTACT = Proc.new do |contact| 
+  TO_CONTACT = Proc.new do |contact|
     Contact.new(id: contact['id'], ip: contact['ip'], port: contact['port'].to_i)
   end
 
@@ -57,7 +57,7 @@ class NetworkAdapter
     response.code == 200
   end
 
-  def get_info(url, port)
+  def info(url, port)
     begin
       response = call_get_info(url, port)
     rescue
@@ -89,8 +89,7 @@ class NetworkAdapter
   def hashify(sender, options = {})
     { id: sender.id,
       ip: sender.ip,
-      port: sender.port
-    }.merge(options)
+      port: sender.port }.merge(options)
   end
 
   def call_rpc(recipient_contact, path, info_hash)

@@ -40,7 +40,7 @@ class FakeNetworkAdapter
     end
   end
 
-  def get_info
+  def info
     nil
   end
 

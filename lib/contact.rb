@@ -19,15 +19,17 @@ class Contact
     @last_seen = Time.now
   end
 
+  def to_json(*options)
+    as_json.to_json(*options)
+  end
+
+  private
+
   def as_json
     {
       id: @id,
       ip: @ip,
       port: @port
     }
-  end
-
-  def to_json(*options)
-    as_json.to_json(*options)
   end
 end
