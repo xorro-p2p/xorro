@@ -3,6 +3,7 @@ require_relative 'contact.rb'
 
 class NetworkAdapter
   attr_reader :nodes
+  include Singleton
 
   def initialize
     @nodes = []
@@ -79,6 +80,8 @@ class NetworkAdapter
     end
     response
   end
+
+  public_class_method :allocate
 
   private
 

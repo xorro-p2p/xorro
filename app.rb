@@ -23,21 +23,11 @@ class XorroNode < Sinatra::Base
   set :bind, '0.0.0.0'
   enable :sessions
 
-  network = NetworkAdapter.new
+  network = NetworkAdapter.instance
   Defaults.setup(settings.port)
 
-  if ENV['WAN'] == 'true'
-    authfile = ENV['HOME'] + "/.ngrok2/ngrok.yml"
-    if File.exist?(authfile)
-      authtoken = authfile["authtoken"]
-      NGROK = Ngrok::Tunnel.start(port: settings.port, authtoken: authtoken)
-    else
-      NGROK = Ngrok::Tunnel.start(port: settings.port)
-    end
-  end
-
   NODE = Defaults.create_node(network, ENV['WAN'] == 'true' ? 80 : settings.port)
-  NODE.activate
+  NODE.activate(settings.port)
 
   refresh_task = Concurrent::TimerTask.new(execution_interval: 3600, timeout_interval: 3600) do
     NODE.buckets_refresh
