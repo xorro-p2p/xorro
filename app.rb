@@ -39,41 +39,22 @@ class XorroNode < Sinatra::Base
   end
   rebroadcast_task.execute
 
-  get '/', '/debug/node' do
-    @title = "Node Info"
+  get '/', '/my_files' do
+    @title = "My Files"
     @refresh = '<meta http-equiv="refresh" content="5">'
     @node = NODE
     @superport = @node.superport || 'none'
-    erb :node
+    erb :my_files
   end
 
-  get '/debug/data' do
-    @title = "Data"
+  get '/upload_file' do
+    @title = "Upload File"
     @node = NODE
-    @superport = @node.superport || 'none'
-    erb :data
-  end
-
-  get '/debug/buckets' do
-    @title = "K-Buckets"
-    @node = NODE
-    @superport = @node.superport || 'none'
-    erb :buckets
-  end
-
-  get '/debug/dht' do
-    @title = "DHT Segment"
-    @node = NODE
-    @superport = @node.superport || 'none'
-    erb :dht
-  end
-
-  get '/drop_zone' do
-    @node = NODE
-    erb :drop_zone
+    erb :upload_file
   end
 
   get '/get_file' do
+    @title = "Get File"
     @node = NODE
     erb :get_file
   end
@@ -107,25 +88,85 @@ class XorroNode < Sinatra::Base
     end
   end
 
-  get '/info' do
-    NODE.to_contact.to_json
+  post '/upload_file' do
+    start = params[:data].index(',') + 1
+    file_data = params[:data][start..-1]
+    decode_base64_content = Base64.decode64(file_data)
+    NODE.save_file(params[:name], decode_base64_content)
+    status 200
   end
 
-  ### File retreival routes
-
-  get '/files/:filename' do
-    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:files]), params[:filename])
+  # debugging rpc control methods.
+  get '/debug/data' do
+    @title = "Data"
+    @node = NODE
+    @superport = @node.superport || 'none'
+    erb :data
   end
 
-  get '/manifests/:filename' do
-    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:manifests]), params[:filename])
+  get '/debug/routing_table' do
+    @title = "Routing Table"
+    @node = NODE
+    @superport = @node.superport || 'none'
+    erb :routing_table
   end
 
-  get '/shards/:filename' do
-    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:shards]), params[:filename])
+  get '/debug/dht' do
+    @title = "DHT Segment"
+    @node = NODE
+    @superport = @node.superport || 'none'
+    erb :dht
+  end
+  get '/debug/rpc' do
+    @title = "RPC Debugging"
+    @node = NODE
+    @superport = @node.superport || 'none'
+    erb :rpc
+  end
+
+  # these initiate an rpc call from the current node to other nodes
+  post '/debug/rpc/send_find_node' do
+    query_id = params[:query_id]
+    @result = NODE.iterative_find_node(query_id)
+    @node = NODE
+    erb :test
+  end
+
+  post '/debug/rpc/send_find_value' do
+    query_id = params[:file_id]
+    @result = NODE.iterative_find_value(query_id)
+    @node = NODE
+    erb :test
+  end
+
+  post '/debug/rpc/send_rpc_store' do
+    key = params[:key]
+    data = params[:data]
+
+    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port])
+    NODE.store(key, data, contact)
+    redirect '/debug/rpc'
+  end
+
+  post '/debug/rpc/send_it_store' do
+    key = params[:key]
+    data = params[:data]
+    NODE.iterative_store(key, data)
+
+    redirect '/debug/rpc'
+  end
+
+  post '/debug/rpc/send_rpc_ping' do
+    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port].to_i)
+    NODE.ping(contact)
+    redirect '/debug/rpc'
   end
 
   ### RPC Routes
+
+  get '/rpc/info' do
+    NODE.to_contact.to_json
+  end
 
   post '/rpc/store' do
     file_id = params[:file_id]
@@ -155,52 +196,18 @@ class XorroNode < Sinatra::Base
     status 200
   end
 
-  # debugging rpc control methods.
-  # these initiate an rpc call from the current node to other nodes
+  ### File retreival routes
 
-  post '/send_find_node' do
-    query_id = params[:query_id]
-    @result = NODE.iterative_find_node(query_id)
-    @node = NODE
-    erb :test
+  get '/files/:filename' do
+    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:files]), params[:filename])
   end
 
-  post '/send_find_value' do
-    query_id = params[:file_id]
-    @result = NODE.iterative_find_value(query_id)
-    @node = NODE
-    erb :test
+  get '/manifests/:filename' do
+    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:manifests]), params[:filename])
   end
 
-  post '/send_rpc_store' do
-    key = params[:key]
-    data = params[:data]
-
-    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port])
-    NODE.store(key, data, contact)
-    redirect '/'
-  end
-
-  post '/send_it_store' do
-    key = params[:key]
-    data = params[:data]
-    NODE.iterative_store(key, data)
-
-    redirect '/'
-  end
-
-  post '/send_rpc_ping' do
-    contact = Contact.new(id: params[:id], ip: params[:ip], port: params[:port].to_i)
-    NODE.ping(contact)
-    redirect '/'
-  end
-
-  post '/save_to_files' do
-    start = params[:data].index(',') + 1
-    file_data = params[:data][start..-1]
-    decode_base64_content = Base64.decode64(file_data)
-    NODE.save_file(params[:name], decode_base64_content)
-    status 200
+  get '/shards/:filename' do
+    send_file File.join(File.expand_path(Defaults::ENVIRONMENT[:shards]), params[:filename])
   end
 
   run! if app_file == $0

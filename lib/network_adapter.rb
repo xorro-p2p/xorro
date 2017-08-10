@@ -104,6 +104,6 @@ class NetworkAdapter
   end
 
   def call_get_info(url, port)
-    HTTP.get('http://' + url + ':' + port.to_s + '/info')
+    HTTP.get('http://' + url + ':' + port.to_s + '/rpc/info')
   end
 end

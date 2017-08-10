@@ -1,0 +1,48 @@
+<div class="forms">
+  <form action="/debug/rpc/send_find_node" method="post">
+    <fieldset>
+    <h4>Iterative find node</h4>
+    <p>Query id</p>
+    <input type="text" id="query_id" name="query_id">
+    <input type="submit" value="submit">
+    </fieldset>
+  </form>
+  <form action="/debug/rpc/send_find_value" method="post">
+    <h4>Iterative find value</h3>
+    <p>Query file_id</p>
+    <input type="text" id="file_id" name="file_id">
+    <input type="submit" value="submit">
+  </form>
+  <form action="/debug/rpc/send_it_store" method="post">
+    <h4>Iterative store</h4>
+    <p>Store key</p>
+    <input type="text" id="key" name="key">
+    <p>Store data(address?)</p>
+    <input type="text" id="data" name="data">
+    <input type="submit" value="submit">
+  </form>
+  <form action="/debug/rpc/send_rpc_store" method="post">
+    <h4>Send RPC Store</h4>
+    <p>Store key</p>
+    <input type="text" id="key" name="key">
+    <p>Store data(address?)</p>
+    <input type="text" id="data" name="data">
+    <p>Recipient IP</p>
+    <input type="text" id="ip" name="ip">        
+    <p>Recipient Port</p>
+    <input type="text" id="port" name="port">
+    <p>Recipient ID</p>
+    <input type="text" id="id" name="id">
+    <input type="submit" value="submit">
+  </form>
+  <form action="/debug/rpc/send_rpc_ping" method="post">
+    <h4>Send Ping</h4>
+    <p>Recipient IP</p>
+    <input type="text" id="ip" name="ip">        
+    <p>Recipient Port</p>
+    <input type="text" id="port" name="port">
+    <p>Recipient ID</p>
+    <input type="text" id="id" name="id">
+    <input type="submit" value="submit">
+  </form>
+</div>
