@@ -97,8 +97,15 @@ class XorroNode < Sinatra::Base
   end
 
   # debugging rpc control methods.
+  get '/debug/node_info' do
+    @title = "Node Information"
+    @node = NODE
+    @superport = @node.superport || 'none'
+    erb :node_info
+  end
+
   get '/debug/data' do
-    @title = "Data"
+    @title = "Data Cache"
     @node = NODE
     @superport = @node.superport || 'none'
     erb :data
