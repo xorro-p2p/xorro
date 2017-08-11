@@ -1,26 +1,99 @@
+@import url("whitespace-reset.css");
+
+html, body {
+  height: 100%;
+}
+
 body {
-  background: black;
-  color: white;
-  font-family: 'Courier New';
+  min-width: 1420px;
+  background: white;
+  color: #363636;
+  font-family: 'Helvetica';
+  font-size: 14px;
   font-weight: 100;
-  min-width: 1420px
+  line-height: 1.2em;
+  letter-spacing: 0.05em;
+}
+
+h2 {
+  padding: 15px 0 10px 0;
+  margin: 0 0 20px 0;
+  font-size: 30px;
+  font-weight: 300;
+  color: #246C87;
+  border-bottom: 1px solid #C7C7C7;
+}
+
+h3 {
+  margin: 0 0 15px 0;
+  font-size: 20px;
+}
+
+h4 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
 }
 
 dd {
+  padding: 0 0 0 20px;
   margin-left: 0
 }
-header {
-  margin: 0 50px
-}
-header nav {
-  margin: 0 auto;
-  width: 800px;
+body > header {
+  height: 80px;
+  padding: 12px 0 0 20px;
+  background: #246C87;
 }
 
-header nav dl{
+body > header h1 {
+  display: inline-block;
+  width: 300px;
+  margin: 0 0 0 0;
+}
+
+body > header h1 img {
+  width: 265px;
+}
+
+#node-info {
   float: right;
-  clear: right;
-  margin: 20px 10px;
+  margin-right: 20px;
+  color: white;
+}
+
+#node-info p {
+  font-size: .9em;
+  line-height: 20px;
+  letter-spacing: 0.08em;
+}
+
+main {
+  min-height: 100%;
+  clear: both;
+}
+
+#sidenav {
+  float: left;
+  width: 285px;
+  height: 100vh;
+  padding: 25px 15px 30px 15px;
+  background: #F4F4F4;
+  color: #246C87;
+  box-sizing: border-box;
+}
+
+#sidenav a {
+  color: #246C87;
+  text-decoration: none;
+}
+
+#sidenav ul {
+  list-style: none;
+}
+
+#content {
+  overflow: hidden;
+  max-width: 1100px;
+  padding: 25px 30px;
 }
 
 div.forms {
@@ -69,9 +142,8 @@ nav dl dd, nav dl dt {
   display: inline-block
 }
 
-div.files, div.dht, div.buckets {
+div.files, div.dht, div.buckets, div.node {
   width: 1000px;
-  margin: 0 auto
 }
 
 div.buckets ul {
@@ -84,14 +156,6 @@ div.buckets li {
   margin-left: 60px
 }
 
-div.files dd, div.dht dd{
-  margin-left: 440px
-}
-
-div.files dt, div.dht dt{
-  width: 440px
-}
-
 div.buckets dl {
   padding: 10px
 }
@@ -100,18 +164,49 @@ div.contact {
   display: inline-block;
 }
 
-dt, td{
-  color: green;
-  width: 100px;
-  text-align: right;
+form {
+  width: 500px;
 }
 
-td {
-  padding: 10px 10px
+.rpc-form {
+  padding: 0 0 15px 0;
+  margin: 10px 0 25px 0;
+  border-bottom: 1px solid #C7C7C7;
 }
 
-tr {
-  border: 1px dotted grey
+label {
+  display: block;
+  margin: 15px 0 10px 0;
+}
+
+input[type="submit"] {
+  color: white;
+  background-color: #246C87;
+}
+
+table {
+  margin-bottom: 30px;
+}
+
+td, th{
+  width: 460px;
+  padding: 12px 10px;
+  text-align: left;
+}
+
+td div {
+  width: 450px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+dt, dd {
+  text-align: left;
+}
+
+dt {
+  width: 80px;
 }
 
 dt::after {
@@ -119,44 +214,52 @@ dt::after {
 }
 
 a {
-  color: white
+  color: #246C87;
 }
 
 a:hover {
-  color: green;
+  color: #419CBE;
 }
 
-main {
-  margin: 30px 50px
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+  vertical-align: middle;
 }
 
-main dt {
+#content dt {
   float: left;
   clear: left;
   font-weight: bold;
 }
 
-input {
-  color: black;
+.copy-btn {
+  margin-right: 5px;
+  border-radius: 3px;
+  border: 1px solid silver;
+  background: #F1F1F1;
+}
+
+.copy-btn img {
+  width: 16px;
 }
 
 .box {
-  width: 600px;
-  color: black;
+  width: 800px;
+  color: #456571;
   font-size: 16px;
   background-color: #c8dadf;
   position: relative;
-  padding: 100px 20px;
+  padding: 150px 20px;
   text-align: center;
   outline: 1px dashed #92b0b3;
   outline-offset: -10px;
   -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
   -moz-transition: outline-offset .15s ease-in-out, background-color .15s linear;
   transition: outline-offset .15s ease-in-out, background-color .15s linear;
-}
-
-.box {
-  
 }
 
 .box_dragndrop,
@@ -194,5 +297,21 @@ input {
   z-index: -1;
 }
 
+.alert-box {
+  width: 600px;
+  padding: 10px;
+  background: #fdce0e;
+  margin: 0 0 15px 0;
+  border-radius: 4px;
+}
 
+.close {
+  line-height: 0.6;
+}
 
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus,
+.nav-pills > li.active > a:hover {
+  background-color: #246C87;
+  color: white !important;
+}
