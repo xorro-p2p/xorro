@@ -19,7 +19,7 @@ Xorro P2P is a Ruby implementation of a Bit-Torrent-Like Peer to Peer file trans
 
 ### Dependencies
 
-##### Ruby 2.3.1 or greater
+##### Ruby 2.3.1
 
 ##### Ngrok
 Ngrok is a tool that allows you to expose a local webserver behind a NAT firewall to the internet via secure tunnel, and Xorro leverages this to enable NAT translated communications.
