@@ -1,25 +1,43 @@
 <div class="files">
-  <h4>data</h4>
-  <table>
+  <h3>Shards</h3>
+  <table class="table table-striped">
+    <tr>
+      <th>File ID</th>
+      <th>Location</th>
+    </tr>
     <% @node.shards.each do |k,v| %>
       <tr>
-        <td><%= k %></td>
-        <td><a href="<%= v %>"><%= v %></a></td>
+        <td>
+          <button class="copy-btn" data-clipboard-text="<%= k %>">
+            <img src="/images/clipboard_icon.svg" alt="Copy to clipboard" />
+          </button>
+          <%= k %>
+        </td>
+        <td>
+          <div><a href="<%= v %>"><%= v %></a></div>
+        </td>
       </tr>
     <% end %>
   </table>
   <br>
-  <table>
+  <h3>Manifests</h3>
+  <table class="table table-striped">
+    <tr>
+      <th>File ID</th>
+      <th>Location</th>
+    </tr>
     <% @node.manifests.each do |k,v| %>
       <tr>
-        <td><%= k %></td>
-        <td><a href="<%= v %>"><%= v %></a></td>
+        <td>
+          <button class="copy-btn" data-clipboard-text="<%= k %>">
+            <img src="/images/clipboard_icon.svg" alt="Copy to clipboard" />
+          </button>
+          <%= k %>
+        </td>
+        <td>
+          <div><a href="<%= v %>"><%= v %></a></div>
+        </td>
       </tr>
     <% end %>
   </table>
 </div>
-
-
-
-
-
