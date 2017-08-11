@@ -7,8 +7,8 @@ module Defaults
     alpha: 3
   }
 
-  def self.setup(port)
-    node_homes = File.expand_path(ENV['node_homes'])
+  def self.setup(port, node_homes_path)
+    node_homes = File.expand_path(node_homes_path)
     safe_mkdir(node_homes)
     create_node_home(node_homes, port)
   end
