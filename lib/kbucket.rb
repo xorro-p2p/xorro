@@ -1,4 +1,3 @@
-require_relative '../config.rb'
 require_relative 'defaults.rb'
 require_relative 'binary.rb'
 
