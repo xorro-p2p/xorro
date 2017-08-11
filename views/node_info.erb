@@ -1,0 +1,29 @@
+<div class="node">
+  <table class="table table-striped">
+    <tr>
+      <td>id</td>
+      <td>
+        <%= @node.id %>
+        <button class="copy-btn" data-clipboard-text="<%= @node.id %>">
+          <img src="/images/clipboard_icon.svg" alt="Copy to clipboard" />
+        </button>  
+      </td>
+    </tr>
+    <tr>
+      <td>ipv4</td>
+      <td><%= @node.ip %></td>
+    </tr>
+    <tr>
+      <td>port</td>
+      <td><%= @node.port %></td>
+    </tr>
+    <tr>
+      <td>super</td>
+      <td><%= @node.is_super %></td>
+    </tr>
+    <tr>
+      <td>superport</td>
+      <td><%= @superport %></td>
+    </tr>
+  </table>
+</div>

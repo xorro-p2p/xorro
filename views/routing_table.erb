@@ -1,6 +1,5 @@
-
 <div class="buckets">
-  <h4>k-buckets: <%= @node.routing_table.buckets.size %></h4>
+  <h4>Total k-buckets: <%= @node.routing_table.buckets.size %></h4>
   <% @node.routing_table.buckets.each_with_index do |b,x| %>
       <div class="bucket">
         <dl>
@@ -24,8 +23,8 @@
              <% b.contacts. each do |c| %>
               <li>id: <%= c.id %></li>
               <li>ip: <a href="http://<%= c.ip %>:<%= c.port %>"><%= c.ip %>:<%= c.port %></a></li>
-              <li>lastseen: <%= c.last_seen %></li>
-              <li>---------------------</li>
+              <li>last seen: <%= c.last_seen %></li>
+              <hr />
               <% end %>
             </ul>
           </dd>

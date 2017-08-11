@@ -1,0 +1,1 @@
+new Clipboard('.copy-btn');

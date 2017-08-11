@@ -1,17 +1,24 @@
 <div class="files">
-  <h4>files</h4>
-    <dl>
+  <table class="table table-striped">
+      <tr>
+        <th>File ID</th>
+        <th>Location</th>
+      </tr>
       <% @node.files.each do |k,v| %>
-        <dt>
-          <%= k %>
-        </dt>
-        <dd>
-          <a href="<%= v %>"><%= v %></a>
-        </dd>
+        <tr>
+          <td>
+            <button class="copy-btn" data-clipboard-text="<%= k %>">
+              <img src="images/clipboard_icon.svg" alt="Copy to clipboard" />
+            </button>
+            <%= k %>
+          </td>
+          <td>
+            <div><a href="<%= v %>"><%= v %></a></div>
+          </td>
+        </tr>
       <% end %>
-    </dl>
+    </table>
 </div>
-
 
 
 

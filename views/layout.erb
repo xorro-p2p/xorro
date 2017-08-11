@@ -5,53 +5,65 @@
   <% if @refresh %>
     <%= @refresh %>
   <% end %>
-  <title>Debug <%= @title %></title>
+  <title>Xorro P2P | <%= @title %></title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <script src="/javascripts/jquery-3.2.1.min.js"></script>
+  <script src="/javascripts/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+  <script src="/javascripts/navigation.js"></script>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
   <header>
-    <nav>
-      <h3><%= @title %></h3>
-      <dl>
-        <dt>id</dt>
-        <dd><%= @node.id %></dd>
-        <dt>ipv4</dt>
-        <dd><%= @node.ip %></dd>
-        <dt>port</dt>
-        <dd><%= @node.port %></dd>
-        <dt>super</dt>
-        <dd><%= @node.is_super %></dd>
-        <dt>superport</dt>
-        <dd><%= @superport %></dd>
-      </dl>
-    </nav>
-    <nav>
-      <ul>
-        <li>
-          <a href="/my_files">My Files</a>
-        </li>
-        <li>
-          <a href="/debug/data">Data</a>
-        </li>
-        <li>
-          <a href="/debug/dht">DHT</a> 
-        </li>
-        <li>
-          <a href="/debug/routing_table">Routing Table</a>
-        </li>
-        <li>
-          <a href="/upload_file">Upload File</a>
-        </li>
-        <li>
-          <a href="/get_file">Get File</a>
-        </li>
-      </ul>
-    </nav>
+    <h1>
+      <a href="/" alt="Xorro P2P Home"><img src="/images/xorro_p2p_logo.png" title="Xorro Iggy"/></a>
+    </h1>
+    <div id="node-info">
+      <p>id: <%= @node.id %></p>
+      <p>ipv4: <%= @node.ip %></p>
+      <p>port: <%= @node.port %></p>
+    </div>
   </header>
   <main>
-    <div class="list">
+    <div id="sidenav">
+      <ul class="nav nav-pills nav-stacked">
+        <li role="presentation">
+          <a href="/my_files">My Files</a>
+        </li>
+        <li role="presentation">
+          <a href="/get_file">Get File</a>
+        </li>
+        <li role="presentation">
+          <a href="/upload_file">Upload File</a>
+        </li>
+        <li role="presentation" class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            Debug <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li role="presentation">
+              <a href="/debug/node_info">Node Information</a>
+            </li>
+            <li role="presentation">
+              <a href="/debug/data">Data</a>
+            </li>
+            <li role="presentation">
+              <a href="/debug/dht">DHT</a>
+            </li>
+            <li role="presentation">
+              <a href="/debug/routing_table">Routing Table</a>
+            </li>
+            <li role="presentation">
+              <a href="/debug/rpc">RPC Tools</a> 
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div id="content">
+      <header>
+        <h2><%= @title %></h2>
+      </header>
       <% flash.keys.each do |type| %>
         <div data-alert class="flash <%= type %> alert-box radius">
           <%= flash[type] %>
@@ -62,5 +74,7 @@
     </div>
   </main>
   <script src="/javascripts/drop_zone.js"></script>
+  <script src="/javascripts/navigation.js"></script>
+  <script src="/javascripts/clipboard.js"></script>
 </body>
 </html>

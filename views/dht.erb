@@ -1,12 +1,20 @@
 <div class="dht">
-  <h4>dht segment</h4>
-  <table>
+  <table class="table table-striped">
+    <tr>
+      <th>File ID</th>
+      <th>Location</th>
+    </tr>
     <% @node.dht_segment.each do |k,v| %>
     <tr>
-      <td><%= k %></td>
+      <td>
+        <button class="copy-btn" data-clipboard-text="<%= k %>">
+          <img src="/images/clipboard_icon.svg" alt="Copy to clipboard" />
+        </button>
+        <%= k %>
+      </td>
       <td>
         <% v.each do |url| %>
-            <a href="<%= url %>"><%= url %></a><br />
+            <div><a href="<%= url %>"><%= url %></a></div>
           <% end %>
       </td>
     </tr>
