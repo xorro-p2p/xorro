@@ -31,6 +31,7 @@ launch_gc_range() {
     port=$(expr 9000 + $p)
     name=client$p.xorro-p2p.com
     launch_gc_client $port $name
+    sleep 0.25
   done
 }
 
