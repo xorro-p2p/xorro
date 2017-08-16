@@ -21,8 +21,14 @@ Xorro P2P is a Ruby implementation of a Bit-Torrent-Like Peer to Peer file trans
 
 ##### Ruby 2.3.1
 
-##### Ngrok
-Ngrok is a tool that allows you to expose a local webserver behind a NAT firewall to the internet via secure tunnel. Xorro leverages this to enable NAT translated communications.
+##### Networking
+While anyone can download Xorro, launch a node, and retreive files from the Xorro network, contributing to the network (hosting files available to others) requires one of the following:
+
+1. Node is directly on the public internet with a public IP, no NAT or Firewall blocking public access.
+2. Node is behind a NAT/Firewall but port forwarding is set up so that the node's port is publicly accessible.
+3. Node is behind a Nat/Firewall with no port forwarding, but a 3rd party tunneling tool is installed.
+
+Ngrok is a tool that allows you to expose a local webserver behind a NAT firewall to the internet via secure tunnel. Xorro supports Ngrok to enable NAT translated communications.
 
 Download Ngrok, unzip the executable, and copy it to somewhere in your `$PATH` ie: `/usr/local/bin/ngrok`
 
@@ -44,10 +50,21 @@ Once ngrok is installed, you can optionally create a free account at [ngrok.com]
 
 Xorro ships with a number of launch/kill scripts located in `bin`. 
 
-To launch a public Xorro Node and join the global P2P network, run:
+To launch a Xorro Node from behind a NAT/Firewall and retreive files from the global P2P network, run:
 
 ```
-bin/launch_public.sh
+bin/launch_leech.sh
+```
+
+To launch a public Xorro Node on a host directly on the internet, or behind a firewall with port forwarding run:
+
+```
+bin/launch_pf_public.sh 9999   ### or other tcp port number
+```
+
+To launch a Xorro Node on a host behind a firewall, using Ngrok for tunneling:
+```
+bin/launch_nat_public.sh 9999   ### or other tcp port number
 ```
 
 Your admin control panel is now accessible at `http://localhost/9999`. Authenticate with the credentials you set in `config.yml`.
@@ -82,4 +99,5 @@ Some relevant environment variables for node launch:
 4. `SUPER`: true or false -- is the node a supernode?
 5. `NAT`: true or false -- is this node behind NAT firewall?
 6. `FQDN`:  Fully Qualified Domain Name or public IP at which the node is reachable.
+7. `LEECH`: true or false -- this disables the broadcast of location info about any hosted files.
 

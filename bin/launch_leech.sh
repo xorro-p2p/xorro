@@ -1,5 +1,6 @@
 #!/bin/bash
 SUPERPORT=9999
+PORT=9999
 SUPERIP=supernode1.xorro-p2p.com
 IP=`dig +short myip.opendns.com @resolver1.opendns.com`
 
@@ -18,14 +19,14 @@ help_message() {
 
 }
 
-if [[ $# -ne 1 ]] || [[ $1 == '-h' ]]; then
+if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
   help_message
   exit 0
 fi
 
 launch_leech() {
-  PORT=$1 SUPERPORT=$SUPERPORT SUPERIP=$SUPERIP SUPER=false LEECH=true FQDN=$IP nohup ruby app.rb >> tmp/nohup.out &
+  PORT=$PORT SUPERPORT=$SUPERPORT SUPERIP=$SUPERIP SUPER=false LEECH=true FQDN=$IP nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
-launch_leech $@
+launch_leech
