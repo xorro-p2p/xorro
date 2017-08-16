@@ -30,7 +30,7 @@ class XorroNode < Sinatra::Base
 
   Defaults.setup(settings.port, settings.node_homes)
 
-  NODE = Defaults.create_node(network, ENV['WAN'] == 'true' ? 80 : settings.port)
+  NODE = Defaults.create_node(network, ENV['NAT'] == 'true' ? 80 : settings.port)
   NODE.activate(settings.port)
 
   refresh_task = Concurrent::TimerTask.new(execution_interval: 3600, timeout_interval: 3600) do

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## launches single supernode on local machine, 
+## take 1 argument:  port that sinatra web app will run on.
+## no nat translation or communications with network are assumed
+
 help_message() {
   echo
   echo 'looks like you need some help using this tool.'
@@ -27,9 +31,9 @@ if [[ $# -ne 1 ]] || [[ $1 == '-h' ]]; then
   exit 0
 fi
 
-launch_super() {
+launch_local_super() {
   PORT=$1 SUPERPORT='' SUPER=true nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
-launch_super $@
+launch_local_super $@
