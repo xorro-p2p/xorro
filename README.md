@@ -26,7 +26,7 @@ While anyone can download Xorro, launch a node, and retreive files from the Xorr
 
 1. Node is directly on the public internet with a public IP, no NAT or Firewall blocking public access.
 2. Node is behind a NAT/Firewall but port forwarding is set up so that the node's port is publicly accessible.
-3. Node is behind a Nat/Firewall with no port forwarding, but a 3rd party tunneling tool is installed.
+3. Node is behind a NAT/Firewall with no port forwarding, but a 3rd party tunneling tool is installed.
 
 Ngrok is a tool that allows you to expose a local webserver behind a NAT firewall to the internet via secure tunnel. Xorro supports Ngrok to enable NAT translated communications.
 
