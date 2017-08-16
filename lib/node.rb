@@ -316,7 +316,7 @@ class Node
   def lookup_ip(port)
     if ENV['FQDN']
       ENV['FQDN']
-    elsif ENV['WAN'] == 'true'
+    elsif ENV['NAT'] == 'true'
       ngrok = initialize_ngrok(port)
       File.basename(ngrok)
     else

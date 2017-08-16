@@ -80,6 +80,6 @@ Some relevant environment variables for node launch:
 2. `SUPERIP`:  IPV4 address or fully qualified domain name of supernode to be contacted at boot.
 3. `SUPERPORT`: TCP Port used to contact supernode at boot.
 4. `SUPER`: true or false -- is the node a supernode?
-5. `WAN`: true or false -- is this node behind NAT firewall?
+5. `NAT`: true or false -- is this node behind NAT firewall?
 6. `FQDN`:  Fully Qualified Domain Name or public IP at which the node is reachable.
 
