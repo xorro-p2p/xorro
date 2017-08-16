@@ -31,6 +31,7 @@ class Node
 
   def activate(port)
     set_ip(port)
+    set_leech
     @superport = ENV['SUPERPORT']
     return if is_super
     @super_ip = ENV['SUPERIP'] || @ip
@@ -44,6 +45,7 @@ class Node
   end
 
   def broadcast
+    return if @leech
     [@manifests, @shards].each do |hash|
       hash.each do |k, v|
         iterative_store(k, file_url(v))
@@ -103,6 +105,7 @@ class Node
   end
 
   def iterative_store(file_id, address)
+    return if @leech
     results = iterative_find_node(file_id)
 
     results.each do |contact|
@@ -311,6 +314,10 @@ class Node
 
   def set_ip(port)
     @ip = lookup_ip(port)
+  end
+
+  def set_leech
+    @leech = ENV["LEECH"] == 'true'
   end
 
   def lookup_ip(port)
