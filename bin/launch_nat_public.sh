@@ -1,5 +1,9 @@
 #!/bin/bash
 
+PORT=9999
+SUPERPORT=9999
+SUPERIP=supernode1.xorro-p2p.com
+
 help_message() {
   echo
   echo 'looks like you need some help using this tool.'
@@ -19,9 +23,9 @@ if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
   exit 0
 fi
 
-launch_public() {
-  PORT=9999 SUPERPORT=9999 SUPERIP='supernode1.xorro-p2p.com' WAN=true nohup ruby app.rb >> tmp/nohup.out &
+launch_nat_public() {
+  PORT=$PORT SUPERPORT=$SUPERPORT SUPERIP=$SUPERIP NAT=true nohup ruby app.rb >> tmp/nohup.out &
   echo $! >> tmp/pids.txt
 }
 
-launch_public
+launch_nat_public
