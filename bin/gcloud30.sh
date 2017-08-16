@@ -12,8 +12,9 @@ help_message() {
   echo 'usage:  "gcloud30.sh"'
   echo
   echo "This script is specifically for launching the xorro demo environment:  supernode on gcloud/aws server with 30 non-super nodes in same network."
-  echo "DNS records for all nodes launched needs to be set up in advance:  "
+  echo "DNS records for all nodes launched needs to be set up in advance"
   echo "DNS record and supernode IP/port will be hard coded into nodes @ip ivar."
+  echo
 }
 
 if [[ $# -ne 0 ]] || [[ $1 == '-h' ]]; then
